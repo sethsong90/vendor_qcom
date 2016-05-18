@@ -1,8 +1,13 @@
 LOCAL_PATH:=$(my-dir)
 include $(CLEAR_VARS)
 
-LOC_API_DIR   = $(TOP)/hardware/qcom/gps/loc_api
+ifeq ($(TARGET_PROVIDES_GPS_LOC_API),true)
+LOC_API_DIR   = $(TOP)/$(TARGET_GPS_HAL_PATH)/loc_api/loc_api_v02
+GPS_UTILS_DIR = $(TOP)/$(TARGET_GPS_HAL_PATH)/utils
+else
+LOC_API_DIR   = $(TOP)/vendor/qcom/opensource/location/loc_api/loc_api_v02
 GPS_UTILS_DIR = $(TOP)/hardware/qcom/gps/utils
+endif
 
 FEATURE_GSIFF_ANDROID_HAL = 1
 FEATURE_GSIFF_ANDROID_NDK = 1
@@ -20,7 +25,7 @@ LOCAL_C_INCLUDES:= \
     $(TARGET_OUT_HEADERS)/diag/include \
     $(TOP) \
     $(LOCAL_PATH) \
-    $(TOP)/vendor/qcom/opensource/location/loc_api/loc_api_v02 \
+    $(LOC_API_DIR) \
     $(GPS_UTILS_DIR) \
     $(LOCAL_PATH)/../../daemon
 
