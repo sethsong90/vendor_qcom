@@ -1657,7 +1657,7 @@ int isp_hw_prepare_vfe_diag(isp_hw_t *isp_hw,
   vfe_diagnostics_t *vfe_diag;
 
   vfe_diag = &isp_hw->isp_diag.user_vfe_diagnostics;
-  memset(vfe_diag, 0, sizeof(vfe_diagnostics_t *));
+  memset(vfe_diag, 0, sizeof(vfe_diagnostics_t));
 
   rc = isp_pipeline_get_params(isp_hw->pipeline.private_data,
     ISP_PIX_GET_VFE_DIAG_INFO, &streaming_mode, sizeof(streaming_mode),
