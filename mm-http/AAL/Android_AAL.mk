@@ -40,8 +40,8 @@ LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/mm-core/omxcore
 LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/mm-parser/include
 LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/common/inc
 LOCAL_C_INCLUDES += $(TOP)/frameworks/av/include/drm
-LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/media/dashplayer
-LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/media/mm-core/inc
+LOCAL_C_INCLUDES += $(GLOBAL_MEDIA_HAL_PATH)/dashplayer
+LOCAL_C_INCLUDES += $(GLOBAL_MEDIA_HAL_PATH)/mm-core/inc
 
 LOCAL_SHARED_LIBRARIES := libdashplayer
 LOCAL_SHARED_LIBRARIES += libutils

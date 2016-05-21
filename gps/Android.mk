@@ -44,6 +44,12 @@ ifeq (, $(wildcard $(GPS_BUILD_DIR)/$(TARGET_BOARD_PLATFORM)*))
    GPS_MAKE_INC=unsupported.in
 endif
 
+ifeq ($(TARGET_GPS_HAL_PATH),)
+GLOBAL_GPS_HAL_PATH := $(TOP)/hardware/qcom/gps
+else
+GLOBAL_GPS_HAL_PATH := $(TOP)/$(TARGET_GPS_HAL_PATH)
+endif
+
 include $(GPS_BUILD_DIR)/$(GPS_MAKE_INC) $(call all-subdir-makefiles)
 
 endif # is-board-platform

@@ -14,7 +14,7 @@ include $(CLEAR_VARS)
 LOCAL_C_INCLUDES:= $(LOCAL_PATH)
 
 LOCAL_SRC_FILES:=  bt_nv.cpp
-LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/common/inc \
+LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/common/inc
 
 LOCAL_MODULE:= libbtnv
 LOCAL_MODULE_TAGS := optional
@@ -26,7 +26,7 @@ include $(BUILD_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
-LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/common/inc \
+LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/common/inc
 
 LOCAL_SRC_FILES:= btnvtool.cpp
 LOCAL_SHARED_LIBRARIES = libbtnv
@@ -157,7 +157,7 @@ LOCAL_COPY_HEADERS    += btqsocnvmutils.h
 
 #Enabling warnings to be treated as errors.
 LOCAL_CFLAGS += -Werror -Wall -Wextra
-LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/common/inc \
+LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/common/inc
 
 LOCAL_SRC_FILES:= bthci_qcomm_linux.cpp bthci_qcomm_linux_uart.c
 LOCAL_SRC_FILES += bthci_qcomm_common.c btqsocnvmplatform_linux.c

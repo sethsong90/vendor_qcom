@@ -24,10 +24,9 @@ LOCAL_C_INCLUDES+= \
       endif
 LOCAL_C_INCLUDES+= $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include/media
 LOCAL_C_INCLUDES+= $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
-LOCAL_C_INCLUDES += hardware/qcom/display/libgralloc \
-        hardware/qcom/display/libgenlock \
-        hardware/qcom/media/libstagefrighthw \
-        hardware/qcom/camera \
+LOCAL_C_INCLUDES += $(TARGET_DISPLAY_HAL_PATH)/libgralloc \
+        $(TARGET_MEDIA_HAL_PATH)/libstagefrighthw \
+        $(TARGET_CAMERA_HAL_PATH) \
         hardware/libhardware/include/hardware
 
 LOCAL_SRC_FILES  := QCamera2HAL.cpp

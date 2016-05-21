@@ -32,7 +32,7 @@ LOCAL_SRC_FILES:=       \
 LOCAL_C_INCLUDES:= \
     $(LOCAL_PATH)/./inc \
     $(LOCAL_PATH)/../common/inc  \
-    $(LOCAL_PATH)/../../opensource/time-services
+    $(TARGET_OUT_HEADERS)/time-services
 
 LOCAL_SHARED_LIBRARIES := \
     libutils  \

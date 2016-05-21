@@ -243,7 +243,7 @@ endif
 
 ifeq ($(HAVE_QC_TIME_SERVICES),true)
   LOCAL_CFLAGS += -DFEATURE_QC_TIME_SERVICES
-  LOCAL_C_INCLUDES += vendor/qcom/opensource/time-services
+  LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/time-services
   LOCAL_SHARED_LIBRARIES += libtime_genoff
 endif # HAVE_QC_TIME_SERVICES
 

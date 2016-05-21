@@ -1,13 +1,13 @@
 LOCAL_PATH:=$(my-dir)
 include $(CLEAR_VARS)
 
-ifeq ($(TARGET_PROVIDES_GPS_LOC_API),true)
-LOC_API_DIR   = $(TOP)/$(TARGET_GPS_HAL_PATH)/loc_api/loc_api_v02
-GPS_UTILS_DIR = $(TOP)/$(TARGET_GPS_HAL_PATH)/utils
+ifeq ($(TARGET_GPS_LOC_API_PATH),)
+LOC_API_DIR = $(TOP)/vendor/qcom/opensource/location/loc_api/loc_api_v02
 else
-LOC_API_DIR   = $(TOP)/vendor/qcom/opensource/location/loc_api/loc_api_v02
-GPS_UTILS_DIR = $(TOP)/hardware/qcom/gps/utils
+LOC_API_DIR = $(TOP)/$(TARGET_GPS_LOC_API_PATH)
 endif
+
+GPS_UTILS_DIR = $(TOP)/$(TARGET_GPS_HAL_PATH)/utils
 
 FEATURE_GSIFF_ANDROID_HAL = 1
 FEATURE_GSIFF_ANDROID_NDK = 1

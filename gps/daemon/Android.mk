@@ -17,7 +17,7 @@ GPSONE_BIT_API_DIR = ../../modem-apis/$(MODEM_APIS_DIR)/api/libs/remote_apis/gps
 #
 
 include $(CLEAR_VARS)
-LOC_API_DIR = ../../../../../hardware/qcom/gps/loc_api/libloc_api_50001
+LOC_API_DIR = $(GLOBAL_GPS_HAL_PATH)/gps/loc_api/libloc_api_50001
 
 LOCAL_CFLAGS+= \
         -DDEBUG_DMN_LOC_API -D_ANDROID_
@@ -29,7 +29,7 @@ LOCAL_C_INCLUDES+= \
         $(TARGET_OUT_HEADERS)/diag/include \
         $(LOCAL_PATH)/$(GPSONE_BIT_API_DIR)/rpc/inc \
         $(LOCAL_PATH)/$(GPSONE_BIT_API_DIR)/inc \
-        $(LOCAL_PATH)/$(LOC_API_DIR)
+        $(LOC_API_DIR)
 
 LOCAL_SRC_FILES:= \
         test/test_loc_api_main.cpp \

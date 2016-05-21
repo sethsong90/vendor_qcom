@@ -45,9 +45,9 @@ endif
 mm-pp-daemon-inc   := $(LOCAL_PATH)/inc
 mm-pp-daemon-inc   += $(TARGET_OUT_HEADERS)/pp/inc
 mm-pp-daemon-inc   += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
-mm-pp-daemon-inc   += $(TOP)/hardware/qcom/display/libqservice
+mm-pp-daemon-inc   += $(TARGET_DISPLAY_HAL_PATH)/libqservice
 mm-pp-daemon-inc   += external/zlib
-mm-pp-daemon-inc   += hardware/qcom/display/libqdutils
+mm-pp-daemon-inc   += $(TARGET_DISPLAY_HAL_PATH)/libqdutils
 
 ifeq ($(TARGET_WITH_ALS),true)
 mm-pp-daemon-inc   += $(TARGET_OUT_HEADERS)/qmi/inc

@@ -19,8 +19,8 @@ LOCAL_CFLAGS:= \
 LOCAL_C_INCLUDES:= \
     $(LOCAL_PATH)/../privinc \
     $(LOCAL_PATH)/../pubinc \
-    $(TOP)/hardware/qcom/gps/utils \
-    $(TOP)/hardware/qcom/gps/platform_lib_abstractions
+    $(GLOBAL_GPS_HAL_PATH)/utils \
+    $(GLOBAL_GPS_HAL_PATH)/platform_lib_abstractions
 
 LOCAL_SHARED_LIBRARIES := \
     libutils \
