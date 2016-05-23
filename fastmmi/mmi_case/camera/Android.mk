@@ -1,4 +1,4 @@
-
+ifdef ENABLE__
 LOCAL_PATH:=$(call my-dir)
 
 include $(CLEAR_VARS)
@@ -41,4 +41,4 @@ LOCAL_MODULE:= mmi_camera
 LOCAL_MODULE_TAGS := optional
 
 include $(BUILD_SHARED_LIBRARY)
-
+endif
