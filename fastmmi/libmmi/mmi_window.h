@@ -23,7 +23,6 @@ class mmi_window {
     void blit(gr_surface source, int sx, int sy, int w, int h, int dx, int dy);
     int get_width();
     int get_height();
-    GGLSurface *get_gr_memory_surface();
     void window_lock();
     void window_unlock();
 
@@ -32,5 +31,7 @@ class mmi_window {
     GGLContext *m_gr_context;
     pthread_mutex_t m_window_mutex;
 };
-
+int win_sem_init(void);
+int win_sem_wait(void);
+int invalidate(void);
 #endif

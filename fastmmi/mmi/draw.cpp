@@ -15,6 +15,7 @@
 #include "mmi.h"
 #include "mmi_utils.h"
 #include "input.h"
+#include "mmi_graphics.h"
 
 extern "C" {
 #include <minui.h>
@@ -55,15 +56,20 @@ void *draw_thread(void *args) {
     bool pf_png_exist = true;
     int text_len = 0, text_x_pos = 0;
 
+    if(win_sem_init()) {
+        ALOGE("sem_int fail in draw thread \n");
+        return NULL;
+    }
+
     gr_surface passSurface, failSurface;
 
-    ret = res_create_surface("mmi/pass", &passSurface);
+    ret = res_create_display_surface("/etc/mmi/pass.png", &passSurface);
 
     if(ret < 0) {
         ALOGE("Cannot load pass image\n");
         pf_png_exist = false;
     }
-    ret = res_create_surface("mmi/fail", &failSurface);
+    ret = res_create_display_surface("/etc/mmi/fail.png", &failSurface);
     if(ret < 0) {
         ALOGE("Cannot load fail  image\n");
         pf_png_exist = false;
@@ -89,9 +95,6 @@ void *draw_thread(void *args) {
         list < mmi_text * >*textlist = cur_module->get_text_list();
         list < mmi_text * >::iterator text_iter;
 
-        list < mmi_window * >*windowslist = cur_module->get_window_list();
-        list < mmi_window * >::iterator window_iter;
-
         list < mmi_item * >*itemlist = cur_module->get_item_list();
         list < mmi_item * >::iterator item_iter;
 
@@ -99,13 +102,6 @@ void *draw_thread(void *args) {
         list < touch_point_t >::iterator trace_iter;
 
         cur_module->win_btn_text_list_lock();
-        if(windowslist->begin() != windowslist->end()) {
-            mmi_window *tmp = *windowslist->begin();
-
-            tmp->window_lock();
-            gr_blit(tmp->get_gr_memory_surface(), 0, 0, gr_fb_width(), gr_fb_height(), 0, 0);
-            tmp->window_unlock();
-        }
 
         for(btn_iter = blist->begin(); btn_iter != blist->end(); btn_iter++) {
             mmi_button *tmp = *btn_iter;
@@ -173,7 +169,7 @@ void *draw_thread(void *args) {
         cur_module->win_btn_text_list_unlock();
         gr_flip();
 
-        usleep(1000 * mmi_input.refresh_interval);
+        win_sem_wait();
     }
 
     return NULL;
