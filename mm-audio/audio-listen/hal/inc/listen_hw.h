@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <cutils/list.h>
-#include <tinyalsa/asoundlib.h>
+#include <asoundlib.h>
 #include <audio_route/audio_route.h>
 #include <listen_types.h>
 #include "sound/lsm_params.h"

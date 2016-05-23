@@ -21,7 +21,7 @@ LOCAL_SHARED_LIBRARIES := \
 
 LOCAL_C_INCLUDES += \
     $(LOCAL_PATH)/inc \
-    external/tinyalsa/include \
+    external/tinyalsa/include/tinyalsa \
     $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include \
     $(call include-path-for, audio-route)
 
