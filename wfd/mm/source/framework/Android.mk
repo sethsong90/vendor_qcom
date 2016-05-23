@@ -36,7 +36,7 @@ mm-wfd-inc += $(LOCAL_PATH)/../../../utils/inc
 mm-wfd-inc += $(TARGET_OUT_HEADERS)/common/inc
 mm-wfd-inc += $(TOP)/external/aac/libAACenc/include
 mm-wfd-inc += $(TOP)/external/aac/libSYS/include
-mm-wfd-inc += $(TOP)/hardware/qcom/display/libqservice/
+mm-wfd-inc += $(TARGET_DISPLAY_HAL_PATH)/libqservice/
 
 ifeq ($(call is-android-codename,ICECREAM_SANDWICH),true)
 mm-wfd-inc += $(TOP)/frameworks/base/include/media/stagefright

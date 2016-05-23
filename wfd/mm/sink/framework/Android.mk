@@ -28,8 +28,8 @@ LOCAL_C_INCLUDES += $(TOP)/frameworks/native/include/ui
 LOCAL_C_INCLUDES += $(TOP)/frameworks/native/include
 LOCAL_C_INCLUDES += $(TOP)/frameworks/native/include/media/hardware
 LOCAL_C_INCLUDES += $(TOP)/system/core/include/system
-LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libqdutils
-LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libgralloc
+LOCAL_C_INCLUDES += $(TARGET_DISPLAY_HAL_PATH)/libqdutils
+LOCAL_C_INCLUDES += $(TARGET_DISPLAY_HAL_PATH)/libgralloc
 endif
 LOCAL_C_INCLUDES += $(TOP)/external/aac/libAACdec/include
 LOCAL_C_INCLUDES += $(TOP)/external/aac/libSYS/include

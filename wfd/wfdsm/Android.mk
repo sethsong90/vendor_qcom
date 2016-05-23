@@ -65,7 +65,7 @@ LOCAL_C_INCLUDES += $(uibc_inc)
 ifeq ($(LNK_HDCP_LIB),true)
 LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/hdcp-mgr/inc
 endif
-LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libqdutils/
+LOCAL_C_INCLUDES += $(TARGET_DISPLAY_HAL_PATH)/libqdutils/
 LOCAL_C_INCLUDES += $(wfd_utils_inc)
 ifneq ($(call is-android-codename,ICECREAM_SANDWICH),true)
 LOCAL_C_INCLUDES += $(TOP)/frameworks/native/include/utils

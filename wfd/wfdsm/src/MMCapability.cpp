@@ -47,6 +47,8 @@ when        who         what, where, why
 #include <fcntl.h>
 #include "qd_utils.h"
 
+using namespace qdutils;
+
 MMCapability::MMCapability() {
     MM_MSG_PRIO(MM_GENERAL,MM_PRIO_HIGH,"MMCapability:Constructor");
     pCapability = (WFD_MM_capability_t*)malloc(sizeof(WFD_MM_capability_t));
