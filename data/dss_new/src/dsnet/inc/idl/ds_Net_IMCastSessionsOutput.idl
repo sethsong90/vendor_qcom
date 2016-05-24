@@ -1,0 +1,51 @@
+#ifndef DS_NET_IMCASTSESSIONSOUTPUT_IDL
+#define DS_NET_IMCASTSESSIONSOUTPUT_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+#include "AEEIQI.idl"
+
+#include "ds_Net_IMCastSession.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IMCastSessionsOutput = 0x0109b9a8;
+      /**
+       * ds Net IMCastSessionsOutput interface.
+       * This interface represents a bundle of MCast Sessions.
+       * The Bundle holds a reference to its MCast Sessions objects.
+       * See IMCastManager::JoinBundle.
+       */
+      interface IMCastSessionsOutput : IQI
+      {
+         /**    
+          * This function provide the Nth IMCastSession object of the bundle.
+          * The order of the objects corresponds to the order of MCast addresses
+          * provided to IMCastManager::JoinBundle.          
+          * @param mcastSession The Nth Mcast session object of the bundle.
+          * @param index number of Session in the bundle. Zero based.
+          * @retval ds::SUCCESS The Nth Mcast session is successfully provided.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          * @See IMCastManager::JoinBundle.
+          */
+         AEEResult GetNth(in long index, rout IMCastSession mcastSession);
+
+         /**
+          * Number of elements in the bundle.          
+          */
+         readonly attribute long numElements;
+      };
+   };// module Net
+};// module ds
+
+#endif /* #ifdef DS_NET_IMCASTSESSIONSOUTPUT_IDL */

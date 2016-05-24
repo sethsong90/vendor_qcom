@@ -1,0 +1,177 @@
+#ifndef DS_NET_IQOSFLOW_IDL
+#define DS_NET_IQOSFLOW_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+
+module ds
+{
+   module Net
+   {
+      typedef unsigned long QoSFlowOptIDType;
+      module QoSFlowOptID
+      {
+         const QoSFlowOptIDType QDS_IP_TRAFFIC_CLASS             = 0x00000001;
+         const QoSFlowOptIDType QDS_DATA_RATE_TOKEN_BUCKET       = 0x00000002;
+         const QoSFlowOptIDType QDS_LATENCY                      = 0x00000004;
+         const QoSFlowOptIDType QDS_LATENCY_VARIANCE             = 0x00000008;
+         const QoSFlowOptIDType QDS_PACKET_ERROR_RATE            = 0x00000010;
+         const QoSFlowOptIDType QDS_MIN_POLICED_PACKET_SIZE      = 0x00000020;
+         const QoSFlowOptIDType QDS_MAX_ALLOWED_PACKET_SIZE      = 0x00000040;
+         const QoSFlowOptIDType QDS_UMTS_RESIDUAL_BIT_ERROR_RATE = 0x00000080;
+         const QoSFlowOptIDType QDS_UMTS_TRAFFIC_PRIORITY        = 0x00000100;
+         const QoSFlowOptIDType QDS_CDMA_PROFILE_ID              = 0x00000200;
+         const QoSFlowOptIDType QDS_WLAN_USER_PRI                = 0x00000400;
+         const QoSFlowOptIDType QDS_WLAN_MIN_SERVICE_INTERVAL    = 0x00000800;
+         const QoSFlowOptIDType QDS_WLAN_MAX_SERVICE_INTERVAL    = 0x00001000;
+         const QoSFlowOptIDType QDS_WLAN_INACTIVITY_INTERVAL     = 0x00002000;
+         const QoSFlowOptIDType QDS_NOMINAL_SDU_SIZE             = 0x00004000;
+         const QoSFlowOptIDType QDS_CDMA_FLOW_PRI                = 0x00008000;
+         const QoSFlowOptIDType QDS_UMTS_IMS_SIGNALING_CONTEXT   = 0x00010000;
+         const QoSFlowOptIDType QDS_UMTS_HIGH_PRIORITY_DATA      = 0x00020000;
+         const QoSFlowOptIDType QDS_DATA_RATE_MIN_MAX            = 0x00040000;
+      };
+      typedef sequence<QoSFlowOptIDType> SeqQoSFlowOptIDType;
+
+      typedef long QoSFlowOptIPTrafficClassType;
+      module QoSFlowOptIPTrafficClass
+      {
+         const QoSFlowOptIPTrafficClassType QDS_CONVERSATIONAL = 0;
+         const QoSFlowOptIPTrafficClassType QDS_STREAMING      = 1;
+         const QoSFlowOptIPTrafficClassType QDS_INTERACTIVE    = 2;
+         const QoSFlowOptIPTrafficClassType QDS_BACKGROUND     = 3;
+      };
+
+      typedef long QoSFlowOptLatencyType;
+      typedef long QoSFlowOptLatencyVarianceType;
+      typedef long QoSFlowOptMinPolicedPacketSizeType;
+      typedef long QoSFlowOptMaxAllowedPacketSizeType;
+
+      typedef long QoSFlowOptUMTSResidualBitErrorRateType;
+      module QoSFlowOptUMTSResidualBitErrorRate
+      {
+         const QoSFlowOptUMTSResidualBitErrorRateType QDS_RATE1  = 0;
+         const QoSFlowOptUMTSResidualBitErrorRateType QDS_RATE2  = 1;
+         const QoSFlowOptUMTSResidualBitErrorRateType QDS_RATE3  = 2;
+         const QoSFlowOptUMTSResidualBitErrorRateType QDS_RATE4  = 3;
+         const QoSFlowOptUMTSResidualBitErrorRateType QDS_RATE5  = 4;
+         const QoSFlowOptUMTSResidualBitErrorRateType QDS_RATE6  = 5;
+         const QoSFlowOptUMTSResidualBitErrorRateType QDS_RATE7  = 6;
+         const QoSFlowOptUMTSResidualBitErrorRateType QDS_RATE8  = 7;
+         const QoSFlowOptUMTSResidualBitErrorRateType QDS_RATE9  = 8;
+         const QoSFlowOptUMTSResidualBitErrorRateType QDS_RATE10 = 9;
+      };
+
+      typedef long QoSFlowOptUMTSTrafficPriorityType;
+      module QoSFlowOptUMTSTrafficPriority
+      {
+         const QoSFlowOptUMTSTrafficPriorityType QDS_PRI1 = 0;
+         const QoSFlowOptUMTSTrafficPriorityType QDS_PRI2 = 1;
+         const QoSFlowOptUMTSTrafficPriorityType QDS_PRI3 = 2;
+      };
+
+      typedef unsigned short QoSFlowOptCDMAProfileIDType;
+      typedef octet QoSFlowOptCDMAFlowPriorityType;
+
+      typedef long QoSFlowOptWLANUserPriorityType;
+      module QoSFlowOptWLANUserPriority
+      {
+         const QoSFlowOptWLANUserPriorityType QDS_BEST_EFFORT      = 0;
+         const QoSFlowOptWLANUserPriorityType QDS_BACKGROUND       = 1;
+         const QoSFlowOptWLANUserPriorityType QDS_RESERVED         = 2;
+         const QoSFlowOptWLANUserPriorityType QDS_EXCELLENT_EFFORT = 3;
+         const QoSFlowOptWLANUserPriorityType QDS_CONTROLLED_LOAD  = 4;
+         const QoSFlowOptWLANUserPriorityType QDS_VIDEO            = 5;
+         const QoSFlowOptWLANUserPriorityType QDS_VOICE            = 6;
+         const QoSFlowOptWLANUserPriorityType QDS_NETWORK_CONTROL  = 7;
+      };
+
+      typedef long QoSFlowOptWLANMinServiceIntervalType;
+      typedef long QoSFlowOptWLANMaxServiceIntervalType;
+      typedef long QoSFlowOptWLANInactivityIntervalType;
+
+      typedef boolean QoSFlowOptUMTSImsSignalingContextType;
+      typedef boolean QoSFlowOptUMTSHighPriorityDataType;
+
+      struct QoSFlowOptDataRateMinMaxType 
+      {
+         long maxRate;
+         long guaranteedRate;
+      };
+
+      struct QoSFlowOptDataRateTokenBucketType 
+      {
+         long peakRate;
+         long tokenRate;
+         long size;
+      };
+
+      struct QoSFlowOptPacketErrorRateType 
+      {
+         unsigned short multiplier;
+         unsigned short exponent;
+      };
+
+      struct QoSFlowOptNominalSDUSizeType 
+      {
+         boolean fixed;
+         long    size;
+      };
+
+      const AEEIID AEEIID_IQoSFlowPriv = 0x0106cd47;
+      /**
+       * ds Net QoS Flow interface.
+       */
+      interface IQoSFlowPriv : IQI
+      {
+         /**
+          * This function creates an identical copy of the IQoSFlowPriv.
+          * @param flow The created IQoSFlowPriv.
+          * @retval ds::SUCCESS IQoSFlowPriv cloned successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Clone(rout IQoSFlowPriv flow);
+
+         /**
+          * This attribute represents the valid options - if an option was set,
+          * its ID will be in this list.
+          */
+         readonly attribute SeqQoSFlowOptIDType ValidOptions;
+
+         /**
+          * This attribute represents a list of erroneous options into
+          * the IQoSFlowPriv object.
+          */
+         readonly attribute SeqQoSFlowOptIDType ErroneousOptions;
+
+         attribute QoSFlowOptIPTrafficClassType TrfClass;
+         attribute QoSFlowOptLatencyType Latency;
+         attribute QoSFlowOptLatencyVarianceType LatencyVar;
+         attribute QoSFlowOptMinPolicedPacketSizeType MinPolicedPktSize;
+         attribute QoSFlowOptMaxAllowedPacketSizeType MaxAllowedPktSize;
+         attribute QoSFlowOptUMTSResidualBitErrorRateType UmtsResBer;
+         attribute QoSFlowOptUMTSTrafficPriorityType UmtsTrfPri;
+         attribute QoSFlowOptCDMAProfileIDType CdmaProfileID;
+         attribute QoSFlowOptWLANUserPriorityType WlanUserPriority;
+         attribute QoSFlowOptWLANMinServiceIntervalType WlanMinServiceInterval;
+         attribute QoSFlowOptWLANMaxServiceIntervalType WlanMaxServiceInterval;
+         attribute QoSFlowOptWLANInactivityIntervalType WlanInactivityInterval;
+         attribute QoSFlowOptCDMAFlowPriorityType CdmaFlowPriority;
+         attribute QoSFlowOptUMTSImsSignalingContextType UmtsImCnFlag;
+         attribute QoSFlowOptUMTSHighPriorityDataType UmtsSigInd;
+         attribute QoSFlowOptDataRateMinMaxType DataRateMinMax;
+         attribute QoSFlowOptDataRateTokenBucketType DataRateTokenBucket;
+         attribute QoSFlowOptPacketErrorRateType PktErrRate;
+         attribute QoSFlowOptNominalSDUSizeType NominalSDUSize;
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IQOSFLOW_IDL */

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2012 Qualcomm Technologies, Inc.  All Rights Reserved.
+  Qualcomm Technologies Proprietary and Confidential.
+ -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_play_pause"
+        android:title="Pause"
+        android:icon="@android:drawable/ic_media_play"
+        android:showAsAction="always|withText"
+        android:onClick="playPauseSurfaceActivity" />
+    <item 
+        android:id="@+id/menu_standby_resume"
+        android:title="Standby"
+        android:icon="@android:drawable/ic_media_pause"
+        android:showAsAction="always|withText"
+        android:onClick="standbyResumeSurfaceActivity" />
+    <item 
+        android:id="@+id/menu_start_stop_UIBC"
+        android:title="Start UIBC"
+        android:icon="@android:drawable/ic_menu_view"
+        android:showAsAction="always|withText"
+        android:onClick="startStopUibcSurfaceActivity" />
+    <item 
+        android:id="@+id/menu_teardown"
+        android:title="Teardown"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:showAsAction="always|withText"
+        android:onClick="teardownSurfaceActivity" />
+    <item
+        android:id="@+id/menu_UIBC_rotate"
+        android:title="UIBC Rotate"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/UIBC_rotate_0"
+                android:title="0 degrees"
+                android:onClick="onUIBCRotate"/>
+            <item
+                android:id="@+id/UIBC_rotate_90"
+                android:title="90 degrees"
+                android:onClick="onUIBCRotate"/>
+            <item
+                android:id="@+id/UIBC_rotate_180"
+                android:title="180 degrees"
+                android:onClick="onUIBCRotate"/>
+            <item
+                android:id="@+id/UIBC_rotate_270"
+                android:title="270 degrees"
+                android:onClick="onUIBCRotate"/>
+        </menu>
+    </item>
+</menu>

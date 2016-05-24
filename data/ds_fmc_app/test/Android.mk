@@ -1,0 +1,154 @@
+# sources and intermediate files are separated
+
+LOCAL_PATH:= $(call my-dir)
+
+#######dfa_test_1##########
+
+include $(CLEAR_VARS)
+
+# Logging Features. Enable only one at any time  
+#LOCAL_CFLAGS += -DFEATURE_DATA_LOG_STDERR
+LOCAL_CFLAGS += -DFEATURE_DATA_LOG_QXDM
+
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_NO_RPC
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_ANDROID
+
+LOCAL_C_INCLUDES += $(LOCAL_PATH)
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../src/
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../inc/
+
+LOCAL_SRC_FILES:= \
+	dfa_test_1.c 
+
+LOCAL_MODULE:= dfa_test_1
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_PATH := $(TARGET_OUT_DATA)/data_test
+LOCAL_PRELINK_MODULE := false
+LOCAL_MODULE_OWNER := qcom
+
+include $(BUILD_EXECUTABLE)
+
+#######dfa_test_2##########
+
+include $(CLEAR_VARS)
+# Logging Features. Enable only one at any time  
+#LOCAL_CFLAGS += -DFEATURE_DATA_LOG_STDERR
+LOCAL_CFLAGS += -DFEATURE_DATA_LOG_QXDM
+
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_NO_RPC
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_ANDROID
+
+LOCAL_C_INCLUDES += $(LOCAL_PATH)
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../src/
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../inc/
+
+LOCAL_SRC_FILES:= \
+	dfa_test_2.c 
+
+LOCAL_MODULE:= dfa_test_2
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_PATH := $(TARGET_OUT_DATA)/data_test
+LOCAL_PRELINK_MODULE := false
+LOCAL_MODULE_OWNER := qcom
+
+include $(BUILD_EXECUTABLE)
+
+#######dfa_test_3##########
+
+include $(CLEAR_VARS)
+# Logging Features. Enable only one at any time  
+#LOCAL_CFLAGS += -DFEATURE_DATA_LOG_STDERR
+LOCAL_CFLAGS += -DFEATURE_DATA_LOG_QXDM
+
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_NO_RPC
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_ANDROID
+
+LOCAL_C_INCLUDES += $(LOCAL_PATH)
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../src/
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../inc/
+
+LOCAL_SRC_FILES:= \
+	dfa_test_3.c 
+
+LOCAL_MODULE:= dfa_test_3
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_PATH := $(TARGET_OUT_DATA)/data_test
+LOCAL_PRELINK_MODULE := false
+LOCAL_MODULE_OWNER := qcom
+
+include $(BUILD_EXECUTABLE)
+
+#######dfa_test_4##########
+
+include $(CLEAR_VARS)
+# Logging Features. Enable only one at any time  
+#LOCAL_CFLAGS += -DFEATURE_DATA_LOG_STDERR
+LOCAL_CFLAGS += -DFEATURE_DATA_LOG_QXDM
+
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_NO_RPC
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_ANDROID
+
+LOCAL_C_INCLUDES += $(LOCAL_PATH)
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../src/
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../inc/
+
+LOCAL_SRC_FILES:= \
+	dfa_test_4.c 
+
+LOCAL_MODULE:= dfa_test_4
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_PATH := $(TARGET_OUT_DATA)/data_test
+LOCAL_PRELINK_MODULE := false
+LOCAL_MODULE_OWNER := qcom
+
+include $(BUILD_EXECUTABLE)
+
+#######dfa_test_5##########
+
+include $(CLEAR_VARS)
+# Logging Features. Enable only one at any time  
+#LOCAL_CFLAGS += -DFEATURE_DATA_LOG_STDERR
+LOCAL_CFLAGS += -DFEATURE_DATA_LOG_QXDM
+
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_NO_RPC
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_ANDROID
+
+LOCAL_C_INCLUDES += $(LOCAL_PATH)
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../src/
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../inc/
+
+LOCAL_SRC_FILES:= \
+	dfa_test_5.c 
+
+LOCAL_MODULE:= dfa_test_5
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_PATH := $(TARGET_OUT_DATA)/data_test
+LOCAL_PRELINK_MODULE := false
+LOCAL_MODULE_OWNER := qcom
+
+include $(BUILD_EXECUTABLE)
+
+#######dfa_test_6##########
+
+include $(CLEAR_VARS)
+# Logging Features. Enable only one at any time  
+#LOCAL_CFLAGS += -DFEATURE_DATA_LOG_STDERR
+LOCAL_CFLAGS += -DFEATURE_DATA_LOG_QXDM
+
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_NO_RPC
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_ANDROID
+
+LOCAL_C_INCLUDES += $(LOCAL_PATH)
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../src/
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../inc/
+
+LOCAL_SRC_FILES:= \
+	dfa_test_6.c 
+
+LOCAL_MODULE:= dfa_test_6
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_PATH := $(TARGET_OUT_DATA)/data_test
+LOCAL_PRELINK_MODULE := false
+LOCAL_MODULE_OWNER := qcom
+
+include $(BUILD_EXECUTABLE)

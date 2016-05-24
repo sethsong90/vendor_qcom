@@ -1,0 +1,31 @@
+#ifndef AEEENV_BID
+#define AEEENV_BID
+/*=============================================================================
+
+   Please use AEECEnv.idl or AEECEnv.h instead.
+   This file is deprecated.
+
+        Copyright (c) 2010 Qualcomm Technologies, Inc.
+               All Rights Reserved
+        Qualcomm Technologies Confidential and Proprietary
+===============================================================================*/
+
+#include "AEECEnv.h"
+#define AEECLSID_Env AEECLSID_CEnv
+
+
+/*=============================================================================
+   CLASS DOCUMENTATION
+===============================================================================
+
+AEECLSID_Env
+
+Description:
+  This class is deprecated, please use AEECLSID_CEnv instead.
+
+See Also:
+  AEECLSID_CEnv
+
+=============================================================================*/
+
+#endif // AEEENV_BID

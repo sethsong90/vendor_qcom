@@ -1,0 +1,8 @@
+
+/* Build this component into a library */
+#include <lib.qbd>
+
+sourcepath
+{
+  -src/ds_qmh_sm_int.c;
+};

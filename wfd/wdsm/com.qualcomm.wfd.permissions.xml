@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  Copyright (c) 2012 Qualcomm Technologies, Inc.
+  All Rights Reserved.
+  Qualcomm Technologies Confidential and Proprietary.
+-->
+
+<permissions>
+    <!-- Access DHCP client info from DHCP table during P2P connection
+         from /data/misc/dhcp -->
+    <permission name="com.qualcomm.permission.READ_DHCP_INFO" >
+        <group gid="dhcp" />
+    </permission>
+</permissions>

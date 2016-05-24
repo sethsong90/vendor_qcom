@@ -1,0 +1,58 @@
+#============================================================================
+#  Name:
+#    DATAMODEM_INTERFACE_NETIFACE.MIN
+#
+#  Description:
+#    An includable component of the makefile to build the DMSS software.
+#============================================================================
+#
+#                        EDIT HISTORY FOR MODULE
+#
+#  $Header: //source/qcom/qct/modem/datamodem/interface/netiface/rel/11.03/src/datamodem_interface_netiface.min#1 $
+#  $Author: zhasan $
+#  $DateTime: 2011/06/17 12:02:33 $
+#
+# when       who     what, where, why
+# --------   ---     --------------------------------------------------------
+# 01/17/11   sa      New min file according to the new perforce layout.
+#============================================================================
+
+DATAMODEM_INTERFACE_NETIFACE_COMMON_C_SOURCES= \
+  netiface_stubs.c \
+  ps_acl.c \
+  ps_arbitration_mgr.c \
+  ps_flow.c \
+  ps_flow_ioctl.c \
+  ps_flowi.c \
+  ps_flowi_event.c \
+  ps_iface.c \
+  ps_iface_flow.c \
+  ps_iface_ioctl.c \
+  ps_iface_ipfltr.c \
+  ps_iface_logging.c \
+  ps_iface_rx_qos_fltr.c \
+  ps_ifacei_event.c \
+  ps_inbound_acl.c \
+  ps_phys_link.c \
+  ps_phys_link_ioctl.c \
+  ps_phys_linki_event.c \
+  ps_policy_mgr.c \
+  ps_route.c \
+  ps_netiface_init.c \
+  ps_routei.c \
+  ps_qos_spec_logging.c \
+  ps_aclrules.c \
+  ps_iface_logical_flow.c \
+  ps_iface_logical_flowi.c \
+  ps_iface_dns_cache.c \
+  ps_dns_cache_config.c
+
+DATAMODEM_INTERFACE_NETIFACE_COMMON_CPP_SOURCES= \
+  NetPlatformLib.cpp
+
+DATAMODEM_INTERFACE_NETIFACE_AMSS_C_SOURCES= \
+  ps_iface_io.c \
+  ps_phys_link_io.c \
+  ps_stat_flow.c \
+  ps_stat_iface.c \
+  ps_stat_phys_link.c

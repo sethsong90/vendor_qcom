@@ -1,0 +1,17 @@
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/ds_Sock_CMsg_Helpers.h#2                   
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/ds_Sock_CSocketFactory.h#2                 
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/ds_Sock_Def.h#1                            
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/ds_Sock_ISocket.h#6                        
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/ds_Sock_ISocketExt.h#3                     
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/ds_Sock_ISocketFactory.h#7                 
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/ds_Sock_Privileges_Def.h#2                 
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/idl/ds_Sock_CSocketFactory.idl#1           
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/idl/ds_Sock_Def.idl#2                      
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/idl/ds_Sock_ISocket.idl#6                  
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/idl/ds_Sock_ISocketExt.idl#3               
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/idl/ds_Sock_ISocketFactory.idl#7           
+//source/qcom/qct/modem/datacommon/dssock/main/latest/inc/idl/ds_Sock_Privileges_Def.idl#2           
+
+
+
+

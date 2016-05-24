@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2011-2012 Qualcomm Technologies, Inc.-
+ All Rights Reserved. Qualcomm Technologies Proprietary and Confidential.-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<TextView android:id="@string/capabilityTextId"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/capabilityText"/>
+<Button android:id="@string/capabilitiesId"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/capabilities" />
+<Button android:id="@string/trackedCapabilitiesId"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/trackedCapabilities" />
+<Button android:id="@string/neededCapabilitiesId"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/getNeededCapabilities" />
+<Button android:id="@string/linkPropertiesId"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/getLinkProperties" />
+</LinearLayout>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2014 Qualcomm Technologies, Inc.  All Rights Reserved.
+     Qualcomm Technologies Proprietary and Confidential.
+     =============================================
+     Copyright (c) 2012 Qualcomm Atheros, Inc.
+     All Rights Reserved.
+     Qualcomm Atheros Confidential and Proprietary.
+-->
+
+<resources>
+    <!-- Defineds the weight of RATs.  A RAT of higher weight, if
+         camped, will shadow all camped RATs of the lower weight.
+         At a given time, only camped RATs of the highest weight
+         count.
+
+         This is in the context of cell location injection to modem.
+
+         If a RAT is not defined, takes weight of 0.
+
+         Only the RAT with highest positive weight value will be taken
+         for info process. Others will be dropped.
+     -->
+    <integer name="weight_cdma" translatable="false">0</integer>
+    <integer name="weight_gsm" translatable="false">2</integer>
+    <integer name="weight_wcdma" translatable="false">1</integer>
+    <integer name="weight_tdscdma" translatable="false">1</integer>
+    <integer name="weight_lte" translatable="false">0</integer>
+
+    <string-array translatable="false" name="tdscdma_operators">
+        <item>"46000"</item>
+        <item>"46002"</item>
+        <item>"46007"</item>
+        <item>"26215"</item>
+    </string-array>
+</resources>

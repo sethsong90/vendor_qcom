@@ -1,0 +1,62 @@
+#ifndef AEEIPRIVSET_IDL
+#define AEEIPRIVSET_IDL
+//============================================================================
+                                                           //qidl copyright
+//% Copyright (c) 2006, 2007 Qualcomm Technologies, Inc.
+                                                           //qidl nested=false
+//% All Rights Reserved.
+//% Qualcomm Technologies Confidential and Proprietary
+//============================================================================
+
+#include "AEEIQI.idl"
+#include "AEEStdDef.idl"
+
+const AEEIID AEEIID_IPrivSet = 0x0102f959;
+
+/**
+ * IPrivSet is an interface that describes a set of privileges, each
+ * identified by a unique ID.
+ */
+interface IPrivSet : IQI
+{
+    /**
+     * Sequence of AEEPRIVIDs.
+     */
+    typedef sequence<AEEPRIVID> SeqAEEPRIVID;
+
+   /**
+    * Checks a list of privileges against the set contained in this instance
+    * of IPrivSet.
+    *
+    * @param privs The privileges to check.
+    *
+    * @retval AEE_SUCCESS One of the privileges in the list is held by this
+    *                     set.
+    * @retval AEE_EPRIVLEVEL None of the privileges in the list is held by
+    *                        this set.
+    */
+   AEEResult CheckPrivileges(in SeqAEEPRIVID privs);
+
+   /**
+    * Gets the full list of privileges this instance contains
+    *
+    * @param privs List of privileges to be filled.
+    */
+   AEEResult GetPrivileges(rout SeqAEEPRIVID privs);
+
+   /**
+    * Creates a new IPrivSet that is a subset of the given IPrivSet.
+    *
+    * @param privSubset List of privileges to include in the new IPrivSet.
+    * @param psSubset New IPrivSet instance.
+    *
+    * @retval AEE_SUCCESS Operation was successful and a new IPrivSet was
+    *                     returned in psSubset.
+    * @retval AEE_EPRIVLEVEL One or more privileges in the list is not
+    *                        present in this instance, so the new IPrivSet
+    *                        could not be created.
+    */
+   AEEResult CreateSubset(in SeqAEEPRIVID privSubset, rout IPrivSet psSubset);
+};
+
+#endif /* #ifndef AEEIPRIVSET_IDL */

@@ -1,0 +1,31 @@
+#ifndef AEEREALLOC_BID
+#define AEEREALLOC_BID
+/*=============================================================================
+
+   Please use AEECRealloc.idl or AEECRealloc.h instead.
+   This file is deprecated.
+
+        Copyright (c) 2010 Qualcomm Technologies, Inc.
+               All Rights Reserved
+        Qualcomm Technologies Confidential and Proprietary
+===============================================================================*/
+
+#include "AEECRealloc.h"
+#define AEECLSID_Realloc AEECLSID_CRealloc
+
+
+/*=============================================================================
+   CLASS DOCUMENTATION
+===============================================================================
+
+AEECLSID_Realloc
+
+Description:
+  This class is deprecated, please use AEECLSID_CRealloc instead.
+
+See Also:
+  AEECLSID_CRealloc
+
+=============================================================================*/
+
+#endif // AEEREALLOC_BID

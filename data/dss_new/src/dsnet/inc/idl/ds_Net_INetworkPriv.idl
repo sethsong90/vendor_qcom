@@ -1,0 +1,295 @@
+#ifndef DS_NET_INETWORKPRIV_IDL
+#define DS_NET_INETWORKPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                             All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+#include "AEEStdDef.idl"
+
+#include "ds_Addr_Def.idl"
+
+#include "ds_Net_Def.idl"
+#include "ds_Net_INetwork.idl"
+#include "ds_Net_IPolicyPriv.idl"
+#include "ds_Net_QoS_Def.idl"
+#include "ds_Net_IBearerInfo.idl"
+
+module ds
+{
+   module Net
+   {
+      typedef sequence<IfaceIdType> SeqIfaceIdType;
+
+      typedef long IfaceNameTypePriv;
+      module IfaceName
+      {
+         /**
+          * IfaceNameTypePriv is part of the enumeration in IfaceNameType.
+          * MBMS iface is moved here until MBMS feature is released publicly.
+          */         
+         const IfaceNameTypePriv IFACE_MBMS = IFACE_RESERVED1;
+      };
+
+      // Network events
+      module NetworkEvent
+      {
+         /**
+          * IDLE event is fired when number of sockets using underlying 
+          * network interface is dropped to zero.
+          * Registration for this event can be performed 
+          * after creation of Network object.
+          */
+         const EventType QDS_EV_IDLE = 0x0109d887;  // Network IDLE event
+      };
+
+
+      // DHCP_SERVER_GET_DEVICE_INFO parameter type
+
+      struct Ipv4Addr
+      {
+         unsigned long ps_s_addr;
+      };
+
+      module ChaddrLen
+      {
+         const long MAX_CHADDR_LEN = 16;
+      };
+
+      module ChostnameLen
+      {
+         const long MAX_CHOSTNAME_LEN = 32;
+      };  
+
+      struct DhcpServerConnDevicesInfo
+      {
+         Ipv4Addr       client_ip;
+         octet          client_hw[ChaddrLen::MAX_CHADDR_LEN];
+         unsigned long  client_hw_len;
+         octet          client_hostname[ChostnameLen::MAX_CHOSTNAME_LEN];
+         unsigned long  client_hostname_len;
+         unsigned long  client_connected_time;
+      };
+
+      typedef sequence<DhcpServerConnDevicesInfo> 
+                      DhcpGetDeviceInfoListType;
+
+      struct DhcpGetDeviceInfoType
+      {
+         DhcpGetDeviceInfoListType dev_info;
+      };
+
+      struct DhcpArpCacheType
+      {
+         unsigned long  ip_addr;
+         byte           hw_addr[ChaddrLen::MAX_CHADDR_LEN];
+         long           hw_addr_len;
+      };
+
+      // DhcpArpCacheUpdate parameter type
+      typedef DhcpArpCacheType DhcpArpCacheUpdateType;
+
+      // DhcpArpCacheClear parameter type
+      typedef DhcpArpCacheType DhcpArpCacheClearType;
+
+      const AEEIID AEEIID_INetworkPriv = 0x01072cf1;
+      /**
+       * ds Net Network Privileged interface.
+       * This interface is intended for internal usage for backward compatibility purposes.
+       * It provides additional functionalities to INetwork.
+       * It exhibits different behavior than INetwork, specifically - the Data Network is not brought up
+       * automatically when INetworkPriv is instantiated.
+       */
+      interface INetworkPriv : IEventManager
+      {
+         /**
+          * This function explicitly brings up the network.        
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult BringUpInterface();
+
+         /**
+          * This function performs a route lookup and binds the INetworkPriv object to an underlying interface object.
+          * Route lookup is required if an application wants the INetworkPriv object to be correctly bound to the appropriate 
+          * underlying interface after it has changed the policy for the INetworkPriv object.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult LookupInterface(); 
+
+         /**
+          * This function returns if laptop call active. "Laptop call" describes 
+          * the use case of mobile device being used as a modem to connect
+          * to the network. In that use case a computer connects to the mobile
+          * device, for example, via USB.
+          * This API can be used by privileged network applications that can 
+          * piggyback a laptop connection rather than bring up an embedded data call. 
+          * Since ACTIVE network objects automatically bring up an embedded data call, 
+          * there is no point of using this API on ACTIVE mode network objects. 
+          * An application can use a MONITORED mode network object to find out 
+          * if laptop call is active and, if not, create an ACTIVE mode network object 
+          * in order to bring up an embedded data call and use it.
+          * @param isActive Argument to hold if laptop call is active.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult IsLaptopCallActive(rout boolean isActive);
+
+         /**
+          * This function is used to get iface ids of all the ifaces available
+          * in the system.
+          * @param allIfaces List of all the iface ids
+          * @retval AEE_SUCCESS Request received successfully.    
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetAllIfaces(rout SeqIfaceIdType allIfaces);
+
+         /**
+          * This function is used to get the previous network state.
+          * @param netState Holds the previous network state.
+          * @see ds::Net::Network::StateType.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetPreviousState(rout NetworkStateType netState);
+
+         /**
+          * This function is used to return the previous IP address 
+          * of the interface.
+          * @param address Buffer that holds the IP address.
+          * @see ds::IPAddrType.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetPreviousIPAddr(rout ds::IPAddrType address);
+
+         /**
+          * This function returns the bearer technology information.
+          * Note: The Bearer Rate information in this case is not applicable through the
+          * bearerTech.
+          * @param bearerTech Object that will hold the bearer information.
+          * @see IBearerInfo
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetPreviousBearerInfo(rout IBearerInfo bearerTech);
+
+         /**
+          * This function can be used to fetch infoCode regarding QOS_AWARE or
+          * QOS_UNAWARE event.
+          * @param infoCode Infocode that was cached from QOS_AWARE/QOS_UNAWARE 
+          * event
+          * See ds::Net::QoS::InfoCodeType.
+          * @retval AEE_SUCCESS The current info code was successfully fetched
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetQoSAwareInfoCode(rout QoSInfoCodeType infoCode);
+
+         /**
+          * This function gets the policy associated with the network.
+          * This function is internal and is to be used by the sockets library
+          * only. 
+          * @param policy - Policy object.
+          * See INetPolicy.
+          * @retval AEE_SUCCESS The current info code was successfully fetched
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetPolicy(rout IPolicy policy);
+
+         /**
+          * This function sets the policy associated with the network.
+          * This function is internal and is to be used by the sockets library
+          * only. 
+          * @param policy - Policy object.
+          * See INetPolicy.
+          * @retval AEE_SUCCESS The current info code was successfully fetched
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult SetPolicy(in IPolicy policy);
+
+         /**
+          * This function used to enable/disable DNS negotiation during
+          * ipcp configuration.
+          * @param enable Spicify if to enable / disable.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult EnableDNSDuringIPCP(in boolean enable);
+
+          /**
+          * This function used to get the devices information which are 
+          * connected to DHCP at any given point of time.
+          * @param connDevInfo Contains the Connected devices information.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */
+         AEEResult GetDhcpDeviceInfo(rout DhcpGetDeviceInfoType connDevInfo);
+
+        /**
+          * This function is used to to update device ARP cache with DHCP 
+          * client's IP/MAC as per the lease offered by the server. This is 
+          * used typically for cases where mode handler uses LAN LLC as 
+          * MAC level protocol. Here when DHCP server assigns a lease to a 
+          * client, it replies with a unicast IP packet to that client. 
+          * This triggers LAN LLC to generate unicast ethernet type frames
+          * for which the destination MAC needs to be resolved and thus, 
+          * triggers ARP requests for the offered unicast address.Since the 
+          * DHCP client would not have yet received the offer, it wouldn't 
+          * reply to the ARP request by device and DHCP handshake would not
+          * complete.If User specifies the callback, DHCP server updates the 
+          * device ARP cache before sending unicast OFFERs/ACKs. 
+          * Also while free-ing the lease, server would clear the same update 
+          * from ARP cache.
+          * @param dhcpArpCacheUpdateParam Contains the Entry information 
+          * to be updated.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */
+         AEEResult DhcpArpCacheUpdate(in DhcpArpCacheUpdateType dhcpArpCacheUpdateParam);
+
+      /**
+          * This function is used to to clear device ARP cache with DHCP 
+          * client's IP/MAC as per the lease offered by the server. This is 
+          * used typically for cases where mode handler uses LAN LLC as 
+          * MAC level protocol. Here when DHCP server assigns a lease to a 
+          * client, it replies with a unicast IP packet to that client. 
+          * This triggers LAN LLC to generate unicast ethernet type frames
+          * for which the destination MAC needs to be resolved and thus, 
+          * triggers ARP requests for the offered unicast address.Since the 
+          * DHCP client would not have yet received the offer, it wouldn't 
+          * reply to the ARP request by device and DHCP handshake would not
+          * complete.If User specifies the callback, DHCP server updates the 
+          * device ARP cache before sending unicast OFFERs/ACKs. 
+          * Also while free-ing the lease, server would clear the same update 
+          * from ARP cache.
+          * @param dhcpArpCacheClearParam Contains the Entry information 
+          * to be cleared.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */
+         AEEResult DhcpArpCacheClear(in DhcpArpCacheClearType dhcpArpCacheClearParam);
+
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_INETWORKPRIV_IDL */

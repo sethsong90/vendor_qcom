@@ -1,0 +1,115 @@
+#ifndef DS_NET_IQOSSECONDARY_IDL
+#define DS_NET_IQOSSECONDARY_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "ds_Net_QoS_Def.idl"
+#include "ds_Net_IQoS.idl"
+
+module ds
+{
+   module Net
+   {
+       module QoSSecondaryEvent
+       {
+          const EventType QDS_EV_STATE_CHANGED = 0x0106dee4;
+       };
+
+       typedef long QoSSecondaryStateType;
+       module QoSSecondaryState
+       {
+          const QoSSecondaryStateType QDS_AVAILABLE_MODIFIED = 1;
+          const QoSSecondaryStateType QDS_SUSPENDING         = 2;
+          const QoSSecondaryStateType QDS_UNAVAILABLE        = 3;
+          const QoSSecondaryStateType QDS_INVALID            = 4;
+          const QoSSecondaryStateType QDS_ACTIVATING         = 5;
+          const QoSSecondaryStateType QDS_SUSPENDED          = 6;
+          const QoSSecondaryStateType QDS_RELEASING          = 7;
+          const QoSSecondaryStateType QDS_CONFIGURING        = 8;
+       };
+
+       struct QoSSecondaryStateInfoType 
+       {
+          QoSSecondaryStateType state;
+          QoSInfoCodeType       infoCode;
+       };
+
+      const AEEIID AEEIID_IQoSSecondary = 0x0106cd45;
+      /**
+       * ds QoS Secondary interface.
+       * Events that can be registered on this interface via OnStateChange(as part of IEventManager interface):
+       * - ds::Net::QoSSecondaryEvent::STATE_CHANGED. Use GetState to fetch the current state of the QoS session.
+       */
+      interface IQoSSecondary : IQoS
+      {
+         /**
+          * This function issues a request for closing a QoS Session. The request is 
+          * forwarded to lower layers in order to release the QoS link resources.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Close();
+
+         /**
+          * This function issues the following modification requests:
+          *  - Modify an existing QoS Session either in Rx, Tx or both directions.
+          *  - Add a new QoS in a specific direction.
+          *  - Remove a granted QoS in a specific direction.
+          * Modification requests can be performed on Rx blocks, Tx blocks or both.
+          * @param requestedSpec Specification for modifying the QoS instance.
+          *                      See ds_Net_QoSSpec.json schema.
+          * @param modifyMask bit mask which indicates the QoS specification
+          *                   blocks (RxFlows, TxFlows, RxFilters, TxFilters) 
+          *                   to be modified. For modified blocks, the full
+          *                   new specification for the block must be provided
+          *                   in requestedSpec (including parts of the
+          *                   specification that are not modified from previous
+          *                   request. For deleted blocks, the current block
+          *                   specification may be omitted from requestedSpec.
+          * @param errSpec specification of flow options and filter options 
+          *                for which invalid values were specified in
+          *                requestedSpec.
+          *                See ds_Net_QoSSpecErr.json schema.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval ds::EBADOPTS Bad options.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Modify(in string            requestedSpec,
+                          in QoSModifyMaskType modifyMask,
+                          rout string          errSpec);
+
+         /**
+          * This function is used in order to activate the QoS link (from dormant mode).
+          * @retval ds::SUCCESS The request was successfully issued. This doesn't indicate that the QoS
+          *                     Session is already activated.
+          */
+         AEEResult Resume();
+
+         /**
+          * This function is used in order to suspend a granted QoS Session.
+          * @retval ds::SUCCESS The request was successfully issued. This doesn't indicate that the QoS
+          *                     Session is already suspended.
+          */
+         AEEResult Suspend();
+
+         /**    
+          * This attribute can be used to fetch the current state of the QoS
+          * session when a ds::Net::QoSSecondary::EVENT::STATE_CHANGED event
+          * is received.
+          * It provides the current state of the QoS Session and additional
+          * info code.
+          * See ds::Net::QoS::StateType and ds::Net::QoS::InfoCodeType.
+          */         
+         readonly attribute QoSSecondaryStateInfoType State;
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IQOSSECONDARY_IDL */

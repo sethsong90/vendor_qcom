@@ -1,0 +1,44 @@
+#ifndef AEECREALLOC_IDL
+#define AEECREALLOC_IDL
+/*qidl copyright
+=============================================================================
+        Copyright 2005-2006 Qualcomm Technologies, Inc.
+               All Rights Reserved.
+            Qualcomm Technologies Proprietary/GTDR
+============================================================================ */
+
+#include "AEEStdDef.idl"
+const AEECLSID AEECLSID_CRealloc = 0x01030522;
+
+
+/*qidl location=bottom target=all
+==========================================================================
+   CLASS DOCUMENTATION
+============================================================================
+
+AEECLSID_CRealloc
+
+Description:
+   
+   AEECLSID_CRealloc identifies the environment's default heap.  Passing this
+   class ID to IEnv_CreateInstance(piEnv,...) will obtain the heap that was
+   created for piEnv.  This is the heap that is used by IEnv's own
+   allocation functions.  This heap is constructed before any components in
+   the environment are instantiated, and is destroyed after all IEnv_AtExit()
+   calls are processed.
+
+Default Interface:
+   IRealloc
+
+Other Supported Interfaces:
+   None
+
+See Also:
+   IEnv
+   IEnv_CreateInstance()
+   IRealloc
+
+============================================================================ */
+
+#endif //AEECREALLOC_IDL
+

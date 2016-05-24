@@ -1,0 +1,157 @@
+#ifndef DS_NET_IBEARERINFO_IDL
+#define DS_NET_IBEARERINFO_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl" 
+#include "AEEIQI.idl"
+
+#include "ds_Net_Def.idl"
+
+module ds
+{
+   module Net
+   {
+      module BearerTechCDMA
+      {
+         /**
+          * CDMA sub-technologies. 
+          * Since a mobile device may simultaneously support more than one
+          * technology, the following may be ORed together to indicate all the
+          * technologies supported by the bearer.
+          */
+         const unsigned long SUBTECH_1X        = 0x01;
+         const unsigned long SUBTECH_EVDO_REV0 = 0x02;
+         const unsigned long SUBTECH_EVDO_REVA = 0x04;
+         const unsigned long SUBTECH_EVDO_REVB = 0x08;
+         /**
+          * SUBTECH_NULL shall be indicated if the application queries for the
+          * the bearer technology but there is currently no active Network 
+          * connection.
+          */
+         const unsigned long SUBTECH_NULL      = 0x8000;
+
+         /**
+          * CDMA 1x specific service options.
+          * Since a mobile device may simultaneously support more than one
+          * service options, the following may be ORed together to indicate all
+          * the service options supported by the bearer.
+          */
+         const unsigned long SO_1X_IS95         = 0x01;
+         const unsigned long SO_1X_IS2000       = 0x02;
+         const unsigned long SO_1X_IS2000_REL_A = 0x04;
+
+         /**
+          * CDMA EVDO (HDR) specific service options. Packet Applications are
+          * not dependent on Rev0/RevA/RevB, therefore the constants are reused
+          * for all revisions.
+          * Since a mobile device may simultaneously support more than one
+          * service options, the following may be ORed together to indicate all
+          * the service options supported by the bearer.
+          */
+         const unsigned long SO_EVDO_DPA        = 0x01;
+         const unsigned long SO_EVDO_MFPA       = 0x02;
+         const unsigned long SO_EVDO_EMPA       = 0x04;
+         const unsigned long SO_EVDO_EMPA_EHRPD = 0x08;
+         const unsigned long SO_EVDO_MMPA       = 0x10;
+         const unsigned long SO_EVDO_MMPA_EHRPD = 0x20;
+      };   
+
+      module BearerTechUMTS
+      {
+         /**
+          * UMTS sub-technologies. 
+          * Since a mobile device may simultaneously support more than one
+          * technology, the following may be ORed together to indicate all the
+          * technologies supported by the bearer.
+          * For example, in WCDMA the WCDMA subtechnology is set; in addition,
+          * HSUPA and HSDPA flags may be set when the respective subtechnologies
+          * are available.
+          */
+         const unsigned long SUBTECH_WCDMA        = 0x01;
+         const unsigned long SUBTECH_GPRS         = 0x02;
+         const unsigned long SUBTECH_HSDPA        = 0x04;
+         const unsigned long SUBTECH_HSUPA        = 0x08;
+         const unsigned long SUBTECH_EDGE         = 0x10;
+         const unsigned long SUBTECH_LTE          = 0x20;
+                
+         /**
+          * HSDPA+ bearer
+          */
+         const unsigned long SUBTECH_HSDPAPLUS    = 0x40;
+
+         /**
+          * Dual Carrier HSDPA+ bearer
+          */         
+         const unsigned long SUBTECH_DC_HSDPAPLUS = 0x80;
+         
+         /**
+          * SUBTECH_NULL shall be indicated if the application queries for the
+          * the bearer technology but there is currently no active Network 
+          * connection.
+          */
+         const unsigned long SUBTECH_NULL  = 0x8000;
+      };
+
+      /** Data bearer rate definitions */
+      struct BearerTechRateType
+      {
+         long maxTxDataRate;      /**< Max Tx bearer data rate */
+         long maxRxDataRate;      /**< Max Rx bearer data rate */
+         long avgTxDataRate;      /**< Average Tx bearer data rate */
+         long avgRxDataRate;      /**< Average Rx bearer data rate */
+         long currentTxDataRate;  /**< Current Tx bearer data rate */
+         long currentRxDataRate;  /**< Current Rx bearer data rate */
+      };
+
+      const AEEIID AEEIID_IBearerInfo = 0x0106c6a5;
+      interface IBearerInfo : IQI
+      {
+         /**
+          * This attribute indicates the network type of the data connection (bearer)
+          */
+         readonly attribute IfaceNameType Network;
+
+         /**
+          * This attribute indicates the CDMA sub technologies of the bearer.
+          * It is relevant if the bearer Network type is CDMA.
+          * @see CDMA sub-technologies.
+          */
+         readonly attribute unsigned long CDMATypeMask;
+
+         /**
+          * This attribute indicates the CDMA service options of the bearer.
+          * It is relevant if the bearer Network type is CDMA.
+          * @see CDMA service options.
+          */
+         readonly attribute unsigned long CDMAServiceOptionsMask;
+
+         /**
+          * This attribute indicates the UMTS sub technologies of the bearer.
+          * It is relevant if the bearer Network type is UMTS.
+          * @see UMTS sub-technologies.
+          */
+         readonly attribute unsigned long UMTSTypeMask;
+
+         /**
+          * This attribute represents the bearer technology rate for this network.
+          */
+         readonly attribute BearerTechRateType Rate;         
+
+         /**
+          * Indicates if the bearer (subtechnology) is the null bearer 
+          * value for the technology described by this instance.
+          * Bearer shall be NULL if there is currently no active Network
+          * connection.
+          */
+         readonly attribute boolean BearerIsNull;
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_IBEARERINFO_IDL */

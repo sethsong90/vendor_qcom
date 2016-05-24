@@ -1,0 +1,51 @@
+#ifndef DS_NET_IQOSSECONDARIESOUTPUT_IDL
+#define DS_NET_IQOSSECONDARIESOUTPUT_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+#include "AEEIQI.idl"
+
+#include "ds_Net_IQoSSecondary.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IQoSSecondariesOutput = 0x0109b9a7;
+      /**
+       * ds Net IQoSSecondariesOutput interface.
+       * This interface represents a bundle of QoS Secondary Sessions.
+       * The Bundle holds a reference to its QoS Secondary objects.
+       * See IQoSManager::Request.
+       */
+      interface IQoSSecondariesOutput : IQI
+      {
+         /**    
+          * This function provide the Nth IQoSSecondary object of the bundle.
+          * The order of the objects corresponds to the order of QoS Specs
+          * provided to IQoSManager::Request.          
+          * @param qosSecondary The Nth QoS Secondary object of the bundle.
+          * @param index number of Session in the bundle. Zero based.
+          * @retval ds::SUCCESS The Nth QoS Secondary is successfully provided.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          * @See IQoSManager::Request.
+          */
+         AEEResult GetNth(in long index, rout IQoSSecondary qosSecondary);
+
+         /**
+          * Number of elements in the bundle.          
+          */
+         readonly attribute long numElements;
+      };
+   };// module Net
+};// module ds
+
+#endif /* #ifdef DS_NET_IQOSSECONDARIESOUTPUT_IDL */

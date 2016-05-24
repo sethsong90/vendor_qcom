@@ -1,0 +1,25 @@
+-- datacommon_dssock.cif
+
+-- Copyright (c) 2010 Qualcomm Technologies, Inc.  
+-- All rights reserved.
+-- Qualcomm Technologies Proprietary and Confidential 
+
+
+include "dssock/inc/ds_Sock_CreateInstance.h"
+
+include "dssock/inc/ds_Sock_CSocketFactory.h"
+include "dssock/inc/ds_Sock_ISocketFactory.h"
+include "dssock/src/ds_Sock_CSocketFactoryService.h"
+
+Class {
+   classid = ds_Sock_AEECLSID_CSocketFactoryService,
+   newfunc_privs = DSSockCreateInstance
+}
+Service {
+   serviceid = ds_Sock_AEECLSID_CSocketFactory,
+   iid = ds_Sock_AEEIID_ISocketFactory,
+   serverid = 0, -- service is in kernel
+   servedclassid = ds_Sock_AEECLSID_CSocketFactoryService,
+   required_privs = { 0 } -- todo
+};
+

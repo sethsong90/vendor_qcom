@@ -1,0 +1,24 @@
+Source: mm-audio-ctrl-prop
+Priority: extra
+Maintainer: . <@>
+Build-Depends: debhelper (>= 7), autoconf, automake, libtool, sanitized-linux-headers
+Standards-Version: 3.8.1
+Section: libs
+
+Package: mm-audio-ctrl-prop-dev
+Section: libdevel
+Architecture: any
+Depends: mm-audio-ctrl-prop (= ${binary:Version})
+Description: Multimedia audio control - development files
+
+Package: mm-audio-ctrl-prop-test
+Section: libs
+Architecture: any
+Depends: mm-audio-ctrl-prop (= ${binary:Version}), ${shlibs:Depends}
+Description: Multimedia audio control - tests
+
+Package: mm-audio-ctrl-prop
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Multimedia audio control

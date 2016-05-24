@@ -1,0 +1,18 @@
+<!--
+ ***************************************************************************
+ *  Copyright (c) 2012-2013 Qualcomm Technologies, Inc.  All Rights Reserved.
+ *  Qualcomm Technologies Proprietary and Confidential.
+ *
+ ***************************************************************************
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:id="@+id/mainView">
+    <LinearLayout android:id="@+id/linearLayout1" android:layout_width="match_parent" android:layout_height="80dp" android:orientation="horizontal">
+         <Button android:text="@string/onScreenEnText" android:id="@+id/onScreenButton" android:layout_width="160dp" android:layout_height="80dp" android:background="#00ff00"/>
+         <Button android:text="@string/offScreenEnText" android:id="@+id/offScreenButton" android:layout_width="160dp" android:layout_height="80dp" android:background="#00ff00"/>
+     </LinearLayout>
+    <qcom.digitalpen.samples.DigitalPenDrawView android:id="@+id/drawView" android:layout_width="match_parent" android:layout_height="wrap_content" />
+</LinearLayout>

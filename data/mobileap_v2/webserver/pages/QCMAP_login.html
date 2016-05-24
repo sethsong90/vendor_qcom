@@ -1,0 +1,141 @@
+<!--
+    Copyright (c) 2013 Qualcomm Technologies, Inc. All Rights Reserved.
+     Qualcomm Technologies Proprietary and Confidential.
+-->
+<html lang="en">
+	<head>
+		<title>QCMAP Login Web Page</title>
+		<script>
+		var Min_PWD_Ln =8;
+		var Max_PWD_Ln =15;
+			$(document).ready(function()
+			{
+
+			});
+			function login()
+			{
+				$.ajax(
+				{
+					type: "POST",
+					url: "cgi-bin/qcmap_auth",
+					data:
+					{
+						type: "session",
+						pwd : $("#LOGIN_PWD").val(),
+						timeout : val_Session_timeout
+					},
+					dataType: "text",
+					success: function(msgs)
+					{
+						if(msgs.length > 0)
+						{
+							var obj = jQuery.parseJSON(msgs);
+							if(obj.result == 1)
+							{
+								window.close();
+								hide_menu();
+								alert("Device is being configured by IP: " + obj.ip + " . Please try after some time.");
+							}
+							else if (obj.result == 0)
+							{
+								location.reload();
+							}
+							else if(obj.result == 3)
+							{
+								alert("Login fail: enter correct password");
+							}
+						}
+						else
+							alert("No Reply from server.");
+					},
+					error: function(xhr, textStatus, errorThrown)
+					{
+						alert("FAIL: " + xhr + " " + textStatus + " " + errorThrown);
+					}
+				});
+			}
+			function ValidatePWD(Me)
+			{
+				if(Me.value.length >= Min_PWD_Ln && Me.value.length <= Max_PWD_Ln)
+				{
+					var pass_match=  /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+					if(Me.value.match(pass_match))
+					{
+
+					}
+					else
+					{
+						alert('Wrong..it should have one numeric one lowecase one upper case letter and one special character.!');
+ 					}
+				}
+				else
+				{
+					alert("Password Length should be between 8 to 15");
+				}
+			}
+			function ValidateUSER( Me)
+			{
+
+				var str1 = Me.value;
+				var str2 = 'admin';
+				if(str1 == str2)
+				{
+					$("#BTN_Login").removeAttr("disabled");
+				}
+				else
+				{
+					$("#BTN_Login").attr('disabled', 'disabled');
+				}
+			}
+		</script>
+		<style type="text/css">
+        <!--
+			.td_class
+			{
+				width:350;
+			}
+			.content_table
+			{
+				font-family:sans-serif;
+				font-size:15pt;
+				width:500;
+				align:center;
+				valign:center;
+				border:1;
+			}
+			-->
+		</style>
+	</head>
+	<body  align="center" valign="center">
+		<center><table id="Main_Table" width="450px">
+		<h1> Enter username and password to login </h1>
+			<tr>
+				<td>
+					<table class ="content_table">
+						<tr>
+							<td class="td_class">
+								username
+							</td>
+							<td class="td_class">
+								<input id="LOGIN_USER" maxlength="15" size="20" type="text" onchange="ValidateUSER(this)"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="td_class">
+								Password
+							</td>
+							<td class="td_class">
+								<input id="LOGIN_PWD" maxlength="15" size="20" type="password" onchange="ValidatePWD(this)"/>
+							</td>
+						</tr>
+						<tr>
+							<td colspan ="2" align="center">
+								<input id="BTN_Login" type="button" value="Login" onclick = "login();"/>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table></center>
+	</body>
+</html>

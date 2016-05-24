@@ -1,0 +1,45 @@
+#ifndef DS_NET_IIPFILTERREGPRIV_IDL
+#define DS_NET_IIPFILTERREGPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+#include "AEEStdDef.idl"
+#include "ds_Net_IEventManager.idl"
+#include "ds_Net_Def.idl"
+
+module ds
+{
+   module Net
+   {
+      module IPFilterEvent
+      {
+         const EventType QDS_EV_STATE_CHANGED = 0x01098bc7;
+      };
+
+      const AEEIID AEEIID_IIPFilterRegPriv = 0x0107d26f;
+
+      /**
+       * ds Filter Registration interface.
+       * This interface derives from IEventManager to get the event registration functions.
+       * This interface can be used to register for IP FILTER STATE_CHANGED Event.
+       * The release of this interface deregister the Filters installed.
+       * IMPORTANT: If and when this functionality is made public (i.e. for extenral
+       *            apps, this interface will have to be changed / used differently
+       *            as it merely redefines IEventManager. The release of filters
+       *            may have to be done in a different manner.
+       */
+      interface IIPFilterRegPriv : IEventManager
+      {
+
+      };
+   };// module Net
+};// module ds
+
+#endif /* #ifdef DS_NET_IFILTERREGPRIV_IDL */

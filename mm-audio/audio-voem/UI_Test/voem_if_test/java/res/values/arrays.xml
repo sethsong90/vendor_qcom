@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+*@file arrays.xml
+*@@brief list of arrays used for listpreferences in VoicePostProcessingTest application
+*
+*Copyright (c) 2011 Qualcomm Technologies, Inc.
+* All Rights Reserved. Qualcomm Technologies Proprietary and Confidential.
+-->
+
+
+<resources>
+<string-array name="choice">
+<item>enable</item>
+<item>disable</item>
+</string-array>
+
+<string-array name="choice_values">
+<item>0</item>
+<item>1</item>
+
+</string-array>
+
+</resources>

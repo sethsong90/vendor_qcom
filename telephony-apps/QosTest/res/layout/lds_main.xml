@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2011-2012 Qualcomm Technologies, Inc.-
+ All Rights Reserved. Qualcomm Technologies Proprietary and Confidential.-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+ <Button android:id="@string/stop_lds_btn"
+    android:layout_width="200dip"
+    android:layout_height="100dip"
+    android:layout_centerInParent="True"
+    android:textSize="20dip"
+    android:text="@string/stop_lds_btn_text"/>
+
+  <Button android:id="@string/settings_lds_btn"
+    android:layout_width="200dip"
+    android:layout_height="100dip"
+    android:layout_centerInParent="True"
+    android:layout_below="@string/stop_lds_btn"
+    android:textSize="20dip"
+    android:text="@string/settings_lds_btn_text"/>
+
+   <Button android:id="@string/start_lds_btn"
+    android:layout_width="200dip"
+    android:layout_height="100dip"
+    android:layout_centerInParent="True"
+    android:layout_above="@string/stop_lds_btn"
+    android:textSize="20dip"
+    android:text="@string/start_lds_btn_text"/>
+
+</RelativeLayout>

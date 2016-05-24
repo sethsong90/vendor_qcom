@@ -1,0 +1,34 @@
+#! /bin/sh
+#
+#Copyright (c) 2012 Qualcomm Technologies, Inc.  All Rights Reserved.
+#Qualcomm Technologies Proprietary and Confidential.
+
+# qti   init.d script to start the Data Software's qti daemon
+
+set -e
+
+case "$1" in
+  start)
+        echo -n "Starting qti: "
+        start-stop-daemon -S -b --exec /usr/bin/qti /dev/rmnet_ctrl /dev/smdcntl8 --pidfile /var/run/qti1.pid
+        start-stop-daemon -S -b --exec /usr/bin/qti /dev/rmnet_ctrl1 /dev/smdcntl9 --pidfile /var/run/qti2.pid
+        start-stop-daemon -S -b --exec /usr/bin/qti /dev/rmnet_ctrl2 /dev/smdcntl10 --pidfile /var/run/qti3.pid
+        start-stop-daemon -S -b --exec /usr/bin/qti /dev/rmnet_ctrl3 /dev/smdcntl11 --pidfile /var/run/qti4.pid
+        echo "done"
+        ;;
+  stop)
+        echo -n "Stopping qti: "
+        start-stop-daemon -K -n qti
+        echo "done"
+        ;;
+  restart)
+        $0 stop
+        $0 start
+        ;;
+  *)
+        echo "Usage qti { start | stop | restart}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0

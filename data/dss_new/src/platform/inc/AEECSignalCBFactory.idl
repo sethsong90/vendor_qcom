@@ -1,0 +1,51 @@
+#ifndef AEECSIGNALCBFACTORY_IDL
+#define AEECSIGNALCBFACTORY_IDL
+/*qidl copyright
+=============================================================================
+        Copyright 2006 - 2007 Qualcomm Technologies, Inc.
+               All Rights Reserved.
+            Qualcomm Technologies Confidential and Proprietary
+===============================================================================
+
+DESCRIPTION:  This file defines the class ID AEECLSID_CSignalCBFactory
+
+=============================================================================*/
+
+#include "AEEStdDef.idl"
+const AEECLSID AEECLSID_CSignalCBFactory = 0x01041207;
+
+
+/*qidl location=bottom target=all
+=============================================================================
+   CLASS DOCUMENTATION
+===============================================================================
+
+AEECLSID_CSignalCBFactory
+
+Description:
+
+   AEECLSID_CSignalCBFactory identifes a signal factory for the current
+   environment.  It is used to create signals that call functions in the
+   current environment.
+
+   AEECLSID_CSignalCBFactory is a per-environment singleton.  Multiple calls
+   to CreateInstance() will return the same instance.
+
+   Unlike most signal-based services, AEECLSID_CSignalCBFactory cannot be
+   used safely in multi-threaded environments.  Its use is limited to
+   single-threaded environments, such as applets.
+
+Default Interface:
+   ISignalCBFactory
+
+Other Supported Interfaces:
+   None
+
+See Also:
+   ISignalFactory
+   ISignal
+   AEECLSID_CSignalFactory
+
+=============================================================================*/
+
+#endif // AEECSIGNALCBFACTORY_IDL

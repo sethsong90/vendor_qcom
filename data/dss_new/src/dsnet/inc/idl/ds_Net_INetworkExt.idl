@@ -1,0 +1,103 @@
+#ifndef DS_NET_INETWORKEXT_IDL
+#define DS_NET_INETWORKEXT_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "ds_Net_Def.idl"
+
+#include "ds_Net_IEventManager.idl"
+#include "ds_Net_IQoSManager.idl"
+#include "ds_Net_IMCastManager.idl"
+#include "ds_Net_IBearerInfo.idl"
+
+module ds
+{
+   module Net
+   {
+      // NetworkExt events
+      module NetworkExtEvent
+      {
+         const EventType QDS_EV_QOS_AWARENESS = 0x0106e611;  // QoS Aware/Unaware events
+         const EventType QDS_EV_BEARER_TECH_CHANGED = 0x0106e616;  // Bearer Technology Change event         
+      };
+
+      typedef long QoSModeType;
+      module QoSMode
+      {
+         const QoSModeType UE_ONLY   = 0; /* Only user can request QoS */
+         const QoSModeType UE_AND_NW = 1; /* Both user and network can request QoS */
+         const QoSModeType NW_ONLY   = 2; /* Only network can request QoS */
+      };
+
+      // INetworkExt IID
+      const AEEIID AEEIID_INetworkExt = 0x0109a8af;
+
+      /**
+       * ds NetworkExt interface.
+       * This Network Extended interface is an auxiliary interface to INetwork,
+       * supporting advanced Network operations, including QoS, MCast, BearerTech and more.
+       * All QoS and MCast objects are created via this interface. @See CreateQoSManager and
+       * CreateMCastManager.
+       *
+       * Events that can be registered on this interface via OnStateChange (as part of IEventManager interface): 
+       * - ds::Net::NetworkExtEvent::QDS_EV_QOS_AWARENESS. Use IsQoSAware to fetch the QOS aware status information.       
+       * - ds::Net::NetworkExtEvent::QDS_EV_BEARER_TECH_CHANGED. Use GetBearerInfo to fetch the status information.
+       */
+      interface INetworkExt : IEventManager
+      {
+         /**
+          * This function returns the bearer technology information.
+          * @param bearerTech Object that will hold the bearer information.
+          * @see IBearerInfo
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetBearerInfo(rout IBearerInfo bearerTech);
+
+         /**          
+          * This attribute indicates whether or not the current system is
+          * CDMA QoS Aware system.
+          * TRUE if the mobile is on a QoS Aware system
+          * FALSE if the mobile is on a QoS Unaware system.          
+          */         
+         readonly attribute boolean QosAware;
+
+         /**
+          * This function Gets the QoS mode
+          * @param qosMode Output The current QosMode
+          * @retval ds::SUCCESS QosMode retrieved successfully 
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetQoSMode(rout QoSModeType qosMode);
+
+         /**    
+          * This function creates an instance of IQoSManager. IQoSManager creation
+          * is supported only via INetworkExt.    
+          * @param newQoSManager Output The newly created IQoSManager instance.
+          * @retval ds::SUCCESS IQoSManager created successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreateQoSManager(rout IQoSManager newQoSManager);
+
+         /**    
+          * This function creates an instance of IMCastManager. IMCastManager creation
+          * is supported only via INetworkExt.    
+          * @param newMCastManager Output The newly created IMCastManager instance.
+          * @retval ds::SUCCESS IMCastManager created successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreateMCastManager(rout IMCastManager newMCastManager);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_INETWORKEXT_IDL */

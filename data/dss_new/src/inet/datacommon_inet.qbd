@@ -1,0 +1,14 @@
+
+/* Build this component into a library */
+#include <lib.qbd>
+
+$(DEFS) += -D"AEEINTERFACE_CPLUSPLUS";
+
+sourcepath
+{
+  -src/ps_ip.c;
+  -src/ps_tcpin.c;
+  -src/ps_tcpsubr.c;
+  -src/ps_tcpout.c;
+  -src/ps_udp.c;
+};

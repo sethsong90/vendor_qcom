@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DigitalPenSDKTester</string>
+    <string name="action_settings">Settings</string>
+    <string name="off_screen_mode_header">Off-Screen Mode</string>
+    <string name="offscreen_mode_choice_duplicate">Duplicate</string>
+    <string name="offscreen_mode_choice_extend">Extend</string>
+    <string name="offscreen_mode_choice_system_default">System Default</string>
+    <string name="offscreen_mode_choice_disable">Disable</string>
+    <string name="apply_configuration_button_text">Apply Configuration</string>
+    <string name="configuration_items_header">Configuration items</string>
+    <string name="checkbox_text_on_screen_side_channel_enable">Enable on-screen side-channel data</string>
+    <string name="checkbox_text_off_screen_side_channel_enable">Enable off-screen side-channel data</string>
+    <string name="placeholder">&lt;placeholder for dynamic text></string>
+
+</resources>

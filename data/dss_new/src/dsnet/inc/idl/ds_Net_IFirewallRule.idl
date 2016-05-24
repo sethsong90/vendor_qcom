@@ -1,0 +1,35 @@
+/*============================================================================
+                  Copyright (c) 2010 Qualcomm Technologies, Inc.
+                             All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================*/
+#ifndef DS_NET_IFIREWALLRULE_IDL
+#define DS_NET_IFIREWALLRULE_IDL
+
+
+#include "AEEIQI.idl"
+#include "AEEStdDef.idl" 
+#include "ds_Errors_Def.idl"
+#include "ds_Net_IIPFilterPriv.idl"
+
+module ds
+{
+   module Net
+   {
+
+      const ::AEEIID AEEIID_IFirewallRule = 0x0109e2f5;
+
+      interface IFirewallRule : IQI
+      {
+         /**
+          * This function retrieves one firewall rule
+          * @param filterSpec Output Retrieved firewall specs
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetFirewallRule(rout IIPFilterPriv filterSpec);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IFIREWALLRULE_IDL */

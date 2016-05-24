@@ -1,0 +1,23 @@
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+
+LOCAL_CFLAGS := -Wall -Werror
+
+LOCAL_SRC_FILES = dsdnsutil.c
+
+LOCAL_SHARED_LIBRARIES += libdsnetutils
+LOCAL_SHARED_LIBRARIES += libc
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/../inc
+LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/common/inc
+
+LOCAL_CFLAGS += -O0
+
+LOCAL_MODULE := dsdnsutil
+LOCAL_MODULE_TAGS := optional
+
+LOCAL_PRELINK_MODULE := false
+LOCAL_MODULE_OWNER := qcom
+
+include $(BUILD_EXECUTABLE)

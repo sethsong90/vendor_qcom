@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+*@file preferences.xml
+*brief Lists of preferences used in the VoicePostProcessingTest UI
+*Copyright (c) 2011 Qualcomm Technologies, Inc.
+* All Rights Reserved. Qualcomm Technologies Proprietary and Confidential.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory 
+		android:title="Voem Features">
+					
+		<CheckBoxPreference
+			android:title="@string/WideVoiceExtension"
+			android:key="WVE"
+			android:summaryOff="Extension of NB speech signal to WB signal/Disabled"
+			android:summaryOn="Extension of NB speech signal to WB signal/Enabled"
+			android:defaultValue="false"
+		/>
+		
+		<CheckBoxPreference
+			android:title="@string/ReceiveVoiceEnhancement"
+			android:key="RVE"
+			android:summaryOff="Reduces effect of near-end noise/Disabled"
+			android:summaryOn="Reduces effect of near-end noise/Enabled"
+			android:defaultValue="false"
+		/>
+		
+		<CheckBoxPreference
+			android:title="@string/AutomaticGainControl"
+			android:key="AGC"
+			android:summaryOff="Adjusts the gain of the audio signal/Disabled"
+			android:summaryOn="Adjusts the gain of the audio signal/Enabled"
+		        android:defaultValue="false"
+		/>
+		
+		<CheckBoxPreference
+			android:title="@string/AutomaticVolumeControl"
+			android:key="AVC"
+			android:summaryOff="Adjusts downlink voice signal in response to near-end background noise/Disabled"
+		        android:summaryOn="Adjusts downlink voice signal in response to near-end background noise/Enabled"
+			android:defaultValue="false"
+		/>
+		
+		<CheckBoxPreference
+			android:title="@string/EchoCancellation"
+			android:key="EC"
+			android:summaryOff="Suppresses echo in the uplink voice/Disabled"
+			android:summaryOn="Suppresses echo in the uplink voice/Enabled"
+			android:defaultValue="false"
+		/>
+		<CheckBoxPreference
+			android:title="@string/PCMFilter"
+			android:key="PF"
+			android:summaryOff="Improve signal spectrum/Disabled"
+			android:summaryOn="Improve signal spectrum/Enabled"
+			android:defaultValue="false"
+		/>
+		<CheckBoxPreference
+			android:title="@string/WindNoiseReduction"
+			android:key="WNR"
+			android:summaryOff="Reduces wind noise/Disabled"
+			android:summaryOn="Reduces wind noise/Enabled"
+			 android:defaultValue="false"
+		/>
+		<CheckBoxPreference
+			android:title="@string/FarEndNoiseSuppression"
+			android:key="FENS"
+			android:summaryOff="Reduces noise from far-end/Disabled"
+			android:summaryOn="Reduces noise from far-end/Enabled"
+			 android:defaultValue="false"
+		/>
+		
+		 <CheckBoxPreference
+                        android:title="@string/SlowTalk"
+                        android:key="ST"
+                        android:summaryOff="Slows down Rx voice stream/Disabled"
+			android:summaryOn="Slows down Rx voice stream/Enabled"
+                        android:defaultValue="false"
+                />
+		 <CheckBoxPreference
+                        android:title="@string/DTMFDetectiononRxpath"
+                        android:key="DRX"
+                        android:summaryOff="Detects DTMF on Rx path/Disabled"
+			android:summaryOn="Detects DTMF on Rx path/Enabled"
+                        android:defaultValue="false"
+                />
+		 <CheckBoxPreference
+                        android:title="@string/DTMFDetectiononTxpath"
+                        android:key="DTX"
+                        android:summaryOff="Detects DTMF on Tx path/Disabled"
+			android:summaryOn="Detects DTMF on Tx path/Disabled"
+	                android:defaultValue="false"
+                />
+		 <CheckBoxPreference
+                        android:title="@string/PsychoacousticBassenhancement"
+                        android:key="PBE"
+                        android:summaryOff="results in bass component sounding more perceivable/Disabled"
+			android:summaryOn="results in bass component sounding more perceivable/Disabled"
+                        android:defaultValue="false"
+                />
+
+		
+	</PreferenceCategory>
+</PreferenceScreen>
+

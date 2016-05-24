@@ -1,0 +1,45 @@
+#ifndef DS_NET_IEVENTMANAGER_IDL
+#define DS_NET_IEVENTMANAGER_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+#include "AEEStdDef.idl"
+#include "AEEISignal.idl"
+#include "ds_Net_Def.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IEventManager = 0x0106d860;
+      /**
+       * ds Net Handle interface.
+      */
+      interface IEventManager : IQI
+      {
+         /**
+          * This function registers a signal to be set when event eventID occurs.
+          * Cannot use the signal for more than one eventID. Can use more than one
+          * signal for the same event.
+          * @param signal The signal to Set() when the state associated with the eventID changes.
+          *               To cancel the registration the application should release this signal. 
+          * @param eventID The event for which the signal shall be fired.
+          * @param regObj Output The application must hold this output registration object to ensure its
+          *                      Signal stays registered. The application can release this object once
+          *                      it has released the signal object.
+          * @retval AEE_SUCCESS Signal set completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult OnStateChange(in ISignal signal, in ds::Net::EventType eventID, rout IQI regObj);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IEVENTMANAGER_IDL */

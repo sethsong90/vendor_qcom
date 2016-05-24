@@ -1,0 +1,132 @@
+/******************************************************************************
+
+                        D S _ F M C _ A P P _ S M . S T M
+
+******************************************************************************/
+
+/******************************************************************************
+
+  @file    ds_fmc_app_sm.stm
+  @brief   DS_FMC_APP state machine specificaiton
+
+  DESCRIPTION
+  DS_FMC_APP's specification for the stame machine framework (STM2).
+
+******************************************************************************/
+/*===========================================================================
+
+  Copyright (c) 2010 Qualcomm Technologies, Inc. All Rights Reserved
+
+  Qualcomm Technologies Proprietary
+
+  Export of this technology or software is regulated by the U.S. Government.
+  Diversion contrary to U.S. law prohibited.
+
+  All ideas, data and information contained in or disclosed by
+  this document are confidential and proprietary information of
+  Qualcomm Technologies, Inc. and all rights therein are expressly reserved.
+  By accepting this material the recipient agrees that this material
+  and the information contained therein are held in confidence and in
+  trust and will not be used, copied, reproduced in whole or in part,
+  nor its contents revealed in any manner to others without the express
+  written permission of Qualcomm Technologies, Inc.
+
+===========================================================================*/
+
+/******************************************************************************
+
+                      EDIT HISTORY FOR FILE
+
+  $Id:$
+
+when       who        what, where, why
+--------   ---        -------------------------------------------------------
+05/12/10   scb        Initial version
+
+******************************************************************************/
+
+STATE_MACHINE DS_FMC_APP_SM
+{
+  INPUT_DEF_FILE  ds_fmc_app_sm.h;
+  ENTRY           ds_fmc_app_sm_entry;
+  EXIT            ds_fmc_app_sm_exit;
+  INSTANCES       1;
+  INITIAL_STATE   DS_FMC_APP_STATE_DOWN;
+  DEBUG_HOOK      ds_fmc_app_sm_debug_hook;
+  ERROR_HOOK      ds_fmc_app_sm_error_hook;
+
+  STATE DS_FMC_APP_STATE_DOWN
+  {
+    ENTRY       ds_fmc_app_sm_state_down_entry;
+    EXIT        ds_fmc_app_sm_state_down_exit;
+
+    INPUTS
+    {
+      DS_FMC_APP_EXT_TRIG_ENABLE_EV  ds_fmc_app_sm_handle_ext_trig_enable;
+    }
+  }
+
+  STATE DS_FMC_APP_STATE_ENABLING_TUNNEL
+  {
+    ENTRY       ds_fmc_app_sm_state_enabling_tunnel_mgr_entry;
+    EXIT        ds_fmc_app_sm_state_enabling_tunnel_mgr_exit;
+
+    INPUTS
+    {
+      DS_FMC_APP_TUNNEL_OPENED_EV    ds_fmc_app_sm_tunnel_opened;
+      DS_FMC_APP_TUNNEL_CLOSED_EV    ds_fmc_app_sm_tunnel_closed;
+      DS_FMC_APP_EXT_TRIG_DISABLE_EV ds_fmc_app_sm_handle_ext_trig_disable;
+      DS_FMC_APP_BEARER_UP_EV        ds_fmc_app_sm_bearer_up;
+    }
+  }
+
+  STATE DS_FMC_APP_STATE_CONFIGURING_TUNNEL_PARAMS
+  {
+    ENTRY       ds_fmc_app_sm_state_configuring_tunnel_params_entry;
+    EXIT        ds_fmc_app_sm_state_configuring_tunnel_params_exit;
+
+    INPUTS
+    {
+      DS_FMC_APP_BEARER_UP_EV        ds_fmc_app_sm_bearer_up;
+      DS_FMC_APP_BEARER_DOWN_EV      ds_fmc_app_sm_bearer_down;
+      DS_FMC_APP_TUNNEL_CLOSED_EV    ds_fmc_app_sm_tunnel_closed;
+      DS_FMC_APP_EXT_TRIG_DISABLE_EV ds_fmc_app_sm_handle_ext_trig_disable;
+    }
+  }
+
+  STATE DS_FMC_APP_STATE_UP
+  {
+    ENTRY       ds_fmc_app_sm_state_up_entry;
+    EXIT        ds_fmc_app_sm_state_up_exit;
+
+    INPUTS
+    {
+      DS_FMC_APP_BEARER_DOWN_EV      ds_fmc_app_sm_bearer_down;
+      DS_FMC_APP_TUNNEL_CLOSED_EV    ds_fmc_app_sm_tunnel_closed;
+      DS_FMC_APP_EXT_TRIG_DISABLE_EV ds_fmc_app_sm_handle_ext_trig_disable;
+    }
+  }
+
+  STATE DS_FMC_APP_STATE_DISABLING_TUNNEL
+  {
+    ENTRY       ds_fmc_app_sm_state_disabling_tunnel_mgr_entry;
+    EXIT        ds_fmc_app_sm_state_disabling_tunnel_mgr_exit;
+
+    INPUTS
+    {
+      DS_FMC_APP_TUNNEL_CLOSED_EV    ds_fmc_app_sm_tunnel_closed;
+    }
+  }
+
+  STATE DS_FMC_APP_STATE_GOING_DOWN
+  {
+    ENTRY       ds_fmc_app_sm_state_going_down_entry;
+    EXIT        ds_fmc_app_sm_state_going_down_exit;
+
+    INPUTS
+    {
+      DS_FMC_APP_BEARER_DOWN_EV      ds_fmc_app_sm_bearer_down_complete;
+    }
+  }
+
+}

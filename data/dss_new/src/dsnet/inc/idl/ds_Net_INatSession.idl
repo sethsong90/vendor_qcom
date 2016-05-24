@@ -1,0 +1,177 @@
+/*============================================================================
+                  Copyright (c) 2008-2009 Qualcomm Technologies, Inc.
+                             All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================*/
+#ifndef DS_NET_INATSESSION_IDL
+#define DS_NET_INATSESSION_IDL
+
+#include "AEEIQI.idl"
+#include "ds_Net_Def.idl"
+
+module ds
+{
+   module Net
+   {
+      struct IPNatStaticEntryType 
+       {
+         uint8 protocol;
+         ds::Net::INAddrType private_ip_addr;
+         ds::Net::INPortType private_port;
+         ds::Net::INPortType global_port;
+       };
+
+      struct DMZEntryType 
+       {
+         ds::Net::INAddrType dmz_ip_addr;
+       };
+
+      const AEEIID AEEIID_INatSession = 0x0109e2f7;
+      /**
+       * DS network NAT Session Interface.
+       */
+      interface INatSession : IQI
+      {
+         typedef sequence<IPNatStaticEntryType> SeqNatStaticEntryType;
+
+         /**
+          * This function add static NAT entry.
+          * @param entry Specify the static NAT entry.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult AddStaticNatEntry
+             (in IPNatStaticEntryType entry);
+
+         /**
+          * This function delete static NAT entry.
+          * @param entry Specify the static NAT entry.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult DeleteStaticNatEntry
+             (in IPNatStaticEntryType entry);
+
+         /**
+          * This function get static NAT entries.
+          * @param entries Output the static NAT entries.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult GetStaticNatEntry
+             (rout SeqNatStaticEntryType entries);
+
+         /**
+          * This function set dynamic NAT entry timeout.
+          * @param timeout Specify the dynamic NAT entry timeout in sec.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult SetDynamicNatEntryTimeout
+             (in unsigned short timeout);
+
+         /**
+          * This function get dynamic NAT entry timeout.
+          * @param timeout Output the dynamic NAT entry timeout in sec.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult GetDynamicNatEntryTimeout
+             (rout unsigned short timeout);
+
+         /**
+          * This function set IPSEC VPN passthrough.
+          * @param isVpnPassThrough Specify whether VPN passthrough is enabled or not.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult SetIpSecVpnPassThrough
+             (in boolean isVpnPassThrough);
+
+         /**
+          * This function get IPSEC VPN passthrough.
+          * @param isVpnPassThrough Specify whether VPN passthrough is enabled or not.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult GetIpSecVpnPassThrough
+             (rout boolean isVpnPassThrough);
+
+         /**
+          * This function sets L2TP VPN passthrough.
+          * @param isVpnPassThrough Specify whether L2TP VPN passthrough is enabled or not.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult SetL2TPVpnPassThrough
+             (in boolean isVpnPassThrough);
+
+         /**
+          * This function gets L2TP VPN passthrough.
+          * @param isVpnPassThrough Specify whether L2TP VPN passthrough is enabled or not.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult GetL2TPVpnPassThrough
+             (rout boolean isVpnPassThrough);
+
+         /**
+          * This function sets PPTP VPN passthrough.
+          * @param isVpnPassThrough Specify whether PPTP VPN passthrough is enabled or not.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult SetPPTPVpnPassThrough
+             (in boolean isVpnPassThrough);
+
+         /**
+          * This function gets PPTP VPN passthrough.
+          * @param isVpnPassThrough Specify whether PPTP VPN passthrough is enabled or not.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult GetPPTPVpnPassThrough
+             (rout boolean isVpnPassThrough);
+
+          /**
+          * This function enables DMZ and creates a DMZ entry.
+          * @param entry Specify the DMZ entry.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult AddDMZ
+             (in DMZEntryType entry);
+
+         /**
+          * This function gets a DMZ entry.
+          * @param entry Specify the DMZ entry.
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult GetDMZ
+             (rout DMZEntryType entry);
+
+         /**
+          * This function is used to delete DMZ
+          * @retval DS::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */
+         AEEResult DeleteDMZ();
+      };
+   };// module Net
+};// module DS
+#endif /* #ifdef DS_NET_INATSESSION_IDL */

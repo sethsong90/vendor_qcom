@@ -1,0 +1,42 @@
+#ifndef AEEISIGNALHANDLER_IDL
+#define AEEISIGNALHANDLER_IDL 
+//============================================================================
+                                                          //qidl copyright
+//% Copyright (c) 2006-2008 Qualcomm Technologies, Inc.
+                                                          //qidl nested=false
+//% All Rights Reserved.
+//% Qualcomm Technologies Confidential and Proprietary
+//============================================================================
+
+#include "AEEIQI.idl"
+
+const AEEIID AEEIID_ISignalHandler = 0x01041078;
+
+/**
+ * This interface is to be implemented by the users who create signals from
+ * ISignalFactory. The signal object sends asynchronous notifications as
+ * invocations of the associated signal handler's ISignalHandler::Notify().
+ *
+ * The typical use case for SignalHandlers is to insure that the context of 
+ * the callback is valid when the callback is fired.
+ *
+ * Owner creates/implements ISignalHandler, and creates ISignal/ISignalCtl
+ * via ISignalFactory.  The implementation of ISignalHandler should only 
+ * hold on to a weak reference of the Owner Object, otherwise a circular reference
+ * will be created:  SignalHandler -> Owner -> Signal -> SignalHandler
+ * 
+ * A simple reusable implementation of SignalHandler is provided in the a1cobj
+ * library in SignalHandlerWR.h
+ *
+ * @see ISignalFactory, Notify(), IWeakRef
+ */
+interface ISignalHandler : IQI
+{
+   /**
+    * This method of the client's signal handler object is invoked when a
+    * signal is set.
+    */
+   AEEResult Notify(in uint32 uArgA, in uint32 uArgB);
+};
+
+#endif /* #ifndef AEEISIGNALHANDLER_IDL */

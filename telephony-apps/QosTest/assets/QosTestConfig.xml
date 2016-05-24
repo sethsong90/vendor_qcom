@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2011-2012 Qualcomm Technologies, Inc.-
+ All Rights Reserved. Qualcomm Technologies Proprietary and Confidential.-->
+
+<QosTestConfig version="2.0">
+<QosTest name="default">
+
+<QosOp operation="enable"/>
+
+<QosSpec>
+        <QosFlowFilter>
+        <SPEC_INDEX value="0"/>
+        <FLOW_DIRECTION value="0"/>
+        <FLOW_TRAFFIC_CLASS value="1"/>
+        <FLOW_DATA_RATE_MIN value="64000"/>
+        <FLOW_DATA_RATE_MAX value="128000"/>
+        <FLOW_LATENCY value="50"/>
+
+        <FILTER_INDEX value="0"/>
+        <FILTER_DIRECTION value="0"/>
+	<FILTER_IPVERSION value="IP"/>
+	<FILTER_IPV4_DESTINATION_ADDR value="10.42.157.77"/>
+        <FILTER_UDP_DESTINATION_PORT_START value="4040"/>
+        <FILTER_UDP_DESTINATION_PORT_RANGE value="20"/>
+        </QosFlowFilter>
+
+        <QosFlowFilter>
+        <SPEC_INDEX value="0"/>
+        <FLOW_DIRECTION value="1"/>
+        <FLOW_TRAFFIC_CLASS value="1"/>
+        <FLOW_DATA_RATE_MIN value="256000"/>
+        <FLOW_DATA_RATE_MAX value="512000"/>
+        <FLOW_LATENCY value="100"/>
+
+        <FILTER_INDEX value="0"/>
+        <FILTER_DIRECTION value="1"/>
+	<FILTER_IPVERSION value="IP"/>
+	<FILTER_IPV4_SOURCE_ADDR value="10.46.104.254"/>
+        <FILTER_UDP_DESTINATION_PORT_START value="6060"/>
+        <FILTER_UDP_DESTINATION_PORT_RANGE value="20"/>
+        </QosFlowFilter>
+
+</QosSpec>
+</QosTest>
+
+<QosTest name="default">
+<QosOp operation="disable" qosId="10" />
+</QosTest>
+
+<QosDataTransfer>
+<DefaultCmd cmd="/data/iperf"/>
+<DefaultOptions options="-c 10.42.162.43 -u -i1 -t20"/>
+</QosDataTransfer>
+
+</QosTestConfig>
+
+<!--
+List of all parameters available and sample values
+NOTE: 0 - TX, 1 - RX
+
+        SPEC_INDEX="0"
+
+        FLOW_DIRECTION="0"
+        FLOW_TRAFFIC_CLASS="0"
+        FLOW_DATA_RATE_MIN="256"
+        FLOW_DATA_RATE_MAX="512"
+        FLOW_LATENCY="50"
+        FLOW_3GPP2_PROFILE_ID="11"
+        FLOW_3GPP2_PRIORITY="20"
+
+        FILTER_INDEX value="0"
+        FILTER_DIRECTION="0"
+        FILTER_IPV4_SOURCE_ADDR="10.2.5.100"
+        FILTER_IPV4_DESTINATION_ADDR="10.2.5.200"
+        FILTER_IPV4_TOS="1"
+        FILTER_IPV4_TOS_MASK="1"
+        FILTER_TCP_SOURCE_PORT_START="5000"
+        FILTER_TCP_SOURCE_PORT_RANGE="10"
+        FILTER_TCP_DESTINATION_PORT_START="5050"
+        FILTER_TCP_DESTINATION_PORT_RANGE="20"
+        FILTER_UDP_SOURCE_PORT_START="6000"
+        FILTER_UDP_SOURCE_PORT_RANGE="20"
+        FILTER_UDP_DESTINATION_PORT_START="6060"
+        FILTER_UDP_DESTINATION_PORT_RANGE="20"
+-->
+
+

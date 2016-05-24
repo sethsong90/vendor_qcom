@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<head>
+<title>Message definition for gyro tap.</title>
+<link rel="stylesheet" type="text/css" href="qmi_idl_wiredoc.css" />
+</head>
+
+<body>
+<h1>Message definition for gyro tap.
+</h1>
+ This file defines messages used by gyro tap algo service.<br><br> As prerequisite, the sensor algorithm must use the common Interface<br> defined in the Sensor Algorithms framework.<br><br> The messages defined herein will be passed to the Sensor framework using<br> the sensor1_write() API.<br><br> Copyright (c) 2012 Qualcomm Technologies, Inc. All Rights Reserved.<br> Qualcomm Technologies Proprietary and Confidential.
+
+<h1>Service Type</h1>
+<ul>
+<li>QMI service type <b>SNS_QMI_SVC_ID_29</b>
+<li>Version <b>01</b>
+</ul>
+<h1><a name='Messages'>Messages</a>
+<table class = 'tlv'><tr class='head'><th>Command</th><th>ID</th><th>Messages</th><th>Description</th></tr>
+<tr><td class='l'><a href='#SNS_COMMON_CANCEL'>SNS_COMMON_CANCEL</a></td><td></td><td class='l'></td><td class='l'>This command cancel all requests from a client to any sensor service This shall be the first message of any sensor service. </td></tr>
+<tr><td class='l'><a href='#SNS_COMMON_VERSION'>SNS_COMMON_VERSION</a></td><td></td><td class='l'></td><td class='l'>This command requests the version of the sensor service This shall be the second message of any sensor service. </td></tr>
+<tr><td class='l'><a href='#SNS_SAM_GYRO_TAP'>SNS_SAM_GYRO_TAP</a></td><td></td><td class='l'><a href="#SNS_SAM_GYRO_TAP_ENABLE_REQ">SNS_SAM_GYRO_TAP_ENABLE_REQ</a></br><a href="#SNS_SAM_GYRO_TAP_ENABLE_RESP">SNS_SAM_GYRO_TAP_ENABLE_RESP</a></br></td><td class='l'>This command enables a sensor algorithm. </td></tr>
+<tr><td class='l'><a href='#SNS_SAM_GYRO_TAP_DISABLE'>SNS_SAM_GYRO_TAP_DISABLE</a></td><td>0x0003</td><td class='l'><a href="#SNS_SAM_GYRO_TAP_DISABLE_REQ">SNS_SAM_GYRO_TAP_DISABLE_REQ</a></br><a href="#SNS_SAM_GYRO_TAP_DISABLE_RESP">SNS_SAM_GYRO_TAP_DISABLE_RESP</a></br></td><td class='l'>This command disables a sensor algorithm. </td></tr>
+<tr><td class='l'><a href='#SNS_SAM_GYRO_TAP_REPORT_IND'>SNS_SAM_GYRO_TAP_REPORT_IND</a></td><td></td><td class='l'><a href="#SNS_SAM_GYRO_TAP_REPORT_IND">SNS_SAM_GYRO_TAP_REPORT_IND</a></br></td><td class='l'>Output report from a sensor algorithm. </td></tr>
+<tr><td class='l'><a href='#SNS_SAM_GYRO_TAP_ERROR'>SNS_SAM_GYRO_TAP_ERROR</a></td><td>0x0005</td><td class='l'><a href="#SNS_SAM_GYRO_TAP_ERROR_IND">SNS_SAM_GYRO_TAP_ERROR_IND</a></br></td><td class='l'>Asynchronous error report from a sensor algorithm. </td></tr>
+<tr><td class='l'><a href='#SNS_SAM_GYRO_TAP_CANCEL'>SNS_SAM_GYRO_TAP_CANCEL</a></td><td>0x0000</td><td class='l'></td><td class='l'>This command cancels all requests to the algorithm service. </td></tr>
+<tr><td class='l'><a href='#SNS_SAM_GYRO_TAP_VERSION'>SNS_SAM_GYRO_TAP_VERSION</a></td><td>0x0001</td><td class='l'></td><td class='l'>This command requests algorithm service version. </td></tr>
+<tr><td class='l'><a href='#SNS_SAM_GYRO_TAP_ENABLE'>SNS_SAM_GYRO_TAP_ENABLE</a></td><td>0x0002</td><td class='l'></td><td class='l'>This command enables the GYRO TAP algorithm service. </td></tr>
+<tr><td class='l'><a href='#SNS_SAM_GYRO_TAP_REPORT'>SNS_SAM_GYRO_TAP_REPORT</a></td><td>0x0004</td><td class='l'></td><td class='l'>This command requests/reports GYRO TAP algorithm reports </td></tr>
+</table>
+<br><br>
+<h4>Description of  REQ/RESP</h4>
+
+<br><br>
+<table class='sep'><tr><td></td></tr></table>
+<h2><a name='SNS_SAM_GYRO_TAP'></a><a href='#Messages'>SNS_SAM_GYRO_TAP</a></h2>
+This command enables a sensor algorithm.
+<h4>Message ID</h4>
+0x0000
+<h3><a name="SNS_SAM_GYRO_TAP_ENABLE_REQ"></a><a href='#Messages'>SNS_SAM_GYRO_TAP_ENABLE_REQ</a></h3>
+<h4>Message Type</h4>Request 
+<h4>Sender</h4>Client 
+
+<h4>Mandatory TLVs</h4>
+<table class = 'tlv'><tr class='head'><th>Field</th><th>Field Value</th><th>Parameter</th><th>Size (bytes)</th><th>Description</th></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x01</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>report_period</td><td>4</td><td class='l'>Unit of seconds, Q16; value of 0 means reporting on new event only </td></tr>
+
+</table>
+<h4>Optional TLVs</h4>
+<table class = 'tlv'><tr class='head'><th>Field</th><th>Field Value</th><th>Parameter</th><th>Size (bytes)</th><th>Description</th></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x10</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>sample_rate</td><td>4</td><td class='l'>sample rate in Hz, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x11</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tap_time_win</td><td>4</td><td class='l'>time over which a tap must occur, s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x12</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tap_time_sleep</td><td>4</td><td class='l'>max time over which a tap can occur, s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x13</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tap_dir_win</td><td>4</td><td class='l'>time over which a tap direction is determined, s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x14</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>history_win</td><td>4</td><td class='l'>Maintained length of history - post tentative tap, s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x15</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>orientation_change_win</td><td>4</td><td class='l'>time over which an orientation change is determined, s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x16</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>jerk_win</td><td>4</td><td class='l'>time over which a jerk is determined, s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x17</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>accel_tap_thresh</td><td>4</td><td class='l'>accel threshold in m/s/s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x18</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>mild_accel_tap_thresh</td><td>4</td><td class='l'>mild tap accel threshold in m/s/s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x19</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>gyro_tap_thresh</td><td>4</td><td class='l'>gyro_tap threshold in radians/s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x1A</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>lr_min_accel_jerk_thresh_min</td><td>4</td><td class='l'>left/right min min-accel-jerk threshold in m/s/s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x1B</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>lr_min_gyro_jerk_thresh_min</td><td>4</td><td class='l'>left/right min min-gyro-jerk threshold in radians/s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x1C</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>lr_max_accel_jerk_thresh_min</td><td>4</td><td class='l'>left/right max min-accel-jerk threshold in m/s/s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x1D</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>lr_max_gyro_jerk_thresh_min</td><td>4</td><td class='l'>left/right max min-gyro-jerk threshold in radians/s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x1E</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tb_accel_jerk_min_thresh</td><td>4</td><td class='l'>top/botton min jerk threshold in m/s/s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x1F</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tb_gyro_jerk_min_thresh</td><td>4</td><td class='l'>top/bottom min gyro jerk threshold in radians/s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x20</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>lr_accel_rat_jerk_yx</td><td>4</td><td class='l'>ratio of L/R accel jerk for y/x axes </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x21</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>lr_accel_rat_jerk_yz</td><td>4</td><td class='l'>ratio of L/R accel jerk for y/z axes </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x22</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>lr_gyro_rat_jerk_zy</td><td>4</td><td class='l'>ratio of L/R gyro jerk for z/y axes </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x23</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>lr_gyro_rat_jerk_zx</td><td>4</td><td class='l'>ratio of L/R gyro jerk for z/x axes </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x24</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tb_accel_rat_jerk_xy</td><td>4</td><td class='l'>ratio of T/B accel jerk for x/y axes </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x25</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>lr_accel_rat_jerk_xz</td><td>4</td><td class='l'>ratio of T/B accel jerk for x/z axes </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x26</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tb_gyro_rat_jerk_yx</td><td>4</td><td class='l'>ratio of T/B gyro jerk for y/x axes </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x27</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tb_gyro_rat_jerk_yz</td><td>4</td><td class='l'>ratio of T/B gyro jerk for y/z axes </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x28</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tb_accel_z_thresh</td><td>4</td><td class='l'>t/b accel z thresh, ms/s/s, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x29</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tb_accel_z_rat_zx</td><td>4</td><td class='l'>t/b accel z versus zx ratio </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x2A</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tb_accel_z_rat_zy</td><td>4</td><td class='l'>t/b accel z versus zy ratio </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x2B</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>1</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>ori_change_reject_mode</td><td>1</td><td class='l'>orientation change rejection mode (0 == off, 1 == on)</td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x2C</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>ori_check_win</td><td>4</td><td class='l'>orientation check window , seconds, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x2D</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>ori_change_win</td><td>4</td><td class='l'>orientation change window , seconds, Q16 </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x2E</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>ori_change_thr</td><td>4</td><td class='l'>orientation change threshold metric </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x2F</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>1</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>z_axis_inc</td><td>1</td><td class='l'>Z axis anamoly handling mode (0 == off, 1 == on)</td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x30</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>1</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>loaded_z_axis_anamoly</td><td>1</td><td class='l'>Z axis anamoly loaded </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x31</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>1</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>loaded_axis_3_valid</td><td>1</td><td class='l'>Z axis load valid </td></tr>
+
+</table>
+<h3><a name="SNS_SAM_GYRO_TAP_ENABLE_RESP"></a><a href='#Messages'>SNS_SAM_GYRO_TAP_ENABLE_RESP</a></h3>
+<h4>Message Type</h4>Response 
+<h4>Sender</h4>Service 
+
+<h4>Mandatory TLVs</h4>
+<table class = 'tlv'><tr class='head'><th>Field</th><th>Field Value</th><th>Parameter</th><th>Size (bytes)</th><th>Description</th></tr>
+<tr class='row_0'><td class='l'>Type</td><td>2</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>2</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>sns_result_t</td><td>1</td><td class='l'>0 == SUCCESS; 1 == FAILURE <br> A result of FAILURE indicates that that any data contained in the response<br> should not be used (other than sns_err_t, to determine the type of error </td></tr>
+<tr class='row_0'><td class='l'></td><td></td><td class='l'>sns_err_t</td><td>1</td><td class='l'>See sensor1_error_e in sensor1.h </td></tr>
+
+</table>
+<h4>Optional TLVs</h4>
+<table class = 'tlv'><tr class='head'><th>Field</th><th>Field Value</th><th>Parameter</th><th>Size (bytes)</th><th>Description</th></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x10</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>1</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>instance_id</td><td>1</td><td class='l'> The instance ID is maintained/assigned by SAM.<br> The client shall use this instance ID for future messages associated with<br> current algorithm instance.<br> </td></tr>
+
+</table>
+<h4>Description of SNS_SAM_GYRO_TAP REQ/RESP</h4>
+
+<br><br>
+<table class='sep'><tr><td></td></tr></table>
+<h2><a name='SNS_SAM_GYRO_TAP_DISABLE'></a><a href='#Messages'>SNS_SAM_GYRO_TAP_DISABLE</a></h2>
+This command disables a sensor algorithm.
+<h4>Message ID</h4>
+0x0003
+<h3><a name="SNS_SAM_GYRO_TAP_DISABLE_REQ"></a><a href='#Messages'>SNS_SAM_GYRO_TAP_DISABLE_REQ</a></h3>
+<h4>Message Type</h4>Request 
+<h4>Sender</h4>Client 
+
+<h4>Mandatory TLVs</h4>
+<table class = 'tlv'><tr class='head'><th>Field</th><th>Field Value</th><th>Parameter</th><th>Size (bytes)</th><th>Description</th></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x01</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>1</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>instance_id</td><td>1</td><td class='l'>To identify an instance of an algorithm. </td></tr>
+
+</table>
+<h4>Optional TLVs</h4>
+None
+<h3><a name="SNS_SAM_GYRO_TAP_DISABLE_RESP"></a><a href='#Messages'>SNS_SAM_GYRO_TAP_DISABLE_RESP</a></h3>
+<h4>Message Type</h4>Response 
+<h4>Sender</h4>Service 
+
+<h4>Mandatory TLVs</h4>
+<table class = 'tlv'><tr class='head'><th>Field</th><th>Field Value</th><th>Parameter</th><th>Size (bytes)</th><th>Description</th></tr>
+<tr class='row_0'><td class='l'>Type</td><td>2</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>2</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>sns_result_t</td><td>1</td><td class='l'>0 == SUCCESS; 1 == FAILURE <br> A result of FAILURE indicates that that any data contained in the response<br> should not be used (other than sns_err_t, to determine the type of error </td></tr>
+<tr class='row_0'><td class='l'></td><td></td><td class='l'>sns_err_t</td><td>1</td><td class='l'>See sensor1_error_e in sensor1.h </td></tr>
+
+</table>
+<h4>Optional TLVs</h4>
+<table class = 'tlv'><tr class='head'><th>Field</th><th>Field Value</th><th>Parameter</th><th>Size (bytes)</th><th>Description</th></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x10</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>1</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>instance_id</td><td>1</td><td class='l'></td></tr>
+
+</table>
+<h4>Description of SNS_SAM_GYRO_TAP_DISABLE REQ/RESP</h4>
+
+<br><br>
+<table class='sep'><tr><td></td></tr></table>
+<h2><a name='SNS_SAM_GYRO_TAP_REPORT_IND'></a><a href='#Messages'>SNS_SAM_GYRO_TAP_REPORT_IND</a></h2>
+Output report from a sensor algorithm.
+<h4>Message ID</h4>
+0x0000
+<h3><a name="SNS_SAM_GYRO_TAP_REPORT_IND"></a><a href='#Messages'>SNS_SAM_GYRO_TAP_REPORT_IND</a></h3>
+<h4>Message Type</h4>Indication 
+<h4>Sender</h4>Service 
+
+<h4>Mandatory TLVs</h4>
+<table class = 'tlv'><tr class='head'><th>Field</th><th>Field Value</th><th>Parameter</th><th>Size (bytes)</th><th>Description</th></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x01</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>1</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>instance_id</td><td>1</td><td class='l'>time stamp of input which caused this indication; in ticks </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x02</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>timestamp</td><td>4</td><td class='l'>TAP direction </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x03</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>4</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>tap_event</td><td>4</td><td class='l'></td></tr>
+
+</table>
+<h4>Optional TLVs</h4>
+None
+<h4>Description of SNS_SAM_GYRO_TAP_REPORT_IND</h4>
+
+<br><br>
+<table class='sep'><tr><td></td></tr></table>
+<h2><a name='SNS_SAM_GYRO_TAP_ERROR'></a><a href='#Messages'>SNS_SAM_GYRO_TAP_ERROR</a></h2>
+Asynchronous error report from a sensor algorithm.
+<h4>Message ID</h4>
+0x0005
+<h3><a name="SNS_SAM_GYRO_TAP_ERROR_IND"></a><a href='#Messages'>SNS_SAM_GYRO_TAP_ERROR_IND</a></h3>
+<h4>Message Type</h4>Indication 
+<h4>Sender</h4>Service 
+
+<h4>Mandatory TLVs</h4>
+<table class = 'tlv'><tr class='head'><th>Field</th><th>Field Value</th><th>Parameter</th><th>Size (bytes)</th><th>Description</th></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x01</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>1</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>error</td><td>1</td><td class='l'>sensors error code </td></tr>
+<tr class='row_0'><td class='l'>Type</td><td>0x02</td><td class='l'></td><td>1</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Length</td><td>1</td><td class='l'></td><td>2</td><td class='l'></td></tr>
+<tr class='row_0'><td class='l'>Value</td><td>&rarr;</td><td class='l'>instance_id</td><td>1</td><td class='l'></td></tr>
+
+</table>
+<h4>Optional TLVs</h4>
+None
+<h4>Description of SNS_SAM_GYRO_TAP_ERROR</h4>
+
+<br><br>
+<table class='sep'><tr><td></td></tr></table>
+\appendix
+\chapter{Additional Information}
+\section{@FOOTER}
+

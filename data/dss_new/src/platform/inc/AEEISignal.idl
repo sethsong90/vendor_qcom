@@ -1,0 +1,47 @@
+#ifndef AEEISIGNAL_IDL
+#define AEEISIGNAL_IDL 
+//============================================================================
+                                                          //qidl copyright
+//% Copyright (c) 2006, 2007 Qualcomm Technologies, Inc.
+                                                          //qidl nested=false
+//% All Rights Reserved.
+//% Qualcomm Technologies Confidential and Proprietary
+//============================================================================
+
+#include "AEEIQI.idl"
+#include "AEEStdDef.idl"
+
+const AEEIID AEEIID_ISignal = 0x010285f5;
+
+/**
+ * ISignal provides asynchronous notification functionality.  These
+ * notifications are triggered via Set().  Notifications are received only
+ * when the signal is enabled.  The recipient of the signal notifications can
+ * control the signal using the ISignalCtl interface.  When a notification is
+ * retrieved, the corresponding signal is automatically disabled.
+ *
+ * When a signal created via ISignalQ is set, a calling thread waiting on
+ * ISignalQ::Pop() will be unblocked and will receive the associated signal
+ * data.
+ *
+ * When a signal created via ISignalFactory is set, it will trigger the
+ * invocation of the associated signal handler via ISignalHandler::Notify().
+ *
+ * Signals are typically stored in ISignalBus, which does not hold a strong
+ * reference to the signal.  It is up to the creator of the signal to hold on
+ * to the ISignalCtl interface.  This will make sure that the signal instance
+ * is valid.
+ *
+ */
+interface ISignal : IQI
+{
+   /**
+    * Marks a signal as "ready", queueing it on its assigned signal queue or
+    * invoking its associated signal handler.
+    *
+    * If the signal has been detached, this call has no effect.
+    */
+   AEEResult Set();
+};
+
+#endif /* #ifndef AEEISIGNAL_IDL */

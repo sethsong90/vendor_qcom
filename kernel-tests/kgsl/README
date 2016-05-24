@@ -1,0 +1,38 @@
+Test: kgsl_test
+Usage: kgsl_test [OPTIONS] [TEST_TYPE]...
+Runs the tests specified by the TEST_TYPE parameters.
+If no TEST_TYPE is specified, then the nominal test is run.
+
+OPTIONS can be:
+  -v, --verbose         run with debug messages on
+
+TEST_TYPE can be:
+  -n, --nominal         run standard functionality tests
+  -a, --adversarial     run tests that try to break the driver
+  -s, --stress          run tests that try to maximize the capacity of the driver
+  -r, --repeat          runs 10 iterations of the nominal, adversarial and stress tests
+ --dev <dev_path>       Supply the path to the device (e.g. /dev/kgsl-3d0 by default)
+  -h, --help            print this help message and exit
+
+TEST BEHAVIOR:
+
+The KGSL test exercises the KGSL driver by directly calling IOCTLS and mmap.
+Features Tested:
+*IOCTL_KGSL_DEVICE_GETPROPERTY
+*IOCTL_KGSL_DEVICE_WAITTIMESTAMP
+*IOCTL_KGSL_RINGBUFFER_ISSUEIBCMDS
+*IOCTL_KGSL_CMDSTREAM_READTIMESTAMP
+*IOCTL_KGSL_CMDSTREAM_FREEMEMONTIMESTAMP
+*IOCTL_KGSL_DRAWCTXT_CREATE
+*IOCTL_KGSL_DRAWCTXT_DELETE
+*IOCTL_KGSL_MAP_USER_MEM
+*IOCTL_KGSL_SHAREDMEM_FREE
+*IOCTL_KGSL_GPUMEM_ALLOC
+*IOCTL_KGSL_DRAWCTXT_SET_BIN_BASE_OFFSET
+*MMAP
+*CTXT SWITCHING
+
+Target: Runs on 8660 FFA & surfs, should work on devices using adreno200 and above.
+More info at http://qwiki.qualcomm.com/qct-linux/Graphics/kgsl-test
+
+Configure for autotools: ./configure --host=arm-none-linux-gnueabi --with-kernel=`readlink -f ../../../../out/target/product/msm8660_surf/obj/KERNEL_OBJ/` --with-sanitized-headers=`readlink  -m ../../../../out/target/product/msm8660_surf/obj/KERNEL_OBJ/usr/include/` --disable-fbtest --disable-msm_bus --disable-rotator --disable-sps

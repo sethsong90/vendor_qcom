@@ -1,0 +1,20 @@
+
+/* Build this component into a library */
+#include <lib.qbd>
+
+$(DEFS) += -D"AEEINTERFACE_CPLUSPLUS";
+
+sourcepath
+{
+  -src/dss_iface_ioctl.c;
+  -src/dssifcbacks.c;
+  -src/dssinternal.c;
+  -src/dssocket.c;
+  -src/dssocki.c;
+  -src/dssicmp.c;
+  -src/dsstcp.c;
+  -src/dssudp.c;
+  -src/dss_ps.c;
+  -src/ps_sock_mem_pool.c;
+};
+

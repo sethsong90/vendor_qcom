@@ -1,0 +1,44 @@
+#ifndef AEEISIGNALCTL_IDL
+#define AEEISIGNALCTL_IDL 
+//============================================================================
+                                                           //qidl copyright
+//% Copyright (c) 2006, 2007 Qualcomm Technologies, Inc.
+                                                           //qidl nested=false
+//% All Rights Reserved.
+//% Qualcomm Technologies Confidential and Proprietary
+//============================================================================
+
+#include "AEEISignal.idl"
+
+const AEEIID AEEIID_ISignalCtl = 0x01041079;
+
+/**
+ * ISignalCtl is the controlling interface of a signal object.
+ * The owner of the signal should hold on to the ISignalCtl facet
+ * to keep the signal valid.  Consumers of signals typically store signals
+ * in an ISignalBus, which does not hold a strong reference to ISignal.
+ * 
+ * The owner of the signal cannot assume that the consumer is using ISignalBus,
+ * and should call ISignalCtl_Detach when they no longer want to process any
+ * signals.
+ *
+ * @see ISignal ISignalBus
+ */
+interface ISignalCtl : ISignal
+{
+   /**
+    * Detaches the signal object from the SignalHandler or SignalQ it is
+    * associated with.
+    */
+   AEEResult Detach();
+
+   /**
+    * Enables the signal, allowing it to be set.  An ISignalBus is enabled
+    * when any ISignal on the bus is enabled.
+    *
+    * @see ISignalBus
+    */
+   AEEResult Enable();
+};
+
+#endif /* #ifndef AEEISIGNALCTL_IDL */

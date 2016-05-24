@@ -1,0 +1,98 @@
+#ifndef DS_NET_IQOS_IDL
+#define DS_NET_IQOS_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl" 
+
+#include "ds_Net_IEventManager.idl"
+#include "ds_Net_QoS_Def.idl"
+#include "ds_Net_IPhysLink.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IQoS = 0x0106d74f;
+      /**
+       * ds Net QoS interface.
+       * Events that can be registered on this interface via OnStateChange (as part of IEventManager interface): 
+       * - ds::Net::QoSEvent::MODIFY_RESULT. Use GetModifyResult to fetch the result information.
+       * - ds::Net::QoSEvent::INFO_CODE_UPDATED. Use GetUpdatedInfoCode to fetch the information.
+       */
+      interface IQoS : IEventManager
+      {
+         /**
+          * This function returns the current Rx and Tx flow specification.
+          * @param rxFlow the current Rx flow specification.
+          *               See ds_Net_QoSFlow.json schema.
+          * @param txFlow the current Tx flow specification.
+          *               See ds_Net_QoSFlow.json schema.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval ds::EBADOPTS Bad options.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetGrantedFlowSpec(rout string rxFlow, rout string txFlow);
+
+         /**
+          * This attribute provides the Tx physical link object.
+          */
+         readonly attribute IPhysLink TXPhysLink;
+
+         /**
+          * This attribute provides the Rx physical link object.          
+          */
+         readonly attribute IPhysLink RXPhysLink;
+
+         /**
+          * This attribute can be used to fetch the result of last 
+          * IQoSSecondary::Modify or IQoSDefault::Modify operation when a
+          * ds::Net::QoS::Event::MODIFY_RESULT
+          * event is received.          
+          * @See ds::Net::QoS::ResultType.
+          */         
+         readonly attribute QoSResultType ModifyResult;
+
+         /**    
+          * This attribute can be used to fetch updated infoCode information
+          * for the QoS flow when a ds::Net::QoS::Event::INFO_CODE_UPDATED
+          * event is received.
+          * @See ds::Net::QoS::InfoCodeType.
+          */         
+         readonly attribute QoSInfoCodeType UpdatedInfoCode;
+
+         /**
+          * This attribute represents the TX queue level.
+          */
+         readonly attribute QoSTXQueueLevelType TXQueueLevel;
+
+         /**
+          * This function allows object extensibility.
+          * For supported interfaces, objects implementing those interfaces may be 
+          * fetched via this function. The supported interfaces are documented in
+          * the DS_NET_NetworkFactory.bid file. GetTechObject-supported interface
+          * does not imply any similar contract in regard to QueryInterface for the
+          * respective interface.
+          * Unlike IQI, the availability of a specific interface depends on some 
+          * factors, e.g. current network type. Moreover, there is no guaranty 
+          * for transitivity or symmetry. 
+          * Note: 'interface' parameter will map to iid and techObj.
+          * @param iid The interface that should be retrieved.
+          * @param techObj On success, will contain the requested interface instance.
+          * @retval ds::SUCCESS Interface retrieved successfully.
+          * @retval AEE_ECLASSNOTSUPPORT Specified interface unsupported.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetTechObject(rout interface techObj);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IQOS_IDL */

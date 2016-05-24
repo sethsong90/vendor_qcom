@@ -1,0 +1,31 @@
+#ifndef AEESIGNALBUS_BID
+#define AEESIGNALBUS_BID
+/*=============================================================================
+
+   Please use AEECSignalBus.idl or AEECSignalBus.h instead.
+   This file is deprecated.
+
+        Copyright (c) 2010 Qualcomm Technologies, Inc.
+               All Rights Reserved
+        Qualcomm Technologies Confidential and Proprietary
+===============================================================================*/
+
+#include "AEECSignalBus.h"
+#define AEECLSID_SignalBus AEECLSID_CSignalBus
+
+
+/*=============================================================================
+   CLASS DOCUMENTATION
+===============================================================================
+
+AEECLSID_SignalBus
+
+Description:
+  This class is deprecated, please use AEECLSID_CSignalBus instead.
+
+See Also:
+  AEECLSID_CSignalBus
+
+=============================================================================*/
+
+#endif // AEESIGNALBUS_BID

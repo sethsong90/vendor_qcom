@@ -1,0 +1,49 @@
+#ifndef DS_NET_IMBMSSPECPRIV_IDL
+#define DS_NET_IMBMSSPECPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+
+module ds
+{
+   module Net
+   {
+      typedef long MBMSServiceType;
+      module MBMSService
+      {
+         const MBMSServiceType QDS_STREAMING = 1;
+         const MBMSServiceType QDS_DOWNLOAD  = 2;
+      };
+
+      typedef long MBMSServiceMethodType;
+      module MBMSServiceMethod
+      {
+         const MBMSServiceMethodType QDS_BROADCAST = 1;
+         const MBMSServiceMethodType QDS_MULTICAST = 2;
+      };
+
+      const AEEIID AEEIID_IMBMSSpecPriv = 0x0106cf97;
+      /**
+       * MBMS Spec Info interface.
+       */
+      interface IMBMSSpecPriv : IQI
+      {
+         attribute uint64                    TMGI;
+         attribute uint64                    SessionStartTime;
+         attribute uint64                    SessionEndTime;
+         attribute unsigned short            Priority;
+         attribute MBMSServiceType           Service;
+         attribute MBMSServiceMethodType     ServiceMethod;
+         attribute boolean                   SelectedService;
+         attribute boolean                   ServiceSecurity;
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IMBMSSPECPRIV_IDL */

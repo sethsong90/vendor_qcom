@@ -1,0 +1,133 @@
+Copyright (c) 2008 Qualcomm Technologies, Inc. All Rights Reserved. Qualcomm Technologies Proprietary and Confidential.
+
+PING_MDM_CLNT_TEST_0000
+
+ping_mdm_clnt_test_0000 <test_duration_ms(2000)> <data_size_words(1000)>
+
+Description:
+This test runs for <test_duration_ms> sending RPC calls to the modem containing <data_size_words> 
+of data. This test verifies that the router and oncrpc infrastructure can handle back-to-back
+rpc calls and rpc calls with data.  The packet size is typically 512 bytes, including headers.
+Data size words of more than 113 will test packet fragmentation.
+
+Sample output:
+PING TEST 0000 STARTED...
+Test parameters
+   Duration     :   2000 ms
+   Data Size    :    220 words
+
+
+
+
+PING TEST STARTED...
+Timer callback called
+Test Passed, completed after 2000 ms
+Performance:
+Test Duration          :2000 ms
+Num RPC Calls completed:295
+Num fwd bytes per call :880
+Num ret bytes per call :4
+Num bytes transferred  :260780
+RPC Call Duration      :6.780 ms
+Data Transfer Rate     :130.390 kbytes/sec
+PING TEST COMPLETE...
+PASS
+
+___________________________________________________________________________________
+PING_MDM_CLNT_TEST_0001
+
+pign_mdm_clnt_test_0001 <test_duration_ms(2000)> <num_itterations>
+
+Description:
+This is a performance test, it sends packets to the modem of increasing size, for each size it runs for
+either <num_iterations> or <test_duration_ms>.  If you want to use the number of iterations, set 
+test_duration_ms.
+example ping_mdm_clnt_test_0001  0 100 will run 100 loops for each packet size.
+
+Sample output:
+FORWARD MODEM PING TEST STARTED...
+Test(ms) #Calls  CallTime(ms) FwdBytes   RetBytes  TotKBytes     DataRate(kbps)
+  457      100      4.576          4        4           0          1.748
+  414      100      4.150          8        4           1          2.892
+  415      100      4.153         16        4           2          4.816
+  418      100      4.185         32        4           3          8.602
+  422      100      4.227         64        4           6         16.087
+  425      100      4.257        128        4          13         31.010
+  428      100      4.281        256        4          26         60.728
+  665      100      6.653        512        4          51         77.556
+  913      100      9.137       1024        4         102        112.512
+ 1403      100     14.039       2048        4         205        146.168
+ 2400      100     24.001       4096        4         410        170.825
+ 4433      100     44.330       8192        4         819        184.884
+ 8622      100     86.228      16384        4        1638        190.055
+PING TEST COMPLETE...
+PASS
+
+
+___________________________________________________________________________________
+PING_MDM_CLNT_TEST_1000
+
+ping_mdm_clnt_test_1000 <test_duration_ms(1000)> <data_size_words(64)>
+
+Description:
+This is a test similar to 0000 but for callbacks.
+This test runs for <test_duration_ms> sending a request to the modem to receive callbacks of
+<data_size_words> of data. This test verifies that the router and oncrpc infrastructure can handle 
+a flood of callbacks with data.  The packet size is typically 512 bytes, including headers.
+Data size words of more than 113 will test packet fragmentation.
+
+Sample output:
+PING TEST STARTED...
+Test parameters
+   Duration     :   2000 ms
+   Data Size    :     64 words
+   Interval     :   1000 ms
+   Fail timeout :   2000 ms
+
+Auto-Register with server
+Waiting for ping...
+Timer Test Time Expired Callback
+
+Sleeping before exit to allow server to process de-registration
+PING TEST COMPLETE...
+Test Duration          :2000 ms
+Num RPC Calls completed:2
+Num fwd bytes per call :256
+Num ret bytes per call :4
+Num bytes transferred  :520
+RPC Call Duration      :1000.000 ms
+Data Transfer Rate     :0.260 kbytes/sec
+PASS
+
+___________________________________________________________________________________
+PING_MDM_CLNT_TEST_1001
+
+ping_mdm_clnt_test_1001 <test_duration_ms(1000)>
+
+Description:
+This is a performance test for callbacks, it runs for increasing packet size, for each 
+size it request continuous callbacks from the modem for <test_duration_ms>. 
+
+Sample output:
+
+
+
+PING MDM CALLBACK TEST STARTED...
+Test(ms) #Calls  CallTime(ms) FwdBytes   RetBytes  TotKBytes     DataRate(kbps)
+ 2000      478      4.184          4        4           3          1.912
+ 2000      473      4.228          8        4           5          2.838
+ 2000      473      4.228         16        4           9          4.730
+ 2000      466      4.292         32        4          16          8.388
+ 2000      469      4.264         64        4          31         15.946
+ 2000      470      4.255        128        4          62         31.020
+ 2000      464      4.310        256        4         120         60.320
+ 2000      446      4.484        512        4         230        115.068
+ 2000      414      4.831       1024        4         425        212.796
+ 2000      346      5.780       2048        4         709        354.996
+ 2000      275      7.273       4096        4        1127        563.750
+ 2000      155     12.903       8192        4        1270        635.190
+ 2000       87     22.989      16384        4        1425        712.878
+Sleeping before exit to allow server to process de-registration
+
+PING TEST COMPLETE...
+PASS

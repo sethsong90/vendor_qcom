@@ -1,0 +1,209 @@
+/*===========================================================================
+
+
+                       Q M I   M O D E   H A N D L E R
+
+            S T A T E   M A C H I N E  S P E C I F I C A T I O N 
+                       
+GENERAL DESCRIPTION
+  This file contains the state machine framework specificaiton for the
+  QMI Proxy IFACE.
+
+Copyright (c) 2008 - 2010 by Qualcomm Technologies, Inc.  All Rights Reserved.
+===========================================================================*/
+
+/*===========================================================================
+
+  $Header:$
+
+when        who    what, where, why
+--------    ---    ----------------------------------------------------------
+10/04/10    sy     Added support for PROXY_IFACE_MODEM_QOS_IND and
+                   PROXY_IFACE_MODEM_EVENT_IND
+06/01/10    hm     Add disabled state to support Fusion target.
+05/06/08    ar     Created module/initial version.
+
+===========================================================================*/
+
+STATE_MACHINE DSQMH_SM
+{
+  INPUT_DEF_FILE  ds_qmhi.h;
+  ENTRY           dsqmhsm_sm_entry;
+  EXIT            dsqmhsm_sm_exit;
+  INSTANCES       5;
+  INITIAL_STATE   DSPROXY_IFACE_STATE_DISABLED;
+  DEBUG_HOOK      dsqmhsm_debug_hook;
+  ERROR_HOOK      dsqmhsm_error_hook;
+
+  STATE DSPROXY_IFACE_STATE_DISABLED
+  {
+    ENTRY       dsqmhsm_state_disabled_entry;
+    EXIT        dsqmhsm_state_disabled_exit;
+
+    INPUTS
+    {
+      PROXY_IFACE_MODEM_INIT_IND     dsqmhsm_modem_init_ind_hdlr;
+    }
+  }
+
+  STATE DSPROXY_IFACE_STATE_DOWN
+  {
+    ENTRY       dsqmhsm_state_down_entry;
+    EXIT        dsqmhsm_state_down_exit;
+
+    INPUTS
+    {
+      PROXY_IFACE_BRING_UP_CMD       dsqmhsm_iface_bringup_hdlr;
+      PROXY_IFACE_TEARDOWN_CMD       dsqmhsm_iface_teardown_hdlr;
+      PROXY_IFACE_MODEM_QOS_IND      dsqmhsm_modem_qos_ind_hdlr;
+      PROXY_IFACE_MODEM_EVENT_IND    dsqmhsm_modem_event_ind_hdlr;
+    }
+  }
+
+  STATE DSPROXY_IFACE_STATE_COMING_UP
+  {
+    ENTRY       dsqmhsm_state_comingup_entry;
+    EXIT        dsqmhsm_state_comingup_exit;
+
+    INPUTS
+    {
+      PROXY_PHYS_LINK_UP_CMD         dsqmhsm_physlink_bringup_hdlr;
+      PROXY_PHYS_LINK_DOWN_CMD       dsqmhsm_physlink_teardown_hdlr;
+      PROXY_IFACE_TEARDOWN_CMD       dsqmhsm_iface_teardown_hdlr;
+
+      PROXY_IFACE_MODEM_UP_IND       dsqmhsm_modem_up_ind_hdlr;
+      PROXY_IFACE_MODEM_DOWN_IND     dsqmhsm_modem_down_ind_hdlr;
+      PROXY_IFACE_MODEM_QOS_IND      dsqmhsm_modem_qos_ind_hdlr;
+      PROXY_IFACE_MODEM_EVENT_IND    dsqmhsm_modem_event_ind_hdlr;
+    }
+  }
+
+  STATE DSPROXY_IFACE_STATE_PLAT_COMING_UP
+  {
+    ENTRY       dsqmhsm_state_platform_comingup_entry;
+    EXIT        dsqmhsm_state_platform_comingup_exit;
+
+    INPUTS
+    {
+      PROXY_IFACE_TEARDOWN_CMD       dsqmhsm_iface_teardown_hdlr;
+      PROXY_PHYS_LINK_DOWN_CMD       dsqmhsm_physlink_teardown_hdlr;
+
+      PROXY_IFACE_MODEM_DOWN_IND     dsqmhsm_modem_down_ind_hdlr;
+      PROXY_IFACE_PLATFORM_UP_IND    dsqmhsm_platform_up_ind_hdlr;
+      PROXY_IFACE_PLATFORM_DOWN_IND  dsqmhsm_platform_down_ind_hdlr;
+      PROXY_IFACE_MODEM_QOS_IND      dsqmhsm_modem_qos_ind_hdlr;
+      PROXY_IFACE_MODEM_EVENT_IND    dsqmhsm_modem_event_ind_hdlr;
+    }
+  }
+
+  STATE DSPROXY_IFACE_STATE_CONFIGURING
+  {
+    ENTRY       dsqmhsm_state_configuring_entry;
+    EXIT        dsqmhsm_state_configuring_exit;
+
+    INPUTS
+    {
+      PROXY_IFACE_TEARDOWN_CMD       dsqmhsm_iface_teardown_hdlr;
+      PROXY_PHYS_LINK_DOWN_CMD       dsqmhsm_physlink_teardown_hdlr;
+
+      PROXY_IFACE_MODEM_DOWN_IND     dsqmhsm_modem_down_ind_hdlr;
+      PROXY_IFACE_CONFIGURED_IND     dsqmhsm_configured_ind_hdlr;
+      PROXY_IFACE_PLATFORM_DOWN_IND  dsqmhsm_platform_down_ind_hdlr;
+      PROXY_IFACE_MODEM_QOS_IND      dsqmhsm_modem_qos_ind_hdlr;
+      PROXY_IFACE_MODEM_EVENT_IND    dsqmhsm_modem_event_ind_hdlr;
+    }
+  }
+
+  STATE DSPROXY_IFACE_STATE_RECONFIGURING
+  {
+    ENTRY       dsqmhsm_state_reconfiguring_entry;
+    EXIT        dsqmhsm_state_reconfiguring_exit;
+
+    INPUTS
+    {
+      PROXY_IFACE_TEARDOWN_CMD       dsqmhsm_iface_teardown_hdlr;
+      PROXY_PHYS_LINK_DOWN_CMD       dsqmhsm_physlink_teardown_hdlr;
+
+      PROXY_IFACE_MODEM_DOWN_IND     dsqmhsm_modem_down_ind_hdlr;
+      PROXY_IFACE_CONFIGURED_IND     dsqmhsm_configured_ind_hdlr;
+      PROXY_IFACE_PLATFORM_DOWN_IND  dsqmhsm_platform_down_ind_hdlr;
+
+      PROXY_IFACE_MODEM_QOS_IND      dsqmhsm_modem_qos_ind_hdlr;
+      PROXY_IFACE_MODEM_EVENT_IND    dsqmhsm_modem_event_ind_hdlr;
+      PROXY_IFACE_MODEM_INTERNAL_IND dsqmhsm_modem_internal_ind_hdlr;
+      PROXY_IFACE_MODEM_MCAST_IND    dsqmhsm_modem_mcast_ind_hdlr;
+      PROXY_IFACE_MODEM_BCMCS_IND    dsqmhsm_modem_bcmcs_ind_hdlr;
+      PROXY_IFACE_MODEM_MTREQ_IND    dsqmhsm_modem_mtreq_ind_hdlr;
+      PROXY_IFACE_PLATFORM_QOS_IND   dsqmhsm_platform_qos_ind_hdlr;
+    }
+  }
+
+  STATE DSPROXY_IFACE_STATE_UP
+  {
+    ENTRY       dsqmhsm_state_up_entry;
+    EXIT        dsqmhsm_state_up_exit;
+
+    INPUTS
+    {
+      PROXY_IFACE_TEARDOWN_CMD       dsqmhsm_iface_teardown_hdlr;
+      PROXY_PHYS_LINK_UP_CMD         dsqmhsm_physlink_bringup_hdlr;
+      PROXY_PHYS_LINK_DOWN_CMD       dsqmhsm_physlink_teardown_hdlr;
+
+      PROXY_IFACE_MODEM_UP_IND       dsqmhsm_modem_up_ind_hdlr;
+      PROXY_IFACE_MODEM_DOWN_IND     dsqmhsm_modem_down_ind_hdlr;
+      PROXY_IFACE_CONFIGURED_IND     dsqmhsm_configured_ind_hdlr;
+      PROXY_IFACE_PLATFORM_DOWN_IND  dsqmhsm_platform_down_ind_hdlr;
+
+      PROXY_IFACE_MODEM_QOS_IND      dsqmhsm_modem_qos_ind_hdlr;
+      PROXY_IFACE_MODEM_EVENT_IND    dsqmhsm_modem_event_ind_hdlr;
+      PROXY_IFACE_MODEM_INTERNAL_IND dsqmhsm_modem_internal_ind_hdlr;
+      PROXY_IFACE_MODEM_MCAST_IND    dsqmhsm_modem_mcast_ind_hdlr;
+      PROXY_IFACE_MODEM_BCMCS_IND    dsqmhsm_modem_bcmcs_ind_hdlr;
+      PROXY_IFACE_MODEM_MTREQ_IND    dsqmhsm_modem_mtreq_ind_hdlr;
+      PROXY_IFACE_PLATFORM_QOS_IND   dsqmhsm_platform_qos_ind_hdlr;
+    }
+  }
+
+  STATE DSPROXY_IFACE_STATE_PLAT_GOING_DOWN
+  {
+    ENTRY       dsqmhsm_state_platform_goingdown_entry;
+    EXIT        dsqmhsm_state_platform_goingdown_exit;
+
+    INPUTS
+    {
+      PROXY_IFACE_MODEM_DOWN_IND     dsqmhsm_modem_down_ind_hdlr;
+      PROXY_IFACE_PLATFORM_DOWN_IND  dsqmhsm_platform_down_ind_hdlr;
+
+      PROXY_IFACE_MODEM_QOS_IND      dsqmhsm_modem_qos_ind_hdlr;
+      PROXY_IFACE_MODEM_EVENT_IND    dsqmhsm_modem_event_ind_hdlr;
+      PROXY_IFACE_MODEM_INTERNAL_IND dsqmhsm_modem_internal_ind_hdlr;
+      PROXY_IFACE_MODEM_MCAST_IND    dsqmhsm_modem_mcast_ind_hdlr;
+      PROXY_IFACE_MODEM_BCMCS_IND    dsqmhsm_modem_bcmcs_ind_hdlr;
+      PROXY_IFACE_MODEM_MTREQ_IND    dsqmhsm_modem_mtreq_ind_hdlr;
+      PROXY_IFACE_PLATFORM_QOS_IND   dsqmhsm_platform_qos_ind_hdlr;
+    }
+  }
+
+  STATE DSPROXY_IFACE_STATE_GOING_DOWN
+  {
+    ENTRY       dsqmhsm_state_goingdown_entry;
+    EXIT        dsqmhsm_state_goingdown_exit;
+
+    INPUTS
+    {
+      PROXY_PHYS_LINK_DOWN_CMD       dsqmhsm_physlink_teardown_hdlr;
+
+      PROXY_IFACE_MODEM_DOWN_IND     dsqmhsm_modem_down_ind_hdlr;
+      PROXY_IFACE_PLATFORM_DOWN_IND  dsqmhsm_platform_down_ind_hdlr;
+
+      PROXY_IFACE_MODEM_QOS_IND      dsqmhsm_modem_qos_ind_hdlr;
+      PROXY_IFACE_MODEM_EVENT_IND    dsqmhsm_modem_event_ind_hdlr;
+      PROXY_IFACE_MODEM_INTERNAL_IND dsqmhsm_modem_internal_ind_hdlr;
+      PROXY_IFACE_MODEM_MCAST_IND    dsqmhsm_modem_mcast_ind_hdlr;
+      PROXY_IFACE_MODEM_BCMCS_IND    dsqmhsm_modem_bcmcs_ind_hdlr;
+      PROXY_IFACE_MODEM_MTREQ_IND    dsqmhsm_modem_mtreq_ind_hdlr;
+      PROXY_IFACE_PLATFORM_QOS_IND   dsqmhsm_platform_qos_ind_hdlr;
+    }
+  }
+
+}

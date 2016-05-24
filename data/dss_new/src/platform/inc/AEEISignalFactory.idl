@@ -1,0 +1,49 @@
+#ifndef AEEISIGNALFACTORY_IDL
+#define AEEISIGNALFACTORY_IDL 
+//============================================================================
+                                                          //qidl copyright
+//% Copyright (c) 2006-2008 Qualcomm Technologies, Inc.
+                                                          //qidl nested=false
+//% All Rights Reserved.
+//% Qualcomm Technologies Confidential and Proprietary
+//============================================================================
+
+#include "AEEIQI.idl"
+#include "AEEISignal.idl"
+#include "AEEISignalCtl.idl"
+#include "AEEISignalHandler.idl"
+
+const AEEIID AEEIID_ISignalFactory = 0x01041077;
+
+/**
+ * ISignalFactory allows creation of signal objecs. These signals provide
+ * asynchronous notification of events to the client via its provided
+ * ISignalHandler interface.
+ *
+ */
+interface ISignalFactory : IQI
+{
+   /**
+    * Create a signal object that invokes a handler object when set.  The new
+    * signal will hold a reference to the handler object and will release it
+    * after the signal is deleted (asynchronously, not synchronously with the
+    * last Release of the signal).
+    *
+    * @param handler The handler interface of the client to call
+    *                ISignalHandler::Notify() on when the signal is set.
+    * @param uArgA The first parameter passed to ISignalHandler::Notify().
+    * @param uArgB The second parameter passed to ISignalHandler::Notify().
+    * @param signal Optional. The created signal object's ISignal interface.
+    * @param signalCtl Optional. The created signal object's ISignalCtl
+    *                            interface.
+    *
+    * @see ISignalHandler, ISignal, ISignalCtl
+    */
+   AEEResult CreateSignal(in ISignalHandler handler,
+                          in uint32 uArgA,
+                          in uint32 uArgB,
+                          rout ISignal signal,
+                          rout ISignalCtl signalCtl);
+};
+
+#endif /* #ifndef AEEISIGNALFACTORY_IDL */

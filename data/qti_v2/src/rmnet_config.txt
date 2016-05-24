@@ -1,0 +1,9 @@
+<config>
+<autoconnect>disabled</autoconnect>
+<link_prot>ETH</link_prot>
+<ul_tlp>disabled</ul_tlp>
+<dl_data_agg_protocol>disabled</dl_data_agg_protocol>
+</config>
+
+
+

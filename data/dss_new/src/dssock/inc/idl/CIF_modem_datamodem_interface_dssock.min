@@ -1,0 +1,35 @@
+#-------------------------------------------------------------------------------
+#  DSSOCK IDL and Remoting build rules
+# $Header: //source/qcom/qct/modem/datamodem/interface/dssock/rel/11.03/inc/idl/CIF_modem_datamodem_interface_dssock.min#1 $
+# $Author: zhasan $
+# $DateTime: 2011/06/17 12:02:33 $
+#-------------------------------------------------------------------------------
+
+ifeq ($(USES_DATAMODEM_INTERFACE_QCMAPI_PUBLIC),yes)
+$(BUILD)_IDLS += \
+   ds_Sock_CSocketFactory \
+   ds_Sock_IAncDataPriv \
+   ds_Sock_IICMPErrInfoPriv \
+   ds_Sock_IRecvIFInfoPriv \
+   ds_Sock_ISocket \
+   ds_Sock_ISocketExt \
+   ds_Sock_ISocketFactory \
+   ds_Sock_ISocketLocalPriv \
+   ds_Sock_ISocketPriv \
+   ds_Sock_Privileges_Def \
+
+vpath %.idl $(MODEM_DATAMODEM_INTERFACE)/dssock/inc/idl
+
+# Some IDLs in DSSock include DSNet IDLs without a path, so we have to provide it
+QIDLFLAGS += -I$(MODEM_DATAMODEM_INTERFACE)/dsnet/inc/idl
+endif
+
+$(TARGETDIR)/datamodem_interface_dssock.clif: $(MODEM_DATAMODEM_INTERFACE)/dssock/inc/idl/datacommon_dssock.cif
+	$(CIFC) -I$(APIONE_DIR)/inc -I$(APIONE_DIR)/inc/OEM -I$(TARGETDIR) -I$(MODEM_DATAMODEM_INTERFACE) -I$(MODEM_DATAMODEM_INTERFACE)/dssock/inc -I$(MODEM_DATAMODEM_INTERFACE)/dsnet/inc -I$(MODEM_DATAMODEM_INTERFACE)/utils/inc -I$(UTILS) -I$(CUST) -I$(DIAG) -pre $@ $<
+  
+# BMP 1.0.2 - CS 1.5.0.28 onwards, BMP 1.0.3 - CS 1.5.2.11 onwards; otherwise,
+# use the CIFS rule below
+
+$(BUILD)_STATICMODCIFS += $(addprefix $(TARGETDIR)/,datamodem_interface_dssock.clif)
+
+# $(BUILD)_CIFS += $(addprefix $(TARGETDIR)/,datacommon_dssock.clif)

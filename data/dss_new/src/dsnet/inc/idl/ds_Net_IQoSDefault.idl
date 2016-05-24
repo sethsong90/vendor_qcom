@@ -1,0 +1,61 @@
+#ifndef DS_NET_IQOSDEFAULT_IDL
+#define DS_NET_IQOSDEFAULT_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "ds_Net_IQoS.idl"
+#include "ds_Net_Def.idl"
+#include "ds_Net_QoS_Def.idl"
+
+module ds
+{
+   module Net
+   {
+       module QoSDefaultEvent
+       {
+          const EventType QDS_EV_MODIFIED = 0x0106dee7;
+       };
+
+      const AEEIID AEEIID_IQoSDefault = 0x0106d74d;
+      /**
+       * ds Net QoS Default interface.
+       * Events that can be registered on this interface via OnStateChange (as part of IEventManager interface): 
+       * - ds::Net::QoSDefaultEvent::MODIFIED. Use GetGrantedFlowSpec to fetch the current flow specification.
+       */
+      interface IQoSDefault : IQoS
+      {
+         /**
+          * This function issues a request to modify the default QoS Flow
+          * specification in either Rx direction, Tx direction or both directions.
+          * Note that this is a privileged operation.
+          * @param requestedSpec QoS specification for modifying the default QoS
+          *                      instance (default QoS).
+          *                      See ds_Net_QoSSpec.json schema.
+          *                      Depending on the technology, filters may or may
+          *                      not be applicable to Default QoS. If filters
+          *                      are not applicable, any filters specification
+          *                      in this parameter shall be ignored.
+          * @param mask The modification direction, can be RX_FLOW, TX_FLOW or
+          *             RX_FLOW|TX_FLOW for modification of both directions.
+          * @param errSpec specification of flow options and filter options 
+          *                for which invalid values were specified in
+          *                requestedSpec.
+          *                See ds_Net_QoSSpecErr.json schema.          
+          * @retval ds::SUCCESS Modification request received successfully.
+          * @retval ds::EBADOPTS Bad options.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Modify(in   string            requestedSpec,
+                          in   QoSModifyMaskType mask,
+                          rout string            errSpec);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IQOSDEFAULT_IDL */

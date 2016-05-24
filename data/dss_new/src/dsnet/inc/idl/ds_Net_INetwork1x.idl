@@ -1,0 +1,113 @@
+#ifndef DS_NET_INETWORK1X_IDL
+#define DS_NET_INETWORK1X_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl" 
+#include "AEEIQI.idl"
+
+#include "ds_Net_INetwork.idl"
+
+module ds
+{
+   module Net
+   {
+      // MDR modes
+      typedef long Network1xMDRModeType;
+      module Network1xMDRMode
+      {
+         const Network1xMDRModeType MDR_ONLY  = 0;  /* Use only MDR packet data services     */
+         const Network1xMDRModeType IF_AVAIL  = 1;  /* Use MDR if available, else low-speed  */
+         const Network1xMDRModeType NO_MDR    = 2;  /* Use only low-speed packet data        */
+         const Network1xMDRModeType SO33_PREF = 3;  /* Service Option 33 (1x channel)        */
+      };
+
+      typedef long Network1xPrivHysteresisTimerType;
+
+      // RLP definitions.
+      module Network1xRLP
+      {
+         const long MAX_NAK_ROUNDS = 3;
+      };
+
+      struct Network1xRLPOptionType
+      {
+         octet rscbIndex;
+         octet nakRoundsFwd;
+         octet naksPerRoundFwd[Network1xRLP::MAX_NAK_ROUNDS];
+         octet nakRoundsRev;
+         octet naksPerRoundRev[Network1xRLP::MAX_NAK_ROUNDS];
+      };
+
+      // DoS flags
+      typedef long Network1xDoSFlagsType;
+      module Network1xDoSFlags
+      {
+         const Network1xDoSFlagsType QDS_MSG_EXPEDITE      = 0x00000001;
+         const Network1xDoSFlagsType QDS_MSG_FAST_EXPEDITE = 0x00000002;
+      };
+
+      const AEEIID AEEIID_INetwork1x = 0x0106ce1c;
+      /**
+       * ds Net Network 1x interface.
+       */
+      interface INetwork1x : IQI
+      {
+         /**
+          * This function is used to query if DoS (Data Over Signaling) is
+          * supported. The flags parameter is used to query support for
+          * specific DoS features (same features used in Socket SendTo
+          * operations).
+          * DoS and SDB (Short Data Burst) are parallel terms.
+          * DoS is the term used in 1xEVDO
+          * SDB is the term used in CDMA 1x.
+          * @param flags DoS flags to be used.
+          * @param dosSupported TRUE if DoS is supported.
+          *                     FALSE if DoS is not supported.
+          * @retval AEE_SUCCESS Registration succeeded.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult QueryDoSSupport(in Network1xDoSFlagsType flags,
+                                   rout boolean dosSupported);
+
+         /**
+          * This attribute indicates the medium data rate value.
+          */
+         attribute long                            MDR;
+
+         /**
+          * This attribute indicates the QoS NA priority.
+          */
+         attribute long                            QoSNAPriority;
+
+         /**
+          * This attribute indicates the 1x RLP current NAK policy information.
+          */
+         attribute Network1xRLPOptionType          RLPAllCurrentNAK;
+
+         /**
+          * This attribute indicates the 1x RLP default NAK policy information.
+          */
+         attribute Network1xRLPOptionType          RLPDefCurrentNAK;
+
+         /**
+          * This attribute indicates the 1x RLP negotiated NAK policy information.
+          */
+         readonly attribute Network1xRLPOptionType RLPNegCurrentNAK;
+
+         /**
+          * This attribute indicates the hysteresis act timer.
+          */
+         attribute long HysteresisTimer;
+
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_INETWORK1X_IDL */

@@ -1,0 +1,78 @@
+#ifndef DS_NET_IMCASTMANAGER_IDL
+#define DS_NET_IMCASTMANAGER_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+
+#include "ds_Addr_Def.idl"
+
+#include "ds_Net_IMCastSession.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IMCastManager = 0x0106cf94;
+      /**
+       * ds Net MCast Manager interface.
+       * This interface supports basic MultiCast management operations for
+       * various MCast technologies inclusing MFLO, DVB-H and BCMCS 1.0 
+       */
+      interface IMCastManager : IQI
+      {
+         /**    
+          * This function issues a request for joining a multicast group and
+          * registering to it.
+          * @param addr Multicast group address.
+          * @param mcastSpec A JSON string specifying extra Multicast join
+          *                  information. The extra Multicast join information
+          *                  is supported only for certain MCast technologies.
+          *                  When using this API to join other MCast
+          *                  technologies, mcastSpec can be empty.          
+          *                  Currently extra Join information is not applicable
+          *                  for supported technologies hence no JSON schema
+          *                  is currently specified for this information.
+          * @param session Output The IMCastSession opened for handling the
+          *                       request.
+          * @param errSpec Output specification of errors in mcastSpec.
+          * @see IMCastSession
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Join(in   SockAddrStorageType addr,
+                        in   string              mcastSpec,
+                        rout IMCastSession       session,
+                        rout string              errSpec);
+         
+         /**
+          * This function allows object extensibility.
+          * For supported interfaces, objects implementing those interfaces may be 
+          * fetched via this function. The supported interfaces are documented in
+          * the DS_NET_NetworkFactory.bid file. GetTechObject-supported interface
+          * does not imply any similar contract in regard to QueryInterface for the
+          * respective interface.
+          * Unlike IQI, the availability of a specific interface depends on some 
+          * factors, e.g. current network type. Moreover, there is no guaranty 
+          * for transitivity or symmetry. 
+          * Note: 'interface' parameter will map to iid and techObj.
+          * @param iid The interface that should be retrieved.
+          * @param techObj On success, will contain the requested interface instance.
+          * @retval ds::SUCCESS Interface retrieved successfully.
+          * @retval AEE_ECLASSNOTSUPPORT Specified interface unsupported.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetTechObject(rout interface techObj);
+      };
+   };// module Net
+};// module ds
+
+#endif /* #ifdef DS_NET_IMCASTMANAGER_IDL */

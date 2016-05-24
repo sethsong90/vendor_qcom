@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--/******************************************************************************
+*  Copyright (c) 2012 Qualcomm Technologies, Inc.  All Rights Reserved.
+*  Qualcomm Technologies Proprietary and Confidential.
+*  *****************************************************************************-->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <string name="app_name">OTP Generator</string>
+    <string name="title_activity_main">OTP Generator</string>
+    <string name="default_password">------</string>
+    <string name="mode1">Time Based</string>
+    <string name="mode2">Counter Based</string>
+    <string name="menu_settings">Settings</string>
+    <string name="requiredPasswordWarning">Oups, a password is required to initialize the token! Please enter a password:</string>
+    <string name="setSaltWarning">A new salt will replace the one used as default  to generate an OTP. Please enter a salt value:</string>
+    <string name="resetPasswordWarning">A new password will replace the one used to initialize the token. Please enter a password:</string>
+    <string name="corruptedApplicationWarning">Oups! Something went wrong with the application. Please try reseting your password. If the problem persists, reinstall the application.</string>
+    <string name="resetButton">Reset Password</string>
+    <string name="reenterButton">Re-enter Password</string>
+    <string name="helpButton">Help</string>
+    <string name="advancedButton">Advanced Configuration</string>
+    <string name="setPasswordButton">  Set Password</string>
+    <string name="enterPassword">Enter a Password</string>
+
+    <string name="enterSalt">Enter a Salt</string>
+    <string name="help_string"><b>OTPGenerator</b> is an application that provides One-Time-Password used to secure your online bank transactions.\n\n<u>How to operate:</u>\n\n1. Switch on the application by pressing the Power button.\n\n2. If first time, enter a password and a type to the dialog shown.\n\n3. Click the OTP monitor to generate OTPs.\n\n4. Press the Power button to switch off the application.\n\n<u>Settings:</u>\n\n&gt; Password and type can be reset.\n\n&gt; Salt can be set, to take effect re-enter the password and type.</string>
+
+
+    <style name="ButtonText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@drawable/text_color</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">#1C1C1C</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+
+    <style name="MonitorText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#F8FBEF</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:textSize">50dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">#1C1C1C</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+
+    <style name="SaltText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#F8FBEF</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:textSize">15dp</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:shadowColor">#1C1C1C</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+</resources>

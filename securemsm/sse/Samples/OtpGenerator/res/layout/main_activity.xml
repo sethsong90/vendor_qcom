@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--/******************************************************************************
+*  Copyright (c) 2012 Qualcomm Technologies, Inc.  All Rights Reserved.
+*  Qualcomm Technologies Proprietary and Confidential.
+*  *****************************************************************************-->
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tabHost"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_background" >
+
+    <TabWidget
+        android:id="@android:id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/tabbar_background" />
+
+    <FrameLayout
+        android:id="@android:id/tabcontent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:id="@+id/homeTab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="120dp" >
+
+            <TextView
+                android:id="@+id/OTPviewer"
+                style="@style/MonitorText"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:background="@drawable/monitor_background"
+                android:enabled="false"
+                android:gravity="center"
+                android:onClick="labelClicked"
+                android:orientation="vertical"
+                android:text="@string/default_password"
+                android:textIsSelectable="false" />
+
+            <TextView
+                android:id="@+id/saltViewer"
+                style="@style/SaltText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:orientation="vertical"
+                android:textIsSelectable="false" />
+
+            <RelativeLayout
+                android:id="@+id/powerOnButtonLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <Button
+                    android:id="@+id/powerOnButton"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/start_button" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/settingsTab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="100dp" >
+
+            <RelativeLayout
+                android:id="@+id/ButtonsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="40dp" >
+
+                <Button
+                    android:id="@+id/helpButton"
+                    style="@style/ButtonText"
+                    android:layout_width="100dp"
+                    android:layout_height="70dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="30dp"
+                    android:background="@drawable/yellow_button_layout"
+                    android:drawableLeft="@drawable/help_icon"
+                    android:text="@string/helpButton"
+                    android:textSize="20dp" />
+
+                <Button
+                    android:id="@+id/advancedButton"
+                    style="@style/ButtonText"
+                    android:layout_width="180dp"
+                    android:layout_height="70dp"
+                    android:layout_above="@+id/resetPasswordButton"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/blue_button_layout"
+                    android:drawableLeft="@drawable/lock_icon"
+                    android:text="@string/advancedButton"
+                    android:textSize="20dp" />
+
+                <Button
+                    android:id="@+id/resetPasswordButton"
+                    style="@style/ButtonText"
+                    android:layout_width="180dp"
+                    android:layout_height="70dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="30dp"
+                    android:background="@drawable/red_button_layout"
+                    android:drawableLeft="@drawable/reset_button"
+                    android:text="@string/setPasswordButton"
+                    android:textSize="20dp" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/aboutTab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="100dp" >
+
+            <TextView
+                android:id="@+id/aboutTabViewer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="50dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/label_background"
+                android:gravity="top"
+                android:orientation="vertical"
+                android:textColor="#8111"
+                android:textIsSelectable="false"
+                android:textSize="20dp" />
+        </LinearLayout>
+    </FrameLayout>
+
+</TabHost>

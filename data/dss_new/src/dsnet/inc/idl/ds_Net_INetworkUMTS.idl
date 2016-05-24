@@ -1,0 +1,38 @@
+#ifndef DS_NET_INETWORKUMTS_IDL
+#define DS_NET_INETWORKUMTS_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+
+module ds
+{
+   module Net
+   {
+      typedef boolean UMTSIMCNFlagType;
+
+      const AEEIID AEEIID_INetworkUMTS = 0x0107fc24;
+      /**
+       * ds Net Network UMTS interface.
+       * This interface provides UMTS network operations.
+       */
+      interface INetworkUMTS : IQI
+      {
+         /**
+          * This function Gets the IM CN Flag.
+          * @param IMCNFlag Output IM CN flag information.
+          * @retval AEE_SUCCESS INetworkUMTS cloned successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetIMCNFlag(rout UMTSIMCNFlagType IMCNFlag);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_INETWORKUMTS_IDL */

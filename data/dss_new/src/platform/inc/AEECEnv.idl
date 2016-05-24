@@ -1,0 +1,37 @@
+#ifndef  AEECENV_IDL
+#define  AEECENV_IDL
+
+/*qidl copyright
+=============================================================================
+
+FILE: AEECEnv.h
+
+SERVICES:     
+
+DESCRIPTION:  
+
+===============================================================================
+        Copyright 2005 Qualcomm Technologies, Inc.
+               All Rights Reserved.
+            Qualcomm Technologies Proprietary/GTDR
+=============================================================================*/
+
+#include "AEEStdDef.idl"
+const AEECLSID AEECLSID_CEnv = 0x0103a936;
+
+/*qidl location=bottom target=all
+=============================================================================
+   CLASS DOCUMENTATION
+===============================================================================
+
+AEECLSID_CEnv
+
+Description:
+   This class id denotes the current environment.
+
+Default Interface:
+   IEnv
+
+=============================================================================*/
+
+#endif /* AEEENV_BID */

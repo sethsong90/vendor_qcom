@@ -1,0 +1,38 @@
+#============================================================================
+#  Name:
+#    LIB_DATAMODEM_INTERFACE_DSS.MIN
+#
+#  Description:
+#    An includable component of the makefile to build the DMSS software.
+#============================================================================
+#
+#                        EDIT HISTORY FOR MODULE
+#
+#  $Header: //source/qcom/qct/modem/datamodem/interface/dss/rel/11.03/src/lib_datamodem_interface_dss.min#1 $
+#  $Author: zhasan $
+#  $DateTime: 2011/06/17 12:02:33 $
+#
+# when       who     what, where, why
+# --------   ---     --------------------------------------------------------
+# 01/17/11   sa      New min file according to the new perforce layout.
+#============================================================================
+
+# Library Header files internal to library that are _not_ for external release
+
+LIB_DATAMODEM_INTERFACE_DSS_SOURCES=\
+  dss_ping.c\
+  dss_ping_comm_mgr.c
+
+LIB_DATAMODEM_INTERFACE_DSS_OBJS :=  $(addprefix $(LIBDIR)/, $(LIB_DATAMODEM_INTERFACE_DSS_SOURCES:%.c=%.o) )
+
+vpath %.c $(MODEM_DATAMODEM_INTERFACE_DSS_SRC)
+
+$(LIBDIR)/datamodem_interface_dss.lib : $(LIB_DATAMODEM_INTERFACE_DSS_OBJS)
+	@echo ------------------------------------------------------------------
+	@echo LIBRARY $@
+	@if test -f $@; then rm -f $@; fi
+	$(ARMAR) -r $@ $(LIB_DATAMODEM_INTERFACE_DSS_OBJS)
+	@echo ------------------------------------------------------------------
+
+LIBOBJECTS := $(LIB_DATAMODEM_INTERFACE_DSS_OBJS) $(LIBOBJECTS)
+

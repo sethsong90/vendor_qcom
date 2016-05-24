@@ -1,0 +1,68 @@
+#ifndef DS_NET_IIPV6ADDRESS_IDL
+#define DS_NET_IIPV6ADDRESS_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl" 
+
+#include "ds_Addr_Def.idl"
+
+#include "ds_Net_IEventManager.idl"
+
+module ds
+{
+   module Net
+   {
+      module IPv6AddrEvent
+      {
+         // IPV6 Address state changed event
+         const EventType QDS_EV_STATE_CHANGED = 0x0106e60a;
+      };
+
+      typedef long IPv6AddrStateType;
+      module IPv6AddrState
+      {
+         const IPv6AddrStateType PRIV_ADDR_DELETED    = 0;
+         const IPv6AddrStateType PRIV_ADDR_WAITING    = 1;
+         const IPv6AddrStateType PRIV_ADDR_AVAILABLE  = 3;
+         const IPv6AddrStateType PRIV_ADDR_DEPRECATED = 4;
+      };
+
+      const AEEIID AEEIID_IIPv6Address = 0x0106df4c;
+      /**
+       * IPv6 address interface. 
+       * For public IPv6 address get an instance of this interface via
+       * INetworkIPv6::GetIPv6Address (after fetching the address itself via
+       * INetwork::IPAddr).
+       * For private IPv6 address get an instance of this interface via
+       * INetworkIPv6::GeneratePrivAddr.
+       * 
+       * Events that can be registered on this interface via OnStateChange (as part of IEventManager interface): 
+       * - ds::Net::IPv6AddrEvent::STATE_CHANGED. Use GetState API to fetch information regarding the new state.
+       */
+      interface IIPv6Address : IEventManager
+      {
+         /**
+          * This attribute contains the IPv6 address encapsulated by this interface.
+          */
+         readonly attribute ds::INAddr6Type Address;
+
+         /**
+          * This function is used to get the state of the IPv6 address.
+          * @param state Holds the state of the address.
+          * @see ds::StateType.
+          * @retval AEE_SUCCESS Registration succeeded.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetState(rout IPv6AddrStateType state);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_IIPV6ADDRESS_IDL */

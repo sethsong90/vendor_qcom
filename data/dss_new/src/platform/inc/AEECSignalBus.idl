@@ -1,0 +1,45 @@
+#ifndef AEECSIGNALBUS_IDL
+#define AEECSIGNALBUS_IDL
+/*qidl copyright
+
+=======================================================================
+                  Copyright 2005 Qualcomm Technologies, Inc.
+                         All Rights Reserved.
+                      Qualcomm Technologies Proprietary/GTDR
+=======================================================================
+*/
+
+#include "AEEStdDef.idl"
+const AEECLSID AEECLSID_CSignalBus = 0x01036d2c;
+
+
+/*qidl location=bottom target=all
+=============================================================================
+   CLASS DOCUMENTATION
+===============================================================================
+
+AEECLSID_CSignalBus
+
+Description:
+
+   AEECLSID_CSignalBus specifies a new instance of a signal bus.
+
+   AEECLSID_CSignalBus is compatible with AEECLSID_CSignalFactory and
+   AEECLSID_CSignalCBFactory.  Instances of AEECLSID_CSignalBus can be used to
+   manage signals created via those compatible classes.
+
+   MT-safe:  Instances of this class can be used safely by multiple threads.
+
+Default Interface:
+   ISignalBus
+
+Other Supported Interfaces:
+   None
+
+See Also:
+   ISignalBus
+===============================================================================
+*/
+
+#endif //AEECSIGNALBUS_IDL
+

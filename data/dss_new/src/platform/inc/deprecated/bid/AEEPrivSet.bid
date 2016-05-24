@@ -1,0 +1,31 @@
+#ifndef AEEPRIVSET_BID
+#define AEEPRIVSET_BID
+/*=============================================================================
+
+   Please use AEECPrivSet.idl or AEECPrivSet.h instead.
+   This file is deprecated.
+
+        Copyright (c) 2010 Qualcomm Technologies, Inc.
+               All Rights Reserved
+        Qualcomm Technologies Confidential and Proprietary
+===============================================================================*/
+
+#include "AEECPrivSet.h"
+#define AEECLSID_PrivSet AEECLSID_CPrivSet
+
+
+/*=============================================================================
+   CLASS DOCUMENTATION
+===============================================================================
+
+AEECLSID_PrivSet
+
+Description:
+  This class is deprecated, please use AEECLSID_CPrivSet instead.
+
+See Also:
+  AEECLSID_CPrivSet
+
+=============================================================================*/
+
+#endif // AEEPRIVSET_BID

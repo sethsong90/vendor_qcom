@@ -1,0 +1,189 @@
+#ifndef DS_SOCK_ISOCKETLOCALPRIV_IDL
+#define DS_SOCK_ISOCKETLOCALPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+#include "AEEIPort1.idl"
+
+#include "ds_Sock_Def.idl"
+#include "ds_Sock_IAncDataPriv.idl"
+
+/**
+ * This is an internal interface for ds::Socket.
+ *
+ * This interface exposes extra socket functionality for use 
+ * by the implementation of QCM API and the DSS API Compatibility Layer.
+ *
+ * This interface is local (not remoted) and as such is not usable outside DS.
+ */
+module ds
+{
+   module Sock
+   {
+      /**
+       * Private Socket Protocol Values.
+       */
+      module Protocol
+      {
+         const ProtocolType QDS_ICMP       = 1;
+      };
+
+      module OptLevel
+      {
+         const OptLevelType QDS_LEVEL_ICMP = 5; 
+      };
+
+      typedef long OptNameTypePriv;
+      module OptNamePriv
+      {
+         /**
+          * Option name: QDS_ICMP_ECHO_ID
+          * Level: ICMP
+          * Value type: int
+          * Description: ICMP ECHO_REQ message, identifier
+          */
+         const OptNameTypePriv QDS_ICMP_ECHO_ID = 0;
+       
+         /**
+          * Option name: QDS_ICMP_ECHO_SEQ_NUM
+          * Level: ICMP
+          * Value type: int
+          * Description: ICMP ECHO_REQ message, sequence num
+          */
+         const OptNameTypePriv QDS_ICMP_ECHO_SEQ_NUM = 1;
+
+         /**
+          * Option name: QDS_ICMP_TYPE
+          * Level: ICMP
+          * Value type: long
+          * Description: ICMP message type
+          */
+         const OptNameTypePriv QDS_ICMP_TYPE = 2;
+       
+         /**
+          * Option name: QDS_ICMP_CODE
+          * Level: ICMP
+          * Value type: long
+          * Description: ICMP message code
+          */
+         const OptNameTypePriv QDS_ICMP_CODE = 3;
+      };
+
+      typedef sequence<IPort1::SeqBytes>  IOBlocksType;
+
+      const AEEIID AEEIID_ISocketLocalPriv = 0x0106d9e1;
+
+      local interface ISocketLocalPriv : IQI
+      {
+         /**
+         * This function sets the socket as system socket.
+         */ 
+         attribute boolean SystemOption;
+
+         /**
+          * This function reads data and ancillary data IO blocks buffers and ancillaryData structs over
+          * the transport specified by the socket. The msghdr parameter as defined in RFC 3542 is split here
+          * to several parameters, each for every individual member of the struct. This is done to allow some
+          * of the members to be both input and output parameters.
+          * @param name Output Address of the source.
+          * @param bufs Output Message payload.
+          * @param outAncillaryData Output Ancillary data. Note: This sequence does *not* follow
+          *                                the regular "output sequence" semantics. The LenReq parameter
+          *                                (implicitly included here) shall indicate the actual size of
+          *                                AncillaryData returned, which may be smaller or equal to the buffer 
+          *                                size provided by the application. Information on additional Ancillary
+          *                                Data that is available but does not fit into the buffer provided
+          *                                by the application is not supported.
+          * @param outFlags Output Output flags.
+          * @param flags Input flags. Currently only MSG_ERRQUEUE is supported - used for retrieving ICMP errors.
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult RecvMsg(rout SockAddrStorageType name,
+                           rout IOBlocksType        bufs,
+                           rout SeqIAncDataPrivType outAncillaryData,
+                           rout unsigned long       outFlags,
+                           in   unsigned long       flags);
+       
+         /**
+          * This function sends data from the provided IO blocks over the 
+          * transport specified by the socket.
+          * @param name Address of the destination.
+          * @param bufs Message payload.
+          * @param numWritten Output Number of bytes actually sent.
+          * @param inAncillaryData Ancillary data, if applicable. 
+          *        For SendMsg AncillaryData is an input only parameter
+          * @param flags Input flags. Currently none are supported.
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult SendMsg(in   SockAddrStorageType name,
+                           in   IOBlocksType        bufs,
+                           rout long                numWritten,
+                           in   SeqIAncDataPrivType inAncillaryData,
+                           in   unsigned long       flags);
+
+         /**
+           * This function sends specified number of bytes from one or more buffers provided by the caller
+           * across the TCP/UDP transport.
+           * @param bufs Byte arrays that contain the data to be sent.
+           * @param numWritten If AEE_SUCCESS is returned, indicates the total number of bytes successfully written.
+           * @retval AEE_SUCCESS The operation completed successfully.
+           * @retval Other ds designated error codes might be returned.
+           * @see ds_Errors_Def.idl.
+           */
+         AEEResult WriteV(in IOBlocksType bufs, rout long numWritten);
+       
+         /**
+          * This function reads specified number of bytes from the TCP/UDP transport into
+          * one or more buffers provided by the caller.
+          * @param bufs Input/Output Bytes arrays into which data can be read. On output contains the
+          *                          read data. This parameter implicitly includes the buffer input
+          *                          and output size parameter.
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult ReadV(rout IOBlocksType bufs);
+
+         /**
+          * Gets non-public options for the socket. (compatible to socket options 
+          * that use a 32 bit integer as the socket option data type).
+          * @param level option level (see ds::Sock::OptLevelType)
+          * @param name option name (see ds::Sock::OptNameTypePriv)
+          * @param value option value
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetOptPriv(in   OptLevelType    level,
+                              in   OptNameTypePriv name,
+                              rout long            value);
+
+         /**
+          * Sets non-public options for the socket. (compatible to socket options 
+          * that use a 32 bit integer as the socket option data type).
+          * @param level option level (see ds::Sock::OptLevelType)
+          * @param name option name (see ds::Sock::OptNameTypePriv)
+          * @param value option value
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult SetOptPriv(in OptLevelType    level,
+                              in OptNameTypePriv name,
+                              in long            value);
+      };
+   };
+};
+
+#endif /* #ifdef DS_SOCK_ISOCKETLOCALPRIV_IDL */

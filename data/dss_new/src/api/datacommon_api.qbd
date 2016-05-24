@@ -1,0 +1,8 @@
+// Add includepath for each VU Folder
+includepath public "hc";
+includepath public "inet";
+includepath public "linklayer";
+includepath public "netiface";
+includepath public "utils";
+includepath public "ifacectls";
+includepath public "dss";

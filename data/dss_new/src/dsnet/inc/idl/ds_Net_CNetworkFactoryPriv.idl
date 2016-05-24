@@ -1,0 +1,20 @@
+#ifndef DS_NET_CNETWORKFACTORYPRIV_IDL
+#define DS_NET_CNETWORKFACTORYPRIV_IDL
+/*qidl copyright nested=false
+============================================================================
+                  Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+
+module ds {
+   module Net {
+      const AEECLSID AEECLSID_CNetworkFactoryPriv = 0x01073e56;
+   };
+};
+
+#endif //DS_NET_CNETWORKFACTORYPRIV_IDL
+

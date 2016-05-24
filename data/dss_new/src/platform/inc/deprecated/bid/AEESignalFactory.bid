@@ -1,0 +1,31 @@
+#ifndef AEESIGNALFACTORY_BID
+#define AEESIGNALFACTORY_BID
+/*=============================================================================
+
+   Please use AEECSignalFactory.idl or AEECSignalFactory.h instead.
+   This file is deprecated.
+
+        Copyright (c) 2010 Qualcomm Technologies, Inc.
+               All Rights Reserved
+        Qualcomm Technologies Confidential and Proprietary
+===============================================================================*/
+
+#include "AEECSignalFactory.h"
+#define AEECLSID_SignalFactory AEECLSID_CSignalFactory
+
+
+/*=============================================================================
+   CLASS DOCUMENTATION
+===============================================================================
+
+AEECLSID_SignalFactory
+
+Description:
+  This class is deprecated, please use AEECLSID_CSignalFactory instead.
+
+See Also:
+  AEECLSID_CSignalFactory
+
+=============================================================================*/
+
+#endif // AEESIGNALFACTORY_BID

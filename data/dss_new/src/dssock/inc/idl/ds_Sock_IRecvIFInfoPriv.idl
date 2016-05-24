@@ -1,0 +1,39 @@
+#ifndef DS_SOCK_IRECVIFINFOPRIV_IDL
+#define DS_SOCK_IRECVIFINFOPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl" 
+
+#include "ds_Sock_IAncDataPriv.idl"
+
+module ds
+{
+  module Sock
+  {
+    const AEEIID AEEIID_IRecvIFInfoPriv = 0x0106e70e;
+
+    /**
+     * ds Socket Recv IF Info interface.
+     * This interface is used to provide application with the network interface handle
+     * on which a datagram was received via a call to IDSSock RecvMsg API.
+     * This information is provided if the IP_RECVIF socket option is enabled.
+     */
+    interface IRecvIFInfoPriv : IAncDataPriv
+    {
+        /* Handle representing the interface on which the packet has beed received.
+         * This information is provided if IP_RECVIF socket option is enabled.
+         * Note: IP_RECVSTADDR socket option is currently unsupported
+         */
+        readonly attribute unsigned long RecvIFHandle;
+    };
+  };
+};
+
+#endif /* #ifdef DS_SOCK_IRECVIFINFOPRIV_IDL */

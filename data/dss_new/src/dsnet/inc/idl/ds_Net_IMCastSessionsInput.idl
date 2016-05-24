@@ -1,0 +1,56 @@
+#ifndef DS_NET_IMCASTSESSIONSINPUT_IDL
+#define DS_NET_IMCASTSESSIONSINPUT_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+#include "AEEIQI.idl"
+
+#include "ds_Net_IMCastSession.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IMCastSessionsInput = 0x0109b66a;
+      /**
+       * ds Net IMCastSessionsInput interface.
+       * This interface represents a group of MCast Sessions.
+       * The Group does not hold a reference to the MCast Sessions objects.
+       * A MCast Session object is disassociated from the group upon its
+       * destruction.
+       * @See IMCastManager::CreateMCastSessionsInput.
+       * @See IMCastManager::JoinBundle.
+       * @See IMCastManager::LeaveBundle.*
+       * @See IMCastManager::RegisterBundle.
+       */
+      interface IMCastSessionsInput : IQI
+      {
+         /**    
+          * This function associates a mcastSession with the group.
+          * @param mcastSession MCast Session to be associated with the group.
+          * @retval ds::SUCCESS Mcast Session successfully associated.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.          
+          */
+         AEEResult Associate(in IMCastSession mcastSession);
+
+         /**    
+          * This function disassociates a mcastSession from the group.
+          * @param mcastSession MCast Session to be disassociated from the group.
+          * @retval ds::SUCCESS Mcast Session successfully disassociated.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.          
+          */
+         AEEResult Disassociate(in IMCastSession mcastSession);
+      };
+   };// module Net
+};// module ds
+
+#endif /* #ifdef DS_NET_IMCASTSESSIONSINPUT_IDL */

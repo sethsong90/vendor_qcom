@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2011-2012 Qualcomm Technologies, Inc.-
+ All Rights Reserved. Qualcomm Technologies Proprietary and Confidential.-->
+
+<LDSTestConfig>
+<LDSTest>
+<LDSSpec>
+  <Notifier>enabled</Notifier>
+  <Role>qos_custom</Role>
+  <Capabilities RW_DESIRED_FWD_BW="512000" RW_REQUIRED_FWD_BW="256000" RW_DESIRED_REV_BW="128000" RW_REQUIRED_REV_BW="64000" RW_MAX_ALLOWED_FWD_LATENCY="100" RW_MAX_ALLOWED_REV_LATENCY="100" RW_REMOTE_DEST_IP_ADDRESSES="111.42.12.222" RW_REMOTE_SRC_IP_ADDRESSES="111.42.12.222" RW_REMOTE_DEST_PORTS="4040-4060" RW_REMOTE_SRC_PORTS="4040-4060" RW_FILTERSPEC_REV_IP_TOS="100" RW_FILTERSPEC_FWD_IP_TOS="200"/>
+  <DstnHost>10.41.38.32</DstnHost>
+  <DstnPort>4042</DstnPort>
+</LDSSpec>
+</LDSTest>
+</LDSTestConfig>
+<!--
+    List of all parameters available and sample values
+    Empty strings, will be assumed if the attributes are present and values are not filled.
+    if you don't want to set the values for the attributes, then remove the attribute itself.
+    Also, dont type DstnHost/Port as strings.Type as shown above.
+    <Capabilities RW_ROLE="" RW_DESIRED_FWD_BW="512000" RW_REQUIRED_FWD_BW="256000" RW_DESIRED_REV_BW="128000" RW_REQUIRED_REV_BW="64000" RW_MAX_ALLOWED_FWD_LATENCY="100" RW_MAX_ALLOWED_REV_LATENCY="100" RW_DISABLE_NOTIFICATIONS="" RW_DEST_IP_ADDRESSES="10.41.38.32" RW_DEST_PORTS="4040-4060" RW_FILTERSPEC_IP_TOS="" />
+-->

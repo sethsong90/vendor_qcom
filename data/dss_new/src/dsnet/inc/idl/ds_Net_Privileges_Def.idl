@@ -1,0 +1,188 @@
+#ifndef DS_NET_PRIVILEGES_DEF_IDL
+#define DS_NET_PRIVILEGES_DEF_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+
+/*============================================================================
+  Privileges of CNetworkFactory.
+============================================================================*/
+
+module ds {
+   module Net {
+      const AEEPRIVID AEEPRIVID_PGoNull        = 0x0109d4a7;
+      const AEEPRIVID AEEPRIVID_PGoDormant     = 0x0109d4da;
+      const AEEPRIVID AEEPRIVID_PMCastClient   = 0x01099fd4;
+      const AEEPRIVID AEEPRIVID_PNetMonitored  = 0x010a2aa8;
+      const AEEPRIVID AEEPRIVID_PMTPD          = 0x010a2aa9;
+      const AEEPRIVID AEEPRIVID_PNetOTA        = 0x010a2aaa;
+      const AEEPRIVID AEEPRIVID_PNetPolicy     = 0x010a2aab;
+      const AEEPRIVID AEEPRIVID_PNetSystem     = 0x010a2aac;
+      const AEEPRIVID AEEPRIVID_PNet           = 0x010a2aad;
+      const AEEPRIVID AEEPRIVID_PBCMCSUpdateDB = 0x010a2aae;
+      const AEEPRIVID AEEPRIVID_PPrivateAddr   = 0x010a2aaf;
+      const AEEPRIVID AEEPRIVID_PQoS           = 0x010a2ab0;
+      const AEEPRIVID AEEPRIVID_PTechUMTS      = 0x010a2ab1;
+      const AEEPRIVID AEEPRIVID_PTech1x        = 0x010a2ab2;
+      const AEEPRIVID AEEPRIVID_NetHAT            = 0x010708aa;
+      const AEEPRIVID AEEPRIVID_PrimaryQoSSession = 0x0104549a;
+      const AEEPRIVID AEEPRIVID_RLPConfig         = 0x010aaac0;
+   };
+};
+
+/*
+===============================================================================
+   PRIVILEGE DOCUMENTATION
+===============================================================================
+
+AEEPRIVID_PGoNull
+
+Description:
+
+   A process with this privilege can employ advanced Network API.
+
+===============================================================================
+
+AEEPRIVID_PGoDormant
+
+Description:
+
+   A process with this privilege can employ advanced Physical Link API.
+
+===============================================================================
+
+AEEPRIVID_PMCastClient
+
+Description:
+
+   A process with this privilege can employ Multicast related APIs.
+
+===============================================================================
+
+AEEPRIVID_PNetMonitored
+
+Description:
+
+   A process with this privilege can employ Monitored Network APIs.
+
+===============================================================================
+
+AEEPRIVID_PMTPD
+
+Description:
+
+   A process with this privilege can employ MTPD API.
+
+===============================================================================
+
+AEEPRIVID_PNetOTA
+
+Description:
+
+   A process with this privilege can employ APIs 
+     which change Over The Air traffic.
+
+===============================================================================
+
+AEEPRIVID_PNetPolicy
+
+Description:
+
+   A process with this privilege can employ Network Policy related APIs.
+
+===============================================================================
+
+AEEPRIVID_PNetSystem
+
+Description:
+
+   A process with this privilege can employ APIs 
+     which change Network System behavior.
+
+===============================================================================
+
+AEEPRIVID_PNet
+
+Description:
+
+   A process with this privilege can employ Network related APIs.
+
+===============================================================================
+
+AEEPRIVID_PBCMCSUpdateDB
+
+Description:
+
+   A process with this privilege can employ advanced BCMCS API.
+
+===============================================================================
+
+AEEPRIVID_PPrivateAddr
+
+Description:
+
+   A process with this privilege can employ advanced Network API.
+
+===============================================================================
+
+AEEPRIVID_PQoS
+
+Description:
+
+   A process with this privilege can employ QoS related APIs.
+
+===============================================================================
+
+AEEPRIVID_PTechUMTS
+
+Description:
+
+   A process with this privilege can employ UMTS technology specific APIs.
+
+===============================================================================
+
+AEEPRIVID_PTech1x
+
+Description:
+
+   A process with this privilege can employ 1x technology specific APIs.
+
+===============================================================================
+
+AEEPRIVID_NetHAT
+
+Description:
+
+   A process with this privilege can employ 1x technology 
+   set Hysteresis Timer API.
+
+===============================================================================
+
+AEEPRIVID_PrimaryQoSSession
+
+Description:
+
+   A process with this privilege can employ 1x Primary QoS Modify API.
+
+===============================================================================
+
+AEEPRIVID_RLPConfig
+
+Description:
+
+   A process with this privilege can employ set for 1x technology RLP 
+   current NAK policy information.
+
+===============================================================================
+*/
+
+#endif //DS_NET_PRIVILEGES_DEF_IDL
+
+

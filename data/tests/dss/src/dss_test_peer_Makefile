@@ -1,0 +1,43 @@
+# Makefile for building DSS test peer app
+
+CPPFLAGS += -DFEATURE_DS_LINUX_NO_RPC -DFEATURE_DS_NO_DCM
+
+CPPFLAGS += -I./dss/inc/
+CPPFLAGS += -I./
+CPPFLAGS += -I./stringl/inc/
+CPPFLAGS += -I./dsc/
+
+LDLIBS += -lpthread
+
+all: dss_test_peer dss_test_master
+
+vpath %.c ./dss/src/
+vpath %.c ./stringl/src/
+
+PEER_OBJECTS = dss_test.o \
+            dss_test_peer.o \
+            ds_socket.o \
+            ds_list.o \
+            strlcat.o \
+            strlcpy.o
+
+MASTER_OBJECTS = dss_test.o \
+            dss_test_master.o \
+            ds_socket.o \
+            ds_list.o \
+            strlcat.o \
+            strlcpy.o
+
+MASTER_CLIENT_OBJECTS = dss_test.o \
+            dss_test_master_client.o \
+            ds_socket.o \
+            ds_list.o \
+            strlcat.o \
+            strlcpy.o
+
+dss_test_peer: $(PEER_OBJECTS)
+
+dss_test_master: $(MASTER_OBJECTS)
+
+clean:
+	rm -v *.o dss_test_peer dss_test_master

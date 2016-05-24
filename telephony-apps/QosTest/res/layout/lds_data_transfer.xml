@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/myLinearLayout"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<TextView android:id="@string/tranferTextId"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/tranferText" />
+<Button android:id="@string/startDataId"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/startData" />
+<Button android:id="@string/suspendQoSId"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/suspendQoS" />
+<Button android:id="@string/releaseQoSId"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/releaseQoS" />
+
+</LinearLayout>

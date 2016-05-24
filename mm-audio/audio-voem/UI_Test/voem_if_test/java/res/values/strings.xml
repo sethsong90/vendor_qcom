@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+*@file strings.xml
+*@brief List of strings to be dispalyed on the UI
+*
+*Copyright (c) 2011 Qualcomm Technologies, Inc.
+* All Rights Reserved. Qualcomm Technologies Proprietary and Confidential.
+-->
+
+<resources>
+
+	<string name="app_name">VoemTest</string>
+	<string name="WideVoiceExtension">Wide Voice Extension</string>
+	<string name="ReceiveVoiceEnhancement">Receive Voice Enhancement</string>
+	<string name="AutomaticGainControl">Automatic Gain Control</string>
+	<string name="AutomaticVolumeControl">Automatic Volume Control</string>
+	<string name="EchoCancellation">Echo Cancellation</string>
+	<string name="WindNoiseReduction">Wind Noise Reduction</string>
+	<string name="FarEndNoiseSuppression">Far End Noise Suppression</string>
+	<string name="PCMFilter">PCM Filter</string>
+	<string name="SlowTalk">Slow Talk</string>
+	<string name="DTMFDetectiononRxpath">DTMF Detection On Rx path</string>
+	<string name="DTMFDetectiononTxpath">DTMF Detection On Tx path</string>
+	<string name="PsychoacousticBassenhancement">Psychoacoustic Bass Enhancement</string>
+
+</resources>
+
+

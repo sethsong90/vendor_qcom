@@ -1,0 +1,44 @@
+#ifndef DS_SOCK_IICMPERRINFOPRIV_IDL
+#define DS_SOCK_IICMPERRINFOPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+
+#include "ds_Addr_Def.idl"
+
+#include "ds_Sock_Def.idl"
+#include "ds_Sock_IAncDataPriv.idl"
+
+module ds
+{
+  module Sock
+  {
+    const AEEIID AEEIID_IICMPErrInfoPriv = 0x0106c948;
+
+    /**
+     * ds Socket ICMP Error Info interface.
+     */
+    interface IICMPErrInfoPriv : IAncDataPriv
+    {
+
+       /**
+        * Error information.
+        */
+       readonly attribute ExtendedErrType ExtendedErr;
+
+       /**
+        * Address of the node that sent this ICMP error.
+        */
+       readonly attribute SockAddrStorageType Addr;
+    };
+  };
+};
+
+#endif /* #ifdef DS_SOCK_IICMPERRINFOPRIV_IDL */

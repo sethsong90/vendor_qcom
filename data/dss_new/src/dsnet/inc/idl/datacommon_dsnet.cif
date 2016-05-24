@@ -1,0 +1,40 @@
+-- datacommon_dsnet.cif
+
+-- Copyright (c) 2010 Qualcomm Technologies, Inc.  
+-- All rights reserved.
+-- Qualcomm Technologies Proprietary and Confidential 
+
+
+include "dsnet/inc/ds_Net_CreateInstance.h"
+include "dsnet/inc/ds_Net_INetworkFactory.h"
+include "dsnet/inc/ds_Net_CNetworkFactory.h"
+include "dsnet/src/ds_Net_CNetworkFactoryService.h"
+include "dsnet/inc/ds_Net_INetworkFactoryPriv.h"
+include "dsnet/inc/ds_Net_CNetworkFactoryPriv.h"
+include "dsnet/src/ds_Net_CNetworkFactoryPrivService.h"
+
+Class {
+   classid = ds_Net_AEECLSID_CNetworkFactoryService,
+   newfunc_privs = DSNetCreateInstance
+}
+
+Service {
+   serviceid = ds_Net_AEECLSID_CNetworkFactory,
+   iid = ds_Net_AEEIID_INetworkFactory,
+   serverid = 0, -- service is in kernel
+   servedclassid = ds_Net_AEECLSID_CNetworkFactoryService,
+   required_privs = { 0 } -- todo
+};
+
+Class { 
+   classid = ds_Net_AEECLSID_CNetworkFactoryPrivService,
+   newfunc_privs = DSNetCreateInstance
+}
+
+Service { 
+   serviceid = ds_Net_AEECLSID_CNetworkFactoryPriv,
+   serverid  = 0, -- service is in kernel
+   iid = ds_Net_AEEIID_INetworkFactoryPriv,
+   servedclassid = ds_Net_AEECLSID_CNetworkFactoryPrivService,
+   required_privs = { 0 } -- todo
+}

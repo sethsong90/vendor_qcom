@@ -1,0 +1,69 @@
+#============================================================================
+#  Name:
+#    DATAMODEM_INTERFACE_UTILS.MIN
+#
+#  Description:
+#    An includable component of the makefile to build the DMSS software.
+#============================================================================
+#
+#                        EDIT HISTORY FOR MODULE
+#
+#  $Header: //source/qcom/qct/modem/datamodem/interface/utils/rel/11.03/src/datamodem_interface_utils.min#1 $
+#  $Author: zhasan $
+#  $DateTime: 2011/06/17 12:02:33 $
+#
+# when       who     what, where, why
+# --------   ---     --------------------------------------------------------
+# 01/17/11   sa      New min file according to the new perforce layout.
+#============================================================================
+
+DATAMODEM_INTERFACE_UTILS_COMMON_C_SOURCES= \
+  ps_handle_mgr.c \
+  ps_mem.c \
+  pstimer.c \
+  ps_system_heap.c \
+  ds_auth.c \
+  ds_auth_modem.c \
+  ds_auth_qmi.c \
+  qmi_crit_sect_rex.c
+
+DATAMODEM_INTERFACE_UTILS_COMMON_CPP_SOURCES=\
+  ds_Utils_Factory.cpp \
+  ds_Utils_List.cpp \
+  ds_Utils_SignalHandler.cpp \
+  ds_Utils_SignalHandlerBase.cpp \
+  ds_Utils_MemManager.cpp \
+  ds_Utils_Conversion.cpp \
+  ds_Utils_FullPrivSet.cpp \
+  ps_utils_init.cpp \
+  ds_Utils_OnDemandSignalBus.cpp
+  
+DATAMODEM_INTERFACE_UTILS_NO_CS_CPP_SOURCES=\
+  ds_Utils_Atomic.cpp \
+  ds_Utils_CritSect.cpp \
+  ds_Utils_Signal.cpp \
+  ds_Utils_SignalCtl.cpp \
+  ds_Utils_SignalBus.cpp \
+  ds_Utils_SignalFactory.cpp \
+  ds_Utils_CreateInstance.cpp
+
+DATAMODEM_INTERFACE_UTILS_CS_CPP_SOURCES=\
+  ds_Utils_CreateInstance_cs.cpp
+
+DATAMODEM_INTERFACE_UTILS_AMSS_C_SOURCES = \
+  ps_logging_diag.c \
+  ps_logging_helper.c \
+  ps_stat_common.c \
+  ps_stat_commoni.c \
+  ps_stat_logging.c \
+  ps_stat_mem.c \
+  ps_utils.c \
+  ps_crit_sect_rex.c \
+  ps_utils_aka.c \
+  ps_timer_rex.c
+
+ifeq ($(USES_DATAMODEM_INTERFACE_BMP),yes)
+  DATAMODEM_INTERFACE_UTILS_COMMON_CPP_SOURCES += $(DATAMODEM_INTERFACE_UTILS_CS_CPP_SOURCES)
+else
+  DATAMODEM_INTERFACE_UTILS_COMMON_CPP_SOURCES += $(DATAMODEM_INTERFACE_UTILS_NO_CS_CPP_SOURCES)
+endif

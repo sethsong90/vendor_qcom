@@ -1,0 +1,80 @@
+#============================================================================
+#  Name:
+#    DATAMODEM_INTERFACE_DSS.MIN
+#
+#  Description:
+#    An includable component of the makefile to build the DMSS software.
+#============================================================================
+#
+#                        EDIT HISTORY FOR MODULE
+#
+#  $Header: //source/qcom/qct/modem/datamodem/interface/dss/rel/11.03/src/datamodem_interface_dss.min#1 $
+#  $Author: zhasan $
+#  $DateTime: 2011/06/17 12:02:33 $
+#
+# when       who     what, where, why
+# --------   ---     --------------------------------------------------------
+# 01/17/11   sa      New min file according to the new perforce layout.
+#============================================================================
+
+DATAMODEM_INTERFACE_DSS_COMMON_C_SOURCES= \
+  dss_init.c \
+  dss_net_mgr.c
+
+
+DATAMODEM_INTERFACE_DSS_COMMON_CPP_SOURCES=\
+  ps_sock_mem_pool.cpp\
+  DSS_BearerTechHandler.cpp \
+  DSS_Conversion.cpp \
+  DSS_EventHandler.cpp \
+  DSS_EventHandlerNetApp.cpp \
+  DSS_EventHandlerQoS.cpp \
+  DSS_ExtendedIPConfigHandler.cpp \
+  DSS_Globals.cpp \
+  DSS_MCast.cpp \
+  DSS_NetApp.cpp \
+  DSS_NetDSAPI.cpp \
+  DSS_NetIOCTLDSAPI.cpp \
+  DSS_NetQoSDefault.cpp \
+  DSS_NetQoSSecondary.cpp \
+  DSS_NetworkIPHandler.cpp \
+  DSS_NetworkStateHandler.cpp \
+  DSS_OutageHandler.cpp \
+  DSS_PhysLinkStateHandler.cpp \
+  DSS_PrimaryNetApp.cpp \
+  DSS_QoSHandler.cpp \
+  DSS_RFConditionsHandler.cpp \
+  DSS_SecondaryNetApp.cpp \
+  DSS_Socket.cpp \
+  DSS_dsapi.cpp \
+  DSS_EventHandlerMCast.cpp \
+  DSS_EventHandlerMCastMBMSCtrl.cpp \
+  DSS_MCastMBMSCtrlHandler.cpp \
+  DSS_MTPDRequestHandler.cpp \
+  DSS_NetMCastMBMSCtrl.cpp \
+  DSS_PrimaryQoSModifyHandler.cpp \
+  DSS_PrimaryQoSModifyStatusHandler.cpp \
+  DSS_QoSAwareUnAwareHandler.cpp \
+  DSS_QoSInfoCodeUpdatedHandler.cpp \
+  DSS_QoSModifyHandler.cpp \
+  DSS_HDRRev0RateInteriaHandler.cpp \
+  DSS_MCastRegisterHandler_1_0.cpp \
+  DSS_MCastRegisterHandler_2_0.cpp \
+  DSS_MCastStatusHandler.cpp \
+  DSS_QoSProfileChangedHandler.cpp \
+  DSS_SlottedResultHandler.cpp \
+  DSS_SlottedSessionChangedHandler.cpp \
+  DSS_MemoryManagement.cpp \
+  DSS_GenScope.cpp \
+  DSS_QoSRequestExScope.cpp \
+  DSS_PrivIpv6Addr.cpp \
+  DSS_EventHandlerPrivIPV6Addr.cpp \
+  DSS_PrivIpv6AddrHandler.cpp \
+  DSS_IPv6PrefixChangedStateHandler.cpp
+
+DATAMODEM_INTERFACE_DSS_AMSS_C_SOURCES= \
+  dss_stubs.c \
+  ps_stat_sock.c
+
+
+

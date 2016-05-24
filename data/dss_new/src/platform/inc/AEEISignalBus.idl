@@ -1,0 +1,106 @@
+#ifndef AEEISIGNALBUS_IDL
+#define AEEISIGNALBUS_IDL
+//============================================================================
+                                                           //qidl copyright
+//% Copyright (c) 2006, 2007 Qualcomm Technologies, Inc.
+                                                           //qidl nested=false
+//% All Rights Reserved.
+//% Qualcomm Technologies Confidential and Proprietary
+//============================================================================
+
+#include "AEEIQI.idl"
+#include "AEEStdDef.idl"
+#include "AEEISignal.idl"
+
+const AEEIID AEEIID_ISignalBus = 0x0103d14b;
+
+/**
+ * ISignalBus allows client to Add() multiple signals for dispatch on Set().
+ * It also tells its client when registration for the events has occurred. An
+ * ISignalBus is enabled when any ISignal on the bus is enabled.
+ *
+ * ISignalBus is designed to provide 3 important services:
+ *   -# Verification that an ISignal instance is compatible with an 
+ *      implementation of ISignalBus.
+ *   -# A mechanism for ISignal registration that obviates the need to
+ *      allocate memory to keep track of multiple registrations.
+ *   -# A way to correlate multiple registrations of the same ISignal, and
+ *      allows ISignal semantics to be single-registration.
+ *
+ * When a signal bus is initially created, it is in the "clear" state, as if
+ * Clear() was called.
+ *
+ * All methods of this interface are thread-safe.
+ */
+interface ISignalBus : IQI
+{
+   /**
+    * Atomically set and clear the bus' state, signalling all the signals 
+    * on the bus.
+    *
+    * @par Side effects: 
+    * If the bus was already set, the bus will end up clear.
+    * 
+    * @see ISignal, Add()
+    */
+   AEEResult Strobe();
+
+   /**
+    * Sets the state of the bus, and sets all the signals on the bus.
+    *
+    * @see ISignal, Add()
+    */
+   AEEResult Set();
+
+   /**
+    * Clears the state of the bus.
+    *
+    * @see ISignal, Add()
+    */
+   AEEResult Clear();
+
+   /**
+    * Associates an ISignal to be set when the ISignalBus has been "enabled",
+    * that is when an ISignal is added or when one of the ISignalBus' ISignals
+    * have been re-enabled.  This function may only be called once.
+    *
+    * @param ps The signal to set when the ISignalBus has been enabled.
+    *
+    * @retval AEE_EALREADY This function has already been called and cannot 
+    *                      be called again.
+    * 
+    * @see Set()
+    */
+   AEEResult OnEnable(in ISignal ps);
+
+   /**
+    * Associates an instance of ISignal with the ISignalBus.
+    *
+    * @par Side effects: 
+    * If the signal has previously been enabled, the OnEnable signal is set.
+    * If the state of the bus is set, the signal will be set immediately.
+    * 
+    * @par Comments:
+    * An instance of ISignal normally only supports registration with a single
+    * instance of ISignalBus.  This function will fail if the signal has been
+    * detached. The bus does not hold a strong reference to the signal.  Its up
+    * to the creator of the signal to hold on to the ISignalCtl facet of the signal
+    * to keep the ISignal facet valid.
+    *
+    * @param ps ISignal to be added to the bus.
+    *
+    * @see ISignal, Set()
+    */
+   AEEResult Add(in ISignal ps);
+
+   /**
+    * Dis-associates an instance of ISignal from the ISignalBus.
+    *
+    * @param ps ISignal to be removed from the bus.
+    *
+    * @see ISignal, Set(), Add()
+    */
+   AEEResult Remove(in ISignal ps);
+};
+
+#endif /* #ifndef AEEISIGNALBUS_IDL */

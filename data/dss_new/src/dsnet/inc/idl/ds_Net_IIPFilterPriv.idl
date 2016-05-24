@@ -1,0 +1,235 @@
+#ifndef DS_NET_IIPFILTERPRIV_IDL
+#define DS_NET_IIPFILTERPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+#include "ds_Addr_Def.idl"
+#include "ds_Net_Def.idl"
+
+module ds
+{
+   module Net
+   {
+      /* 
+       * Filter option IDs.
+       */      
+      typedef long IPFilterIDType;
+      module IPFilterID
+      {
+         /* Common IPv4/IPv6 IDs */
+         const IPFilterIDType QDS_SRC_ADDR           = 101;
+         const IPFilterIDType QDS_DST_ADDR           = 102;
+         const IPFilterIDType QDS_NEXT_HDR_PROTO     = 103;
+                                                 
+         /* IPv4 IDs */
+         const IPFilterIDType QDS_IPV4_TOS           = 201;
+                                                 
+         /* IPv6 IDs */
+         const IPFilterIDType QDS_IPV6_TRF_CLASS     = 301;
+         const IPFilterIDType QDS_IPV6_FLOW_LABEL    = 302;
+                                                 
+         /* TCP IDs */
+         const IPFilterIDType QDS_TCP_SRC_PORT       = 401;
+         const IPFilterIDType QDS_TCP_DST_PORT       = 402;
+                                                 
+         /* UDP IDs */
+         const IPFilterIDType QDS_UDP_SRC_PORT       = 501;
+         const IPFilterIDType QDS_UDP_DST_PORT       = 502;
+                                                 
+         /* ESP IDs */
+         const IPFilterIDType QDS_ESP_SPI            = 601;
+
+         /* Private FIlter IDs below */
+
+         /* ICMP IDs (Private IDs) */
+         const IPFilterIDType QDS_ICMP_MTYPE = 1000;
+         const IPFilterIDType QDS_ICMP_MCODE = 1001;
+      };
+
+      typedef sequence<IPFilterIDType> SeqIPFilterIDType;            
+
+      typedef octet IPFilterIPVersionType;
+      module IPFilterIPVersion 
+      {
+         const IPFilterIPVersionType QDS_FILTER_IPV4 = 4;
+         const IPFilterIPVersionType QDS_FILTER_IPV6 = 6;
+      };
+
+      typedef octet IPFilterIPNextProtocolType;
+      module IPFilterIPNextProtocol
+      {
+         const IPFilterIPNextProtocolType QDS_FILTER_ICMP = 1;
+         const IPFilterIPNextProtocolType QDS_FILTER_TCP = 6;
+         const IPFilterIPNextProtocolType QDS_FILTER_UDP = 17;
+         const IPFilterIPNextProtocolType QDS_FILTER_ESP = 50;
+      };
+
+      typedef long IPFilterIPv6FlowLabelType;
+      typedef unsigned long IPFilterSpiType;
+
+      struct IPFilterIPv4AddrType
+      {
+         INAddrType addr;
+         INAddrType subnetMask;
+      };
+      
+      struct IPFilterTOSType
+      {
+         octet val;
+         octet mask;
+      };
+
+      struct IPFilterPortType 
+      {
+         INPortType     port;
+         unsigned short range;
+      };
+
+      struct IPFilterIPv6AddrType 
+      {
+         ds::INAddr6Type addr;
+         octet           prefixLen;
+      };
+
+      struct IPFilterIPv6TrafficClassType 
+      {
+         octet  val;
+         octet  mask;
+      };
+
+      struct IPFilterAuxInfoType
+      {
+         unsigned short fi_id;
+         unsigned short fi_precedence;
+      };
+
+      const AEEIID AEEIID_IIPFilterPriv = 0x0106dcc4;
+      /**
+       * ds IP Filter interface.
+       * This interface provides a common base for all the possible values of
+       * IP filter. 
+      */
+      interface IIPFilterPriv : IQI
+      {
+         /**
+          * This function creates an identical copy of the IIPFilter.
+          * @param filter The created IIPFilter.
+          * @retval ds::SUCCESS IIPFilter cloned successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Clone(rout IIPFilterPriv filter);
+
+         /**
+          * This attribute represents the valid options - if an option was set,
+          * its ID will be in this list.
+          */
+         readonly attribute SeqIPFilterIDType ValidOptions;
+
+         /**
+          * This attribute represents a list of erroneous options into
+          * the IIPFilterPriv object.
+          */
+         readonly attribute SeqIPFilterIDType ErroneousOptions;
+
+         /**
+          * This attribute indicates the IP version.
+          */
+         attribute IPFilterIPVersionType IPVsn;
+
+         /**
+          * This attribute indicates the next header protocol.
+          * It identifies the higher layer protocol (TCP/UDP) that needs to be
+          * considered for filtering an IP packet. If this field is specified,
+          * only IP packets belonging to the specified higher layer protocol
+          * are considered for filtering. The filtering can be further enhanced
+          * by specifying parameters from that protocol header fields.
+          * Only parameters from the NextHdrProt are considered (other protocol
+          * header fields are ignored).
+          */
+         attribute IPFilterIPNextProtocolType NextHdrProt;
+
+         /**
+          * This attribute indicates the source port.
+          */
+         attribute IPFilterPortType SrcPort;
+
+         /**
+          * This attribute indicates the destination port.
+          */
+         attribute IPFilterPortType DstPort;
+
+         /**
+          * This attribute indicates the source IPv4 address.
+          */
+         attribute IPFilterIPv4AddrType SrcV4;
+
+         /**
+          * This attribute indicates the destination IPv4 address.
+          */
+         attribute IPFilterIPv4AddrType DstV4;
+
+         /**
+          * This attribute indicates the type of service.
+          */
+         attribute IPFilterTOSType Tos;
+
+         /**
+          * This attribute indicates the IPv6 flow label.
+          */
+         attribute IPFilterIPv6FlowLabelType FlowLabel;
+
+         /**
+          * This attribute indicates the source IPv6 address.
+          */
+         attribute IPFilterIPv6AddrType SrcV6;
+
+         /**
+          * This attribute indicates the destination IPv6 address.
+          */
+         attribute IPFilterIPv6AddrType DstV6;
+
+         /**
+          * This attribute indicates the traffic class.
+          */
+         attribute IPFilterIPv6TrafficClassType TrafficClass;
+         
+         /**
+          * This attribute indicates the ESP SPI parameter value.
+          * This is a Security Parameter Index as defined in RFC 2406.
+          * If specified, the SPI field in ESP header shall be considered for
+          * filtering an IP packet.
+          */
+         attribute long EspSpi;
+         
+         /**
+          * This attribute indicates the Filter ID and precedence value.
+          */
+          
+         /**
+          * This attribute indicates the ICMP type.
+          */
+         attribute octet ICMPType;
+
+         /**
+          * This attribute indicates the ICMP code.
+          */
+         attribute octet ICMPCode;
+         
+         readonly attribute IPFilterAuxInfoType AuxInfo;
+      };
+
+      typedef sequence<IIPFilterPriv> SeqIIPFilterPrivType;
+
+   };// module Net
+};// module ds
+
+#endif /* #ifdef DS_NET_IIPFILTERPRIV_IDL */
+

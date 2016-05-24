@@ -1,0 +1,177 @@
+#ifndef DS_NET_INETWORK1XPRIV_IDL
+#define DS_NET_INETWORK1XPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2011 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl" 
+#include "AEEIQI.idl"
+
+#include "ds_Net_IEventManager.idl"
+#include "ds_Net_INetwork.idl"
+#include "ds_Net_INetwork1x.idl"
+
+module ds
+{
+   module Net
+   {
+      module Network1xPrivEvent
+      {
+         const long SLOTTED_MODE_RESULT          = 0x0106e11a;
+         const long SLOTTED_MODE_CHANGED         = 0x0106e11b;
+         const long HDR_REV0_RATE_INERTIA_RESULT = 0x0106e11c;
+      };
+
+      struct Network1xPrivHDRSlottedModeArg
+      {
+         boolean enable;
+         long    slottedModeOption;           /* slot cycle value */
+         long    getSlottedMode;              /* indicate intent to get SM value */
+      };
+
+      typedef long Network1xPrivResultCodeType;
+      module Network1xPrivSlottedMode
+      {
+         const Network1xPrivResultCodeType REQUEST_SUCCEES     = 0;
+         const Network1xPrivResultCodeType REQUEST_REJECTED    = 1;
+         const Network1xPrivResultCodeType REQUEST_FAILED_TX   = 2;
+         const Network1xPrivResultCodeType REQUEST_NO_NET      = 3;
+         const Network1xPrivResultCodeType REQUEST_UNSUPPORTED = 4;
+      };
+
+         typedef long Network1xPrivSessionTimerSelectType;
+      module Network1xPrivSessionTimerSelect
+      {
+         const Network1xPrivSessionTimerSelectType S_INVALID   = 0;
+         const Network1xPrivSessionTimerSelectType S_DO        = 1;
+         const Network1xPrivSessionTimerSelectType S_1X        = 2;
+         const Network1xPrivSessionTimerSelectType S_1X_AND_DO = 3;
+      };
+
+      struct Network1xPrivSessionTimerType
+      {
+         Network1xPrivSessionTimerSelectType select;
+         short                               value;
+      };
+
+      typedef long Network1xPrivHDRRev0RateInertiaFailureCodeType;
+      module Network1xPrivHDRRev0RateInertiaFailureCode
+      {
+         const Network1xPrivHDRRev0RateInertiaFailureCodeType REQUEST_REJECTED   = 0;
+         const Network1xPrivHDRRev0RateInertiaFailureCodeType REQUEST_FAILED_TX  = 1;
+         const Network1xPrivHDRRev0RateInertiaFailureCodeType NOT_SUPPORTED      = 2;
+         const Network1xPrivHDRRev0RateInertiaFailureCodeType NO_NET             = 3;
+      };
+
+      const AEEIID AEEIID_INetwork1xPriv = 0x010741e0;
+      /**
+       * ds Net Network 1x Priv interface.
+       * Events that can be registered on this interface via OnStateChange (as part of IEventManager interface): 
+       * - ds::Net::Network1xPrivEvent::SLOTTED_MODE_RESULT. Use GetHDRSlottedModeResult to fetch the slotted mode result information.
+       * - ds::Net::Network1xPrivEvent::SLOTTED_MODE_CHANGED. Use GetHDRSlottedModeCycleIndex to fetch the new slotted mode cycle index. TODO: Verify that this API provides the information relevant to this event.
+       * - ds::Net::Network1xPrivEvent::HDR_REV0_RATE_INERTIA_RESULT. Use GetHDRRev0RateInteriaResult to fetch the rate information.
+       */
+
+      interface INetwork1xPriv : IEventManager
+      {
+         /**
+          * This function is used to set the 1x holddown timer.
+          * @param enable Used to enable/disable the functionality.
+          * @retval AEE_SUCCESS Registration succeeded.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult EnableHoldDown(in boolean enable);
+
+         /**
+          * This function is used to set the mode for operating VT on 
+          * a Rev 0 HDR system.
+          * @param enable Used to enable/disable the functionality.
+          * @retval AEE_SUCCESS Registration succeeded.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult EnableHDRRev0RateInertia(in boolean enable);
+
+         /**
+          * This function is used to get the result of attempting to 
+          * set the mode for operating VT on a Rev 0 HDR system.
+          * @param result Holds the result.
+          * @retval AEE_SUCCESS Registration succeeded.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetHDRRev0RateInertiaResult(rout boolean result);
+
+         /**
+          * This function is used to set the HDR slotted mode.
+          * @param arg Slotted mode argument.
+          * @see ds::Net::Network1xPriv::HDRSlottedModeArg.
+          * @retval AEE_SUCCESS Registration succeeded.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult EnableHDRSlottedMode(in Network1xPrivHDRSlottedModeArg arg);
+
+         /**
+          * This function is used to get the result of attempting to 
+          * set HDR slotted mode.
+          * @param resultCode Holds the result.
+          * @see ds::Net::Network1x::ResultCodeType.
+          * @retval AEE_SUCCESS Registration succeeded.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetHDRSlottedModeResult(rout Network1xPrivResultCodeType resultCode);
+
+         /**
+          * This function is used to get HDR slotted mode cycle index.
+          * @param sci Holds the HDR Slotted mode cycle index.
+          * @retval AEE_SUCCESS Registration succeeded.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetHDRSlottedModeCycleIndex(rout uint32 sci);
+
+         /**
+          * This function is used to set the HDR HPT mode.
+          * @param enable Used to enable/disable the functionality.
+          * @retval AEE_SUCCESS Registration succeeded.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult EnableHDRHPTMode(in boolean enable);
+
+         /**
+          * This attribute indicates the dormacy timer.
+          */
+         attribute long DormancyTimer;
+
+         /**
+          * This attribute indicates the session timer.
+          */
+         attribute Network1xPrivSessionTimerType SessionTimer;
+
+         /**
+          * This attribute indicates the 1x HandDown Option information.
+          */
+         attribute boolean HDR1xHandDownOption;
+
+         /**
+          * This function gets the result info code from HDR Rev0 
+          * Rate inertia event.
+          * @param infoCode Info code returned
+          * @retval AEE_SUCCESS Registration succeeded.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetHDRRev0RateInertiaResultInfoCode(rout Network1xPrivHDRRev0RateInertiaFailureCodeType failureCode);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_INETWORK1XPRIV_IDL */

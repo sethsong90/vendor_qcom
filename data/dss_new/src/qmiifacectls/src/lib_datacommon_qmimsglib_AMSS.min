@@ -1,0 +1,26 @@
+#-----------------------------------------------------------------------------
+# DATACOMMON QMI Message Library Sources
+# $Header: //source/qcom/qct/modem/datacommon/qmiifacectls/rel/09.02.01/src/lib_datacommon_qmimsglib_AMSS.min#2 $ 
+#-----------------------------------------------------------------------------
+
+# Library Header files internal to library that are _not_ for external release
+LIB_DATACOMMON_QMIMSGLIB_AMSS_SOURCES=\
+  ds_qmimsglib_qmux_amss.c \
+  ds_qmimsglib_task.c
+
+vpath %.c $(MODEM_DATACOMMON_QMIIFACECTLS_SRC)
+
+LIB_DATACOMMON_QMIMSGLIB_AMSS_OBJS :=  $(addprefix $(LIBDIR)/, $(LIB_DATACOMMON_QMIMSGLIB_AMSS_SOURCES:%.c=%.o) )
+
+$(LIBDIR)/datacommon_qmimsglib_AMSS.lib : $(LIB_DATACOMMON_QMIMSGLIB_AMSS_OBJS)
+	@echo ------------------------------------------------------------------
+	@echo LIBRARY $@
+	@if test -f $@; then rm -f $@; fi
+	$(ARMAR) -r $@ $(LIB_DATACOMMON_QMIMSGLIB_AMSS_OBJS)
+	@echo ------------------------------------------------------------------
+
+LIBOBJECTS := $(LIB_DATACOMMON_QMIMSGLIB_AMSS_OBJS) $(LIBOBJECTS)
+QCTLIBS := $(QCTLIBS) $(LIBDIR)/datacommon_qmimsglib_AMSS.lib
+
+$(TARGETDIR)/datacommon_qmimsglib_AMSS.lib : $(LIB_DATACOMMON_QMIMSGLIB_AMSS_SOURCES)
+	$(group_c_compile)

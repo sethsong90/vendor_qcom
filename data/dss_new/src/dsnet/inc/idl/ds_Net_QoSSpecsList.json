@@ -1,0 +1,21 @@
+/* ============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                          All Rights Reserved.
+                 Qualcomm Technologies Confidential and Proprietary
+============================================================================ */
+
+{
+   "name":"ds_Net_QoSSpecsList.json",
+   "description":"This is the JSON Schema for a QoSSpecsList",
+   "type":"object",
+   "properties":{
+      "QoSSpecs":{
+         "type":"array",
+         "items":{
+            "type":{"$ref":"ds_Net_QoSSpec.json"}
+         },
+         "description":"an array of QoS Specifications. Used for requesting
+                        multiple QoS Sessions"
+      }
+   }
+}

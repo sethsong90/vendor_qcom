@@ -1,0 +1,119 @@
+#ifndef DS_NET_IQOSMANAGER_IDL
+#define DS_NET_IQOSMANAGER_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl" 
+
+#include "ds_Net_Def.idl"
+#include "ds_Net_QoS_Def.idl"
+#include "ds_Net_IQoSDefault.idl"
+#include "ds_Net_IQoSSecondary.idl"
+#include "ds_Net_IQoSSecondariesInput.idl"
+#include "ds_Net_IQoSSecondariesOutput.idl"
+
+module ds
+{
+   module Net
+   {
+      module QoSMgrEvent
+      {
+         // QoS profile change events
+         const EventType QDS_EV_PROFILES_CHANGED = 0x0106e615;
+      };
+
+      const AEEIID AEEIID_IQoSManager = 0x0106cd44;
+      /**
+       * ds Net QoS Manager interface.
+       * Events that can be registered on this interface via OnStateChange (as part of IEventManager interface): 
+       * - ds::Net::QoSMgrEvent::PROFILES_CHANGED. Use GetSupportedProfiles to fetch the current set of supported QoS Profiles. 
+       */
+      interface IQoSManager : IEventManager
+      {
+         typedef sequence<QoSProfileIdType> SeqQoSProfileIdType;
+
+         /**
+          * This attribute returns an object that represents the default QoS link.          
+          * @see IQoSDefault
+          */         
+         readonly attribute IQoSDefault QosDefault;
+
+         /**
+          * This function issues QoS requests for multiple 
+          * or single QoS sessions.
+          * @param specs A JSON string that specifies the QoS Specification
+          *              for all the required QoS Sessions (or session).
+          *              See ds_Net_QoSRequest.json schema.
+          * @param opCode The operation.
+          * @param qosSessions Output The QoS sessions. 
+          *                    The order of sessions in IQoSSecondariesOutput 
+          *                    shall correspond to the order of QoS specs in
+          *                    specs.
+          * @param errSpec specification of flow options and filter options 
+          *                for which invalid values were specified in specs.
+          *                See ds_Net_QoSRequestErr.json schema.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval ds::EBADOPTS Bad options.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          * @see ds::Net::QoSRequestOpCodeType
+          */   
+         AEEResult Request(in   string                specs,
+                           in   QoSRequestOpCodeType  opCode,
+                           rout IQoSSecondariesOutput qosSessions,
+                           rout string                errSpec);
+
+         /**
+          * The function closes one or more QoS sessions.
+          * @param qosSessions IQoSSecondary objects to Close.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */   
+         AEEResult Close(in IQoSSecondariesInput qosSessions);
+
+         /**
+          * The function resumes one or more QoS sessions.
+          * @param qosSessions IQoSSecondary objects to Resume.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */   
+         AEEResult Resume(in IQoSSecondariesInput qosSessions);
+
+         /**
+          * The function suspends one or more QoS sessions.
+          * @param qosSessions IQoSSecondary objects to Suspend.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */   
+         AEEResult Suspend(in IQoSSecondariesInput qosSessions);
+
+         /**
+          * This attribute returns the QoS Profiles that are currently supported
+          * by the network.           
+          * @see SeqQoSProfileIdType
+          */         
+         readonly attribute SeqQoSProfileIdType SupportedProfiles;
+         
+         /**    
+          * This function creates an instance of IQoSSecondariesInput.
+          * IQoSSecondariesInput creation is supported only via IQoSManager. 
+          * @param new newQoSSecondariesInput Output The newly created 
+          *                                          IQoSSecondariesInput instance.
+          * @retval ds::SUCCESS IQoSSecondariesInput created successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreateQoSSecondariesInput(rout IQoSSecondariesInput newQoSSecondariesInput);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IQOSMANAGER_IDL */

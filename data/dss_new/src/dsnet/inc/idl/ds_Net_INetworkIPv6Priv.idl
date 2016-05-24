@@ -1,0 +1,55 @@
+#ifndef DS_NET_INETWORKIPV6PRIV_IDL
+#define DS_NET_INETWORKIPV6PRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "ds_Addr_Def.idl"
+
+#include "ds_Net_IEventManager.idl"
+#include "ds_Net_IIPv6Address.idl"
+
+module ds
+{
+   module Net
+   {
+      module IPv6PrivEvent
+      {
+         const EventType QDS_EV_PREFIX_CHANGED = 0x01089294;
+      };
+      struct IPv6PrivPrefixInfoType 
+      {
+         ds::INAddr6Type prefix;
+         IPv6AddrStateType prefixType;
+         unsigned short prefixLen;
+      };
+      typedef sequence<IPv6PrivPrefixInfoType>  SeqIPv6PrivPrefixInfoType;
+
+      const AEEIID AEEIID_INetworkIPv6Priv = 0x01089273;
+      /**
+       * ds Net Network Privileged interface.
+       * This interface is intended for internal usage for backward compatibility purposes.
+       * INetworkIPv6Priv address interface.
+       * Events that can be registered on this interface via OnStateChange (as part of IEventManager interface): 
+       * - ds::Net::IPv6PrivEvent::QDS_EV_PREFIX_CHANGED. 
+      */
+      interface INetworkIPv6Priv : IEventManager
+      {
+        
+         /**
+          * This function used to get all available prefixes
+          * @param allPrefixes List , prefixes with DELETED state should not be included
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetAllIPv6Prefixes(rout SeqIPv6PrivPrefixInfoType allPrefixes);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_INETWORKIPV6PRIV_IDL */

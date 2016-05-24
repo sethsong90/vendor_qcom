@@ -1,0 +1,50 @@
+#ifndef DS_NET_QOS_DEFPRIV_IDL
+#define DS_NET_QOS_DEFPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+
+#include "ds_Net_IQoSFlowPriv.idl"
+#include "ds_Net_IIPFilterPriv.idl"
+
+/**
+ * ds Net QoS Def Private module.
+ * This module groups all the Private QoS types and constants.
+ */
+module ds
+{
+   module Net
+   {
+      typedef sequence<IQoSFlowPriv> SeqIQoSFlowPrivType;       
+
+      struct QoSSpecType 
+      {
+         SeqIQoSFlowPrivType  rxFlows;
+         boolean              rxMinFlow;
+         SeqIQoSFlowPrivType  txFlows;
+         boolean              txMinFlow;
+         SeqIIPFilterPrivType rxFilter;
+         SeqIIPFilterPrivType txFilter;
+      };
+
+      struct QoSSpecPrimaryType 
+      {
+         SeqIQoSFlowPrivType rxFlows;
+         boolean             rxMinFlow;
+         SeqIQoSFlowPrivType txFlows;
+         boolean             txMinFlow;
+      };
+
+      typedef sequence<QoSSpecType> SeqQoSSpecType;
+
+   };// module Net
+};// module ds
+
+#endif /* #ifdef DS_NET_QOS_DEFPRIV_IDL */

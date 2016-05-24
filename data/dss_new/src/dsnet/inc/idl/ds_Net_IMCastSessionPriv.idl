@@ -1,0 +1,102 @@
+#ifndef DS_NET_IMCASTSESSIONPRIV_IDL
+#define DS_NET_IMCASTSESSIONPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+
+#include "ds_Net_IEventManager.idl"
+
+#include "ds_Net_MCast_Def.idl"
+
+module ds
+{
+   module Net
+   {
+      module MCastSessionPrivEvent
+      {
+        /**
+         * QDS_EV_REGISTRATION_STATE_PRIV_BCMCS1_0: 
+         * DSS shall register to this event to be notified on MCast events with
+         * BCMCS1.0 ("legacy") info code. DSS shall register to this event
+         * regardless if the MCastSession object was obtained via call to
+         * IMCastManagerPriv::Join or IMCastManagerPriv::JoinBundle.
+         * Once the signal of this event registration is set, DSS shall fetch
+         * both the registration state and info code together in a single call
+         * to GetRegStateAndBCMCS1_0InfoCode.
+         */
+        const EventType QDS_EV_REGISTRATION_STATE_PRIV_BCMCS1_0  = 0x010a4640;
+
+        /**
+         * QDS_EV_REGISTRATION_STATE_PRIV_BCMCS2_0: 
+         * DSS shall register to this event to be notified on MCast events with
+         * BCMCS2.0 ("new") info code. DSS shall register to this event
+         * regardless if the MCastSession object was obtained via call to
+         * IMCastManagerPriv::Join or IMCastManagerPriv::JoinBundle.
+         * Once the signal of this event registration is set, DSS shall fetch
+         * both the registration state and info code together in a single call
+         * to GetRegStateAndBCMCS2_0InfoCode.
+         */
+        const EventType QDS_EV_REGISTRATION_STATE_PRIV_BCMCS2_0  = 0x010a463f;
+
+        /**
+         * QDS_EV_TECHNOLOGY_STATUS_PRIV: 
+         * DSS shall register to this event to be notified on MCast events with
+         * BCMCS2.0 ("new") info code. DSS shall register to this event
+         * regardless if the MCastSession object was obtained via call to
+         * IMCastManagerPriv::Join or IMCastManagerPriv::JoinBundle.
+         * Once the signal of this event registration is set, DSS shall fetch
+         * both the registration state and info code together in a single call
+         * to GetRegStateAndBCMCS2_0InfoCode.
+         */
+        const EventType QDS_EV_TECHNOLOGY_STATUS_PRIV = 0x010a4641;
+      };
+
+      const AEEIID AEEIID_IMCastSessionPriv = 0x010a38d4;
+      /**
+       * ds Net MultiCast interface.
+       * Events that can be registered on this interface via OnStateChange (as part of IEventManager interface): 
+       * - ds::Net::MCastSessionEvent::REGISTRATION_STATE. Use GetRegistrationState to fetch the state information.
+       * - ds::Net::MCastSessionEvent::TECHNOLOGY_STATUS. Use GetTechnologyStatus to fetch the status information.
+       */
+      interface IMCastSessionPriv : IEventManager
+      {
+         /**
+          * This function issues a request for leaving a multicast group.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Leave();
+
+         /**
+          * This attribute indicates the MCast session registration state and
+          * information code. DSS fetch this information once 
+          * QDS_EV_REGISTRATION_STATE_PRIV_BCMCS1_0 events occurs.
+          */
+         readonly attribute MCastStateChangedType RegStateAndInfoCodeBCMCS1_0;
+
+         /**
+          * This attribute indicates the MCast session registration state and
+          * information code. DSS fetch this information once 
+          * QDS_EV_REGISTRATION_STATE_PRIV_BCMCS2_0 events occurs.
+          */
+         readonly attribute MCastStateChangedType RegStateAndInfoCodeBCMCS2_0;
+
+         /**
+          * This attribute indicates the information code for the status of the
+          * MCast technology session.
+          * DSS fetch this information onceQDS_EV_TECHNOLOGY_STATUS_PRIV event
+          * occurs.
+          */
+         readonly attribute MCastInfoCodeType TechStatusInfoCode;         
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IMCASTSESSIONPRIV_IDL */

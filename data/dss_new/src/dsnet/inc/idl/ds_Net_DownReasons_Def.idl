@@ -1,0 +1,480 @@
+#ifndef DS_NET_DOWNREASONS_DEF_IDL
+#define DS_NET_DOWNREASONS_DEF_IDL
+
+/*qidl copyright nested=false
+============================================================================
+                  Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                   Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+
+/**
+ * ds Net Network Down Reason types and constants 
+ */
+module ds
+{
+   module Net
+   {
+      // Network down reasons
+      typedef long NetDownReasonType;
+      
+      /**
+       * Type 1: MIP Network Down Reasons.
+       */
+      const NetDownReasonType DOWN_REASON_TYPE1 = 0x00010000;
+      
+      /**
+       * Type 2: Internal Network Down Reasons.
+       */
+      const NetDownReasonType DOWN_REASON_TYPE2 = 0x00020000;
+      
+      /**
+       * Type 3: Call Manager Network Down Reasons
+       */
+      const NetDownReasonType DOWN_REASON_TYPE3 = 0x00030000;
+      
+      /**
+       * Type 4: EAP Network Down Reasons.
+       */
+      const NetDownReasonType DOWN_REASON_TYPE4 = 0x00040000;
+
+      /**
+       * Type 5: IPSEC Network Down Reasons.
+       */
+      const NetDownReasonType DOWN_REASON_TYPE5 = 0x00050000;
+      
+      /**
+       * Type 6: Network Down Reasons mapped to corresponding 
+       * network down reasons from 3GPP TS 24.008 version 3.5.0 Release 1999
+       */
+      const NetDownReasonType DOWN_REASON_TYPE6 = 0x00060000;         
+      
+      module NetDownReason
+      {
+         /**
+          * The network was closed for an unspecified reason.
+          */
+         const NetDownReasonType QDS_NOT_SPECIFIED                         = 0; 
+
+         /* MIP Network down reasons */
+         const NetDownReasonType QDS_MIP_FA_ERR_REASON_UNSPECIFIED                = DOWN_REASON_TYPE1 | 64;
+         const NetDownReasonType QDS_MIP_FA_ERR_ADMINISTRATIVELY_PROHIBITED       = DOWN_REASON_TYPE1 | 65;
+         const NetDownReasonType QDS_MIP_FA_ERR_INSUFFICIENT_RESOURCES            = DOWN_REASON_TYPE1 | 66;
+         const NetDownReasonType QDS_MIP_FA_ERR_MOBILE_NODE_AUTHENTICATION_FAILURE= DOWN_REASON_TYPE1 | 67;
+         const NetDownReasonType QDS_MIP_FA_ERR_HA_AUTHENTICATION_FAILURE         = DOWN_REASON_TYPE1 | 68;
+         const NetDownReasonType QDS_MIP_FA_ERR_REQUESTED_LIFETIME_TOO_LONG       = DOWN_REASON_TYPE1 | 69;
+         const NetDownReasonType QDS_MIP_FA_ERR_MALFORMED_REQUEST                 = DOWN_REASON_TYPE1 | 70;
+         const NetDownReasonType QDS_MIP_FA_ERR_MALFORMED_REPLY                   = DOWN_REASON_TYPE1 | 71;
+         const NetDownReasonType QDS_MIP_FA_ERR_ENCAPSULATION_UNAVAILABLE         = DOWN_REASON_TYPE1 | 72;
+         const NetDownReasonType QDS_MIP_FA_ERR_VJHC_UNAVAILABLE                  = DOWN_REASON_TYPE1 | 73;
+         const NetDownReasonType QDS_MIP_FA_ERR_REVERSE_TUNNEL_UNAVAILABLE        = DOWN_REASON_TYPE1 | 74;
+         const NetDownReasonType QDS_MIP_FA_ERR_REVERSE_TUNNEL_IS_MANDATORY_AND_T_BIT_NOT_SET
+                                                                                      = DOWN_REASON_TYPE1 | 75;
+         const NetDownReasonType QDS_MIP_FA_ERR_DELIVERY_STYLE_NOT_SUPPORTED      = DOWN_REASON_TYPE1 | 79;
+         const NetDownReasonType QDS_MIP_FA_ERR_MISSING_NAI                       = DOWN_REASON_TYPE1 | 97;
+         const NetDownReasonType QDS_MIP_FA_ERR_MISSING_HA                        = DOWN_REASON_TYPE1 | 98;
+         const NetDownReasonType QDS_MIP_FA_ERR_MISSING_HOME_ADDR                 = DOWN_REASON_TYPE1 | 99;                                                                                
+         const NetDownReasonType QDS_MIP_FA_ERR_UNKNOWN_CHALLENGE                 = DOWN_REASON_TYPE1 | 104;
+         const NetDownReasonType QDS_MIP_FA_ERR_MISSING_CHALLENGE                 = DOWN_REASON_TYPE1 | 105;
+         const NetDownReasonType QDS_MIP_FA_ERR_STALE_CHALLENGE                   = DOWN_REASON_TYPE1 | 106;
+         const NetDownReasonType QDS_MIP_HA_ERR_REASON_UNSPECIFIED                = DOWN_REASON_TYPE1 | 128;
+         const NetDownReasonType QDS_MIP_HA_ERR_ADMINISTRATIVELY_PROHIBITED       = DOWN_REASON_TYPE1 | 129;
+         const NetDownReasonType QDS_MIP_HA_ERR_INSUFFICIENT_RESOURCES            = DOWN_REASON_TYPE1 | 130;
+         const NetDownReasonType QDS_MIP_HA_ERR_MOBILE_NODE_AUTHENTICATION_FAILURE= DOWN_REASON_TYPE1 | 131;
+         const NetDownReasonType QDS_MIP_HA_ERR_FA_AUTHENTICATION_FAILURE         = DOWN_REASON_TYPE1 | 132;
+         const NetDownReasonType QDS_MIP_HA_ERR_REGISTRATION_ID_MISMATCH          = DOWN_REASON_TYPE1 | 133;
+         const NetDownReasonType QDS_MIP_HA_ERR_MALFORMED_REQUEST                 = DOWN_REASON_TYPE1 | 134;
+         const NetDownReasonType QDS_MIP_HA_ERR_UNKNOWN_HA_ADDR                   = DOWN_REASON_TYPE1 | 136;
+         const NetDownReasonType QDS_MIP_HA_ERR_REVERSE_TUNNEL_UNAVAILABLE        = DOWN_REASON_TYPE1 | 137;
+         const NetDownReasonType QDS_MIP_HA_ERR_REVERSE_TUNNEL_IS_MANDATORY_AND_T_BIT_NOT_SET
+                                                                                      = DOWN_REASON_TYPE1 | 138;
+         const NetDownReasonType QDS_MIP_HA_ERR_ENCAPSULATION_UNAVAILABLE         = DOWN_REASON_TYPE1 | 139;
+         const NetDownReasonType QDS_MIP_ERR_REASON_UNKNOWN                       = DOWN_REASON_TYPE1 | 65535;
+
+         /**
+          * Call is terminated by the mobile device because of some internal error. 
+          */
+         const NetDownReasonType QDS_INTERNAL_ERROR                        = DOWN_REASON_TYPE2 | 201;
+
+         /**
+          * Call is terminated locally by the mobile. 
+          */
+         const NetDownReasonType QDS_INTERNAL_CALL_ENDED                   = DOWN_REASON_TYPE2 | 202;
+
+         /**
+          * Call is terminated locally by the mobile but the cause is not mapped to a network down reason yet. 
+          */
+         const NetDownReasonType QDS_INTERNAL_UNKNOWN_CAUSE_CODE           = DOWN_REASON_TYPE2 | 203;
+
+         /**
+          * Reason why the call ended cannot be provided or is not mapped to a network down reason yet. 
+          */
+         const NetDownReasonType QDS_UNKNOWN_CAUSE_CODE                    = DOWN_REASON_TYPE2 | 204;
+
+         /**
+          * The network connection request was rejected as the previous connection of the same network is
+          * currently being closed.
+          */
+         const NetDownReasonType QDS_CLOSE_IN_PROGRESS                     = DOWN_REASON_TYPE2 | 205; 
+
+         /**
+          * This indicates that the session was terminated by the network.
+          */
+         const NetDownReasonType QDS_NW_INITIATED_TERMINATION              = DOWN_REASON_TYPE2 | 206; 
+       
+         const NetDownReasonType QDS_APP_PREEMPTED                         = DOWN_REASON_TYPE2 | 207;   
+         
+
+         /* Call Manager Network Down Reasons */
+
+         const NetDownReasonType QDS_CDMA_LOCK                             = DOWN_REASON_TYPE3 | 500;
+
+         const NetDownReasonType QDS_INTERCEPT                             = DOWN_REASON_TYPE3 | 501;
+         const NetDownReasonType QDS_REORDER                               = DOWN_REASON_TYPE3 | 502;
+         const NetDownReasonType QDS_REL_SO_REJ                            = DOWN_REASON_TYPE3 | 503;
+         const NetDownReasonType QDS_INCOM_CALL                            = DOWN_REASON_TYPE3 | 504;
+         const NetDownReasonType QDS_ALERT_STOP                            = DOWN_REASON_TYPE3 | 505;
+         const NetDownReasonType QDS_ACTIVATION                            = DOWN_REASON_TYPE3 | 506;
+         const NetDownReasonType QDS_MAX_ACCESS_PROBE                      = DOWN_REASON_TYPE3 | 507;
+         const NetDownReasonType QDS_CCS_NOT_SUPPORTED_BY_BS               = DOWN_REASON_TYPE3 | 508;
+         const NetDownReasonType QDS_NO_RESPONSE_FROM_BS                   = DOWN_REASON_TYPE3 | 509;
+         const NetDownReasonType QDS_REJECTED_BY_BS                        = DOWN_REASON_TYPE3 | 510;
+         const NetDownReasonType QDS_INCOMPATIBLE                          = DOWN_REASON_TYPE3 | 511;
+         const NetDownReasonType QDS_ALREADY_IN_TC                         = DOWN_REASON_TYPE3 | 512;
+         const NetDownReasonType QDS_USER_CALL_ORIG_DURING_GPS             = DOWN_REASON_TYPE3 | 513;
+         const NetDownReasonType QDS_USER_CALL_ORIG_DURING_SMS             = DOWN_REASON_TYPE3 | 514;
+         const NetDownReasonType QDS_NO_CDMA_SRV                           = DOWN_REASON_TYPE3 | 515;
+         const NetDownReasonType QDS_MC_ABORT                              = DOWN_REASON_TYPE3 | 516;
+         const NetDownReasonType QDS_PSIST_NG                              = DOWN_REASON_TYPE3 | 517;
+         const NetDownReasonType QDS_UIM_NOT_PRESENT                       = DOWN_REASON_TYPE3 | 518;
+         const NetDownReasonType QDS_RETRY_ORDER                           = DOWN_REASON_TYPE3 | 519;
+         const NetDownReasonType QDS_ACCESS_BLOCK                          = DOWN_REASON_TYPE3 | 520;
+         const NetDownReasonType QDS_ACCESS_BLOCK_ALL                      = DOWN_REASON_TYPE3 | 521;
+         const NetDownReasonType QDS_IS707B_MAX_ACC                        = DOWN_REASON_TYPE3 | 522;
+
+         const NetDownReasonType QDS_CONF_FAILED                           = DOWN_REASON_TYPE3 | 1000;
+         const NetDownReasonType QDS_INCOM_REJ                             = DOWN_REASON_TYPE3 | 1001;
+         const NetDownReasonType QDS_NO_GW_SRV                             = DOWN_REASON_TYPE3 | 1002;
+         const NetDownReasonType QDS_NO_GPRS_CONTEXT                       = DOWN_REASON_TYPE3 | 1003;
+         const NetDownReasonType QDS_ILLEGAL_MS                            = DOWN_REASON_TYPE3 | 1004;
+         const NetDownReasonType QDS_ILLEGAL_ME                            = DOWN_REASON_TYPE3 | 1005;
+         const NetDownReasonType QDS_GPRS_SERVICES_AND_NON_GPRS_SERVICES_NOT_ALLOWED = DOWN_REASON_TYPE3 | 1006;
+         const NetDownReasonType QDS_GPRS_SERVICES_NOT_ALLOWED                       = DOWN_REASON_TYPE3 | 1007;
+         const NetDownReasonType QDS_MS_IDENTITY_CANNOT_BE_DERIVED_BY_THE_NETWORK    = DOWN_REASON_TYPE3 | 1008;
+         const NetDownReasonType QDS_IMPLICITLY_DETACHED                             = DOWN_REASON_TYPE3 | 1009;
+         const NetDownReasonType QDS_PLMN_NOT_ALLOWED                                = DOWN_REASON_TYPE3 | 1010;
+         const NetDownReasonType QDS_LA_NOT_ALLOWED                                  = DOWN_REASON_TYPE3 | 1011;
+         const NetDownReasonType QDS_GPRS_SERVICES_NOT_ALLOWED_IN_THIS_PLMN          = DOWN_REASON_TYPE3 | 1012;
+         const NetDownReasonType QDS_PDP_DUPLICATE                                   = DOWN_REASON_TYPE3 | 1013;
+         const NetDownReasonType QDS_UE_RAT_CHANGE                                   = DOWN_REASON_TYPE3 | 1014;
+         const NetDownReasonType QDS_CONGESTION                                      = DOWN_REASON_TYPE3 | 1015;
+         const NetDownReasonType QDS_NO_PDP_CONTEXT_ACTIVATED                        = DOWN_REASON_TYPE3 | 1016;
+         const NetDownReasonType QDS_ACCESS_CLASS_DSAC_REJECTION                     = DOWN_REASON_TYPE3 | 1017;
+
+         const NetDownReasonType QDS_CD_GEN_OR_BUSY                                  = DOWN_REASON_TYPE3 | 1500;
+         const NetDownReasonType QDS_CD_BILL_OR_AUTH                                 = DOWN_REASON_TYPE3 | 1501;
+         const NetDownReasonType QDS_CHG_HDR                                         = DOWN_REASON_TYPE3 | 1502;
+         const NetDownReasonType QDS_EXIT_HDR                                        = DOWN_REASON_TYPE3 | 1503;
+         const NetDownReasonType QDS_HDR_NO_SESSION                                  = DOWN_REASON_TYPE3 | 1504;
+         const NetDownReasonType QDS_HDR_ORIG_DURING_GPS_FIX                         = DOWN_REASON_TYPE3 | 1505;
+         const NetDownReasonType QDS_HDR_CS_TIMEOUT                                  = DOWN_REASON_TYPE3 | 1506;
+         const NetDownReasonType QDS_HDR_RELEASED_BY_CM                              = DOWN_REASON_TYPE3 | 1507;
+         const NetDownReasonType QDS_COLLOC_ACQ_FAIL                                     = DOWN_REASON_TYPE3 | 1508;
+         const NetDownReasonType QDS_OTASP_COMMIT_IN_PROG                                = DOWN_REASON_TYPE3 | 1509;
+         const NetDownReasonType QDS_NO_HYBR_HDR_SRV                                     = DOWN_REASON_TYPE3 | 1510;
+         const NetDownReasonType QDS_HDR_NO_LOCK_GRANTED                                 = DOWN_REASON_TYPE3 | 1511;
+         const NetDownReasonType QDS_HOLD_OTHER_IN_PROG                                  = DOWN_REASON_TYPE3 | 1512;
+         const NetDownReasonType QDS_HDR_FADE                                            = DOWN_REASON_TYPE3 | 1513;
+         const NetDownReasonType QDS_HDR_ACC_FAIL                                        = DOWN_REASON_TYPE3 | 1514;                                                                           
+
+         const NetDownReasonType QDS_CLIENT_END                                      = DOWN_REASON_TYPE3 | 2000;
+         const NetDownReasonType QDS_NO_SRV                                          = DOWN_REASON_TYPE3 | 2001;
+         const NetDownReasonType QDS_FADE                                            = DOWN_REASON_TYPE3 | 2002;
+         const NetDownReasonType QDS_REL_NORMAL                                      = DOWN_REASON_TYPE3 | 2003;
+         const NetDownReasonType QDS_ACC_IN_PROG                                     = DOWN_REASON_TYPE3 | 2004;
+         const NetDownReasonType QDS_ACC_FAIL                                        = DOWN_REASON_TYPE3 | 2005;
+         const NetDownReasonType QDS_REDIR_OR_HANDOFF                                = DOWN_REASON_TYPE3 | 2006;
+
+         const NetDownReasonType QDS_OFFLINE                                         = DOWN_REASON_TYPE3 | 2500;
+         const NetDownReasonType QDS_EMERGENCY_MODE                                  = DOWN_REASON_TYPE3 | 2501;
+         const NetDownReasonType QDS_PHONE_IN_USE                                    = DOWN_REASON_TYPE3 | 2502;
+         const NetDownReasonType QDS_INVALID_MODE                                    = DOWN_REASON_TYPE3 | 2503;
+         const NetDownReasonType QDS_INVALID_SIM_STATE                               = DOWN_REASON_TYPE3 | 2504;
+         const NetDownReasonType QDS_NO_COLLOC_HDR                                   = DOWN_REASON_TYPE3 | 2505;
+         const NetDownReasonType QDS_CALL_CONTROL_REJECTED                           = DOWN_REASON_TYPE3 | 2506;
+
+         /* EAP Network down reasons */
+         
+         /**
+          * A general error code indicating failure 
+          */
+         const NetDownReasonType QDS_EAP_CLIENT_ERR_UNABLE_TO_PROCESS             = DOWN_REASON_TYPE4 | 5001;
+
+         /**
+          * The peer does not support any of the versions listed in AT_VERSION_LIST 
+          */
+         const NetDownReasonType QDS_EAP_CLIENT_ERR_UNSUPPORTED_VERS              = DOWN_REASON_TYPE4 | 5002;
+
+         /**
+          * The peer's policy requires more triplets than the server included in AT_RAND 
+          */
+         const NetDownReasonType QDS_EAP_CLIENT_ERR_INSUFFICIENT_CHALLANGES       = DOWN_REASON_TYPE4 | 5003;
+
+         /**
+          * The peer believes that the RAND challenges included in AT_RAND were not fresh 
+          */
+         const NetDownReasonType QDS_EAP_CLIENT_ERR_RAND_NOT_FRESH                = DOWN_REASON_TYPE4 | 5004;
+
+         /**
+          * Notification code indicating general failure after authentication 
+          */
+         const NetDownReasonType QDS_EAP_NOTIFICATION_GENERAL_FAILURE_AFTER_AUTH  = DOWN_REASON_TYPE4 | 5005;
+
+         /**
+          * Notification code indicating general failure before authentication 
+          */
+         const NetDownReasonType QDS_EAP_NOTIFICATION_GENERAL_FAILURE_BEFORE_AUTH = DOWN_REASON_TYPE4 | 5006;
+
+         /**
+          * User has been temporarily denied access to the requested service.
+          * (Implies failure, used after successful authentication.)
+          */
+         const NetDownReasonType QDS_EAP_NOTIFICATION_TEMP_DENIED_ACCESS          = DOWN_REASON_TYPE4 | 5007;
+
+         /**
+          * User has not subscribed to the requested service.
+          * (Implies failure, used after successful authentication.)
+          */
+         const NetDownReasonType QDS_EAP_NOTIFICATION_USER_NOT_SUBSCRIBED         = DOWN_REASON_TYPE4 | 5008;
+
+         /**
+          * Success.  User has been successfully authenticated 
+          */
+         const NetDownReasonType QDS_EAP_SUCCESS                                  = DOWN_REASON_TYPE4 | 5009;
+
+         /**
+          * Notification error code while parsing an EAP identity indicating that 
+          * NAI realm portion is unavailable in environments where a realm is required.
+          */
+         const NetDownReasonType QDS_EAP_NOTIFICATION_REALM_UNAVAILABLE           = DOWN_REASON_TYPE4 | 5010;
+
+         /**
+          * Notification error code while parsing an EAP identity indicating 
+          * that username is unavailable.
+          */
+         const NetDownReasonType QDS_EAP_NOTIFICATION_USER_NAME_UNAVAILABLE       = DOWN_REASON_TYPE4 | 5011;
+
+         /**
+          * Notification error code indicating that the call has been barred. 
+          */
+         const NetDownReasonType QDS_EAP_NOTIFICATION_CALL_BARRED                 = DOWN_REASON_TYPE4 | 5012;
+
+         
+         /* IPSEC Network down reasons */
+         
+         /**
+          * The call failed because the PDIF is unreachable. 
+          */
+         const NetDownReasonType QDS_IPSEC_GW_UNREACHABLE                         = DOWN_REASON_TYPE5 | 5101;
+
+         /**
+          * The call failed because of authentication failure during IPSEC tunnel establishment. 
+          */
+         const NetDownReasonType QDS_IPSEC_AUTH_FAILED                            = DOWN_REASON_TYPE5 | 5102;
+
+         /**
+          * The call failed because the certificate is invalid. 
+          */
+         const NetDownReasonType QDS_IPSEC_CERT_INVALID                           = DOWN_REASON_TYPE5 | 5103;
+
+         /**
+          * The call failed because of internal error in IPSEC. 
+          */
+         const NetDownReasonType QDS_IPSEC_INTERNAL_ERROR                         = DOWN_REASON_TYPE5 | 5104;         
+
+         /**
+          * This reason indicates that the operator determined barring.
+          */
+         const NetDownReasonType QDS_OPERATOR_DETERMINED_BARRING           = DOWN_REASON_TYPE6 | 8;
+
+         const NetDownReasonType QDS_LLC_SNDCP_FAILURE                     = DOWN_REASON_TYPE6 | 25;
+
+         /**
+          * PDP context activation request, secondary PDP context activation request or PDP context 
+          * modification request cannot be accepted due to insufficient resources.
+          */
+         const NetDownReasonType QDS_INSUFFICIENT_RESOURCES                = DOWN_REASON_TYPE6 | 26;
+
+         /**
+          * Requested service was rejected by the external packet data network 
+          * because the access point name was not included although required 
+          * or if the access point name could not be resolved.
+          */
+         const NetDownReasonType QDS_UNKNOWN_APN                           = DOWN_REASON_TYPE6 | 27;
+
+         /**
+          * Requested service was rejected by the external packet data network 
+          * because the PDP address or type could not be recognized.
+          */
+         const NetDownReasonType QDS_UNKNOWN_PDP                           = DOWN_REASON_TYPE6 | 28;
+
+         /**
+          * Requested service was rejected by the external packet data network 
+          * due to a failed user authentication.
+          */  
+         const NetDownReasonType QDS_AUTH_FAILED                           = DOWN_REASON_TYPE6 | 29;
+
+         /**
+          * GGSN has rejected the activation request.
+          */
+         const NetDownReasonType QDS_GGSN_REJECT                           = DOWN_REASON_TYPE6 | 30;
+
+         /**
+          * Activation request rejected with unspecified reason.
+          */
+         const NetDownReasonType QDS_ACTIVATION_REJECT                     = DOWN_REASON_TYPE6 | 31;
+
+         /**
+          * The requested service option is not supported by the PLMN.
+          */
+         const NetDownReasonType QDS_OPTION_NOT_SUPPORTED                  = DOWN_REASON_TYPE6 | 32;
+
+         /**
+          * The requested service option is not subscribed for.
+          */
+         const NetDownReasonType QDS_OPTION_UNSUBSCRIBED                   = DOWN_REASON_TYPE6 | 33;
+
+         /**
+          * MSC cannot service the request because of temporary 
+          * outage of one or more functions required for supporting the service. 
+          */
+         const NetDownReasonType QDS_OPTION_TEMP_OOO                       = DOWN_REASON_TYPE6 | 34;
+
+         /**
+          * MNSAPI requested by the MS in the PDP context activation 
+          * request is already used by another active PDP context of this MS.
+          */
+         const NetDownReasonType QDS_NSAPI_ALREADY_USED                    = DOWN_REASON_TYPE6 | 35;
+
+         /**
+          * Regular MS or network initiated PDP context deactivation.
+          */
+         const NetDownReasonType QDS_REGULAR_DEACTIVATION                  = DOWN_REASON_TYPE6 | 36;
+
+         /**
+          * The new QoS cannot be accepted by the UE that were 
+          * indicated by the network in the PDP Context Modification procedure.
+          */
+         const NetDownReasonType QDS_QOS_NOT_ACCEPTED                      = DOWN_REASON_TYPE6 | 37;
+
+         /**
+          * PDP context deactivation is caused by an error situation in the network.
+          */
+         const NetDownReasonType QDS_NETWORK_FAILURE                       = DOWN_REASON_TYPE6 | 38;
+
+         /**
+          * This cause code is used by the network to request a PDP context 
+          * reactivation after a GGSN restart. It is up to the application to reattach. 
+          * The specification does not mandate it.
+          */
+         const NetDownReasonType QDS_UMTS_REATTACH_REQ                     = DOWN_REASON_TYPE6 | 39;
+
+         const NetDownReasonType QDS_FEATURE_NOT_SUPPORTED                 = DOWN_REASON_TYPE6 | 40;
+
+         /**
+          * There is a semantic error in the TFT operation included 
+          * in a secondary PDP context activation request or an MS-initiated PDP context modification.
+          */
+         const NetDownReasonType QDS_TFT_SEMANTIC_ERROR                    = DOWN_REASON_TYPE6 | 41;
+
+         /**
+          * There is a syntactical error in the TFT operation included 
+          * in a secondary PDP context activation request or an MS-initiated PDP context modification.
+          */
+         const NetDownReasonType QDS_TFT_SYNTAX_ERROR                      = DOWN_REASON_TYPE6 | 42;
+
+         /**
+          * PDP context identified by the Linked TI IE the secondary PDP 
+          * context activation request is not active.
+          */
+         const NetDownReasonType QDS_UNKNOWN_PDP_CONTEXT                   = DOWN_REASON_TYPE6 | 43;
+
+         /**
+          * There is one or more semantic errors in packet filter(s) 
+          * of the TFT included in a secondary PDP context activation 
+          * request or an MS-initiated PDP context modification.
+          */
+         const NetDownReasonType QDS_FILTER_SEMANTIC_ERROR                 = DOWN_REASON_TYPE6 | 44;
+
+         /**
+          * There is one or more syntactical errors in packet filter(s) 
+          * of the TFT included in a secondary PDP context activation request 
+          * or an MS-initiated PDP context modification.
+          */
+         const NetDownReasonType QDS_FILTER_SYNTAX_ERROR                   = DOWN_REASON_TYPE6 | 45;
+
+         /**
+          * The network has already activated a PDP context without TFT.
+          */
+         const NetDownReasonType QDS_PDP_WITHOUT_ACTIVE_TFT                = DOWN_REASON_TYPE6 | 46;
+
+         /**
+          * The equipment sending this cause has received a message 
+          * with a transaction identifier which is not currently in use on the MS-network interface.
+          */
+         const NetDownReasonType QDS_INVALID_TRANSACTION_ID                = DOWN_REASON_TYPE6 | 81;
+
+         /**
+          * Message is semantically incorrect.
+          */
+         const NetDownReasonType QDS_MESSAGE_INCORRECT_SEMANTIC            = DOWN_REASON_TYPE6 | 95;
+
+         /**
+          * Mandatory information is invalid.
+          */
+         const NetDownReasonType QDS_INVALID_MANDATORY_INFO                = DOWN_REASON_TYPE6 | 96;
+
+         /**
+          * Message type is non-existent or is not supported.
+          */
+         const NetDownReasonType QDS_MESSAGE_TYPE_UNSUPPORTED              = DOWN_REASON_TYPE6 | 97;
+
+         /**
+          * Message type is not compatible with the protocol state.
+          */
+         const NetDownReasonType QDS_MSG_TYPE_NONCOMPATIBLE_STATE          = DOWN_REASON_TYPE6 | 98;
+
+         /**
+          * Information element is non-existent or is not implemented.
+          */
+         const NetDownReasonType QDS_UNKNOWN_INFO_ELEMENT                  = DOWN_REASON_TYPE6 | 99;
+
+         /**
+          * Conditional IE Error 
+          */
+         const NetDownReasonType QDS_CONDITIONAL_IE_ERROR                  = DOWN_REASON_TYPE6 | 100;
+
+         /**
+          * Message is not compatible with the current protocol state 
+          */
+         const NetDownReasonType QDS_MSG_AND_PROTOCOL_STATE_UNCOMPATIBLE   = DOWN_REASON_TYPE6 | 101;
+
+         /**
+          * Used to report a protocol error event only when no other 
+          * cause in the protocol error class applies. 
+          */
+         const NetDownReasonType QDS_PROTOCOL_ERROR                        = DOWN_REASON_TYPE6 | 111;
+
+         /**
+          * This reason indicates that there was an access point name type conflict. 
+          */
+         const NetDownReasonType QDS_APN_TYPE_CONFLICT                     = DOWN_REASON_TYPE6 | 112;         
+      }; // module NetDownReason
+
+   };// module Net
+};// module ds
+
+#endif /* #ifdef DS_NET_DOWNREASONS_DEF_IDL */

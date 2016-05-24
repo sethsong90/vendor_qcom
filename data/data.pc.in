@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: data
+Description: data services package
+Version: @VERSION@
+libs: -L${libdir} -lnetmgr -ldsnet -ldssnew -lsap_cm -ldsstest
+Cflags: -I${includedir}/data

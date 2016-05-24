@@ -1,0 +1,387 @@
+#ifndef DS_SOCK_DEF_IDL
+#define DS_SOCK_DEF_IDL
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+#include "ds_Addr_Def.idl"
+#include "ds_Net_Def.idl"
+
+module ds
+{
+   module Sock
+   {
+      // Socket types
+      typedef long SocketType;
+      module Type
+      {
+         const SocketType QDS_UNSPEC = 0;  // Unspecified socket type
+         const SocketType QDS_STREAM = 1;  // TCP - streaming socket
+         const SocketType QDS_DGRAM  = 2;  // UDP - datagram socket
+      };
+
+      /**
+       * Socket Protocol Values.
+       */
+      typedef long ProtocolType;
+
+      module Protocol
+      {
+         const ProtocolType QDS_UNSPEC = 0;
+         const ProtocolType QDS_TCP    = 6;
+         const ProtocolType QDS_UDP    = 17;
+      };
+
+      /**
+       * consts of shutdown type for the Shutdown() method.
+       * @see Shutdown()
+       */
+      typedef long ShutdownDirType;
+      module ShutdownDir
+      {
+         const ShutdownDirType QDS_READ_DIR       = 0;
+         const ShutdownDirType QDS_WRITE_DIR      = 1;
+         const ShutdownDirType QDS_READ_WRITE_DIR = 2;
+      };
+
+      /**
+       * This module includes constant definitions for flags used by IDSSock's methods.
+       * See each method's definition for specific usage instructions.
+       */
+      typedef unsigned long FlagType;
+      module SendFlags
+      {
+         const FlagType QDS_MSG_EXPEDITE      = 0x00000001;
+         const FlagType QDS_MSG_FAST_EXPEDITE = 0x00000002;
+         const FlagType QDS_MSG_SOCK_WAKEUP   = 0x00000004;
+      };
+      module RecvFlags
+      {
+         /**
+          * Flag name: QDS_MSG_CTRUNC
+          * Description: Indicates amount of incoming ancillary data that is 
+          *              larger than buffer supplied by the application. The 
+          *              part of ancillary data that fits into the buffer is 
+          *              provided to the application. The rest of the ancillary
+          *              data cannot be fetched.
+          */
+         const FlagType QDS_MSG_CTRUNC   = 0x0008;
+
+         /**
+          * Flag name: QDS_MSG_TRUNC
+          * Description: Indicates amount of incoming data that is larger than
+          *              buffer supplied by the application. The part of data 
+          *              that fits into the buffer is provided to the 
+          *              application. The rest of the data cannot be fetched.
+          */
+         const FlagType QDS_MSG_TRUNC    = 0x0020;
+         
+         /**
+          * Flag name: QDS_MSG_ERRQUEUE
+          * Description: Indicates that application wants to ream ICMP error
+          *              ancillary data.
+          */
+         const FlagType QDS_MSG_ERRQUEUE = 0x2000; 
+      };
+
+      typedef long OptLevelType;
+      module OptLevel
+      {
+         /**
+          * Option level: QDS_LEVEL_IP
+          * Level: IP
+          * Description: used in socket options (GetOpt / SetOpt) and for 
+          * ancillary data.
+          */
+         const OptLevelType QDS_LEVEL_IP     = 1;
+
+         /**
+          * Option level: QDS_LEVEL_SOCKET
+          * Level: Socket
+          * Description: used in socket options (GetOpt / SetOpt) and for 
+          * ancillary data.
+          */
+         const OptLevelType QDS_LEVEL_SOCKET = 2;
+
+         /**
+          * Option level: QDS_LEVEL_TCP
+          * Level: TCP
+          * Description: used in socket options (GetOpt / SetOpt) and for 
+          * ancillary data.
+          */
+         const OptLevelType QDS_LEVEL_TCP    = 3;
+
+         /**
+          * Option level: QDS_LEVEL_IPV6
+          * Level: IPV6
+          * Description: used in socket options (GetOpt / SetOpt) and for 
+          * ancillary data.
+          */
+         const OptLevelType QDS_LEVEL_IPV6   = 4;
+
+         /**
+          * Option level: QDS_LEVEL_UDP
+          * Level: UDP
+          * Description: used in socket options (GetOpt / SetOpt) and for 
+          * ancillary data.
+          */
+         const OptLevelType QDS_LEVEL_UDP    = 7;
+      };
+
+      typedef long OptNameType;
+      module OptName
+      {
+         /**
+          * Option name: QDS_SO_KEEPALIVE
+          * Level: Socket
+          * Value type: Boolean
+          * Description: Enables periodic probes on idle TCP connection.
+          */
+         const OptNameType QDS_SO_KEEPALIVE = 0;
+       
+         /**
+          * Option name: QDS_SO_REUSEADDR
+          * Level: Socket
+          * Value type: Boolean
+          * Description: Enable socket port reuse.
+          */
+         const OptNameType QDS_SO_REUSEADDR = 1;
+       
+       
+         /**
+          * Option name: QDS_SO_ERROR_ENABLE
+          * Level: Socket
+          * Value type: Boolean
+          * Description: Enable retrieving of ICMP errors using SO_ERROR.
+          */
+         const OptNameType QDS_SO_ERROR_ENABLE = 2;
+       
+         /**
+          * Option name: QDS_SO_TX_IFACE
+          * Level: Socket
+          * Value type: unsigned long
+          * Description: Get tx iface id.
+          */
+         const OptNameType QDS_SO_TX_IFACE = 3;
+       
+         /**
+          * Option name: QDS_SO_RCVBUF
+          * Level: Socket
+          * Value type: long
+          * Description: Change the receive buffer size for the socket.
+          */
+         const OptNameType QDS_SO_RCVBUF = 4;
+       
+         /**
+          * Option name: QDS_SO_SNDBUF
+          * Level: Socket
+          * Value type: long
+          * Description: Change the send buffer size for the socket.
+          */
+         const OptNameType QDS_SO_SNDBUF = 5;
+       
+         /**
+          * Option name: QDS_SO_ERROR
+          * Level: Socket
+          * Value type: long
+          * Description: Get ICMP error on the socket.
+          */
+         const OptNameType QDS_SO_ERROR = 6;
+       
+         /**
+          * Option name: QDS_TCP_NODELAY
+          * Level: TCP
+          * Value type: Boolean
+          * Description: Disable Nagle's algorithm.
+          */
+         const OptNameType QDS_TCP_NODELAY = 7;
+       
+         /**
+          * Option name: QDS_TCP_DELAYED_ACK
+          * Level: TCP
+          * Value type: Boolean
+          * Description: Reduce the number of ACKs sent to half.
+          */
+         const OptNameType QDS_TCP_DELAYED_ACK = 8;
+       
+         /**
+          * Option name: QDS_TCP_SACK
+          * Level: TCP
+          * Value type: Boolean
+          * Description: Enables TCP selective ACK option.
+          */
+         const OptNameType QDS_TCP_SACK = 9;
+       
+         /**
+          * Option name: QDS_TCP_TIMESTAMP
+          * Level: TCP
+          * Value type: Boolean
+          * Description: Enables TCP time stamp option.
+          */
+         const OptNameType QDS_TCP_TIMESTAMP = 10;
+       
+         /**
+          * Option name: QDS_TCP_FIONREAD
+          * Level: TCP
+          * Value type: unsigned long
+          * Description: Retrieve TCP queue size.
+          */
+         const OptNameType QDS_TCP_FIONREAD = 11;
+       
+         /**
+          * Option name: QDS_TCP_MAXSEG
+          * Level: TCP
+          * Value type: long
+          * Description: Change the TCP maximum segment size.
+          */
+         const OptNameType QDS_TCP_MAXSEG = 12;
+         /**
+          * Option name: QDS_IP_RECVIF
+          * Level: IP
+          * Value type: Boolean
+          * Description: Enable retrieving of Rx iface of packet.
+          */
+         const OptNameType QDS_IP_RECVIF = 13;
+       
+         /**
+          * Option name: QDS_IP_RECVERR
+          * Level: IP
+          * Value type: Boolean
+          * Description: Enable retrieving of extended ICMP error info.
+          */
+         const OptNameType QDS_IP_RECVERR = 14;
+       
+         /**
+          * Option name: IP_TOS
+          * Level: IP
+          * Value type: long
+          * Description: Set TOS for outgoing IP packets.
+          */
+         const OptNameType QDS_IP_TOS = 15;
+       
+         /**
+          * Option name: QDS_IP_TTL
+          * Level: IP
+          * Value type: long
+          * Description: Change the Time To Live value.
+          */
+         const OptNameType QDS_IP_TTL = 16;
+       
+         /**
+          * Option name: QDS_IP_MULTICAST_TTL
+          * Level: IP
+          * Value type: octet (larger values supplied to SetOpt API shall be
+          *             truncated to 8 bit value).
+          * Description: Specifies the time-to-live value for Multicast
+          *              datagrams sent through this socket.
+          */
+         const OptNameType QDS_IP_MULTICAST_TTL = 17;
+       
+         /**
+          * Option name: QDS_IPV6_RECVERR
+          * Level: IPv6
+          * Value type: Boolean
+          * Description: Enable retrieving of extended ICMPv6 error info.
+          */
+         const OptNameType QDS_IPV6_RECVERR = 18;
+       
+         /**
+          * Option name: QDS_IPV6_TCLASS
+          * Level: IPV6
+          * Value type: long
+          * Description: Set the traffic class for the IPv6 socket.
+          */
+         const OptNameType QDS_IPV6_TCLASS = 19;
+       
+         /**
+          * Option name: QDS_TCP_MAX_BACKOFF_TIME 
+          * Level: TCP
+          * Value type: unsigned long
+          * Description: Maximal TCP backoff time
+          */
+         const OptNameType QDS_TCP_MAX_BACKOFF_TIME = 20;
+         
+         /**
+          * Option name: QDS_IP_MULTICAST_LOOP
+          * Level: IP
+          * Value type: octet (larger values supplied to SetOpt API shall be
+          *             truncated to 8 bit value).
+          * Description: Enable/Disable Multicast datagrams to be looped back.
+          */
+         const OptNameType QDS_IP_MULTICAST_LOOP = 21;
+
+         /**
+          * Option name: QDS_SO_FIONREAD
+          * Level: Socket
+          * Value type: unsigned long
+          * Description: No. of bytes that can be read from a
+          *              TCP/UDP/ICMP socket
+          *
+          */
+         const OptNameType QDS_SO_FIONREAD = 22;
+      };
+
+       /**
+         * LingerType. Used with Socket option SO_LINGER
+         */
+      struct LingerType {
+         boolean  lingerEnabled;   /**< Linger on or off. */
+         long     timeInSec;    /**< Linger time, in seconds. */
+      };
+
+      /**
+      * Extended error type.
+      */
+      struct ExtendedErrType 
+      {
+         unsigned long  error_number;  /**< Error number */
+         octet          origin;        /**< Where the error originated */
+         octet          type;          /**< Type field from the ICMP header */
+         octet          code;          /**< Code field from the ICMP header */
+         unsigned long  info;          /**< Discovered MTU for EMSGSIZE errors */
+      };
+
+      /**
+      * Extended error info type.
+      * This structure represents information embedded in the msg_control 
+      * parameter when the IP_RECVERR socket option is set and the 
+      * MSG_ERRQUEUE flag is set. 
+      * The cmsg header level is set to QDS_LEVEL_IP and the type to 
+      * QDS_IP_RECVERR to indicate this payload.
+      * See the RecvMsg API documentation for how to extract 
+      * this info from msg_control parameter using utility macros.
+      * Byte order of the err member is little endian.
+      * Byte order of the addr member is network order.
+      */
+      struct ExtendedErrInfoType
+      {
+         ExtendedErrType     err;
+         SockAddrStorageType addr;
+      };
+
+      /**
+      * Received Iface info type.
+      * This structure represents information embedded in the msg_control 
+      * parameter when the IP_RECVIF socket option is set.
+      * The cmsg header level is set to QDS_LEVEL_IP and the type to 
+      * QDS_IP_RECVIF to indicate this payload.
+      * See the RecvMsg API documentation for how to extract 
+      * this info from msg_control parameter using utility macros.
+      * Byte order of the ifaceId member is little endian.
+      * Byte order of the addr member is network order.
+      * @See INetwork::IfaceId
+      */
+      struct RecvIfaceInfoType
+      {
+         ds::Net::IfaceIdType IfaceId;
+         SockAddrStorageType  Addr;
+      };
+
+   };
+};
+#endif /* #ifndef DS_SOCK_DEF_IDL */

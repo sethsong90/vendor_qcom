@@ -1,0 +1,84 @@
+#ifndef DS_NET_INETWORKFACTORYPRIV_IDL
+#define DS_NET_INETWORKFACTORYPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                             All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+#include "AEEStdDef.idl"
+#include "ds_Net_INetworkPriv.idl"
+#include "ds_Net_IPolicyPriv.idl"
+#include "ds_Net_IIPFilterPriv.idl"
+#include "ds_Net_IQoSFlowPriv.idl"
+#include "ds_Net_INatSessionPriv.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_INetworkFactoryPriv = 0x01072cf0;
+      interface INetworkFactoryPriv : IQI
+      {
+         /**    
+          * NOTE: THIS API IS NOT PUBLIC (shall not be available for user applications)
+          * This function creates an instance of INetworkPriv. INetworkPriv creation is supported only
+          * via INetworkFactoryPriv. In this API the Application specifies the network policy to be used
+          * for the creation of the network object.
+          * @param policy Network policy. If NULL default policy shall be used.
+          * @param newNetworkPriv Output The newly created INetworkPriv instance.
+          * @retval AEE_SUCCESS INetworkPriv created successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreateNetworkPriv(in IPolicyPriv policy, rout INetworkPriv newNetworkPriv);
+
+         /**    
+          * This function creates an instance of PolicyPriv. PolicyPriv creation is supported only
+          * via INetworkFactory. 
+          * @param newPolicyPriv Output The newly created PolicyPriv instance.
+          * @retval AEE_SUCCESS PolicyPriv created successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreatePolicyPriv(rout IPolicyPriv newPolicyPriv);
+         
+         /**    
+          * This function creates an instance of IPFilterSpec. IPFilterSpec creation is supported only
+          * via INetworkFactory. 
+          * @param newIPFilterSpec Output The newly created IPFilterSpec instance.
+          * @retval ds::SUCCESS IPFilterSpec created successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreateIPFilterSpec(rout IIPFilterPriv newIPFilterSpec);
+
+         /**    
+          * This function creates an instance of QoSFlowSpec. QoSFlowSpec creation is supported only
+          * via INetworkFactory. 
+          * @param newQoSFlowSpec Output The newly created QoSFlowSpec instance.
+          * @retval AEE_SUCCESS QoSFlowSpec created successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreateQoSFlowSpec(rout IQoSFlowPriv newQoSFlowSpec);
+
+         /**    
+          * This function creates an instance of NatSessionPriv. NatSessionPriv creation is supported only
+          * via INetworkFactory. 
+          * @param policy Network policy.
+          * @param newNatSessionPriv Output The newly created NatSessionPriv instance.
+          * @retval AEE_SUCCESS NatSessionPriv created successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreateNatSessionPriv(in IPolicyPriv pIPolicy, rout INatSessionPriv newNatSessionPriv);
+
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_INETWORKFACTORYPRIV_IDL */

@@ -1,0 +1,199 @@
+#ifndef DS_SOCK_PRIVILEGES_DEF_IDL
+#define DS_SOCK_PRIVILEGES_DEF_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+
+/*============================================================================
+  Privileges of CSocketFactory0.
+============================================================================*/
+
+module ds {
+   module Sock {
+      const AEEPRIVID AEEPRIVID_PStreamSocket = 0x01099fd1;
+      const AEEPRIVID AEEPRIVID_PDatagramSocket = 0x01099fd2;
+      const AEEPRIVID AEEPRIVID_PServerSocket = 0x01099fd3;
+      const AEEPRIVID AEEPRIVID_PSocketMem = 0x01099fd5;
+      const AEEPRIVID AEEPRIVID_PNetworkTx = 0x01099fd6;
+      const AEEPRIVID AEEPRIVID_PPSProcessing = 0x01099fd7;
+      const AEEPRIVID AEEPRIVID_PReuseAddr = 0x01099fd8;
+      const AEEPRIVID AEEPRIVID_NetUrgent = 0x010153f7;
+   };
+};
+
+/*============================================================================
+
+Privileges for the SocketFactory interfaces:
+   AEEPRIVID_PStreamSocket - Creation of Stream type socket
+   AEEPRIVID_PDatagramSocket - Creation of DGRAM type socket
+
+
+Privileges for Other (directly) Supported Interfaces:
+   None   
+
+Privileges for Other (indirectly) Supported Interfaces:   
+   ds_Sock_ISocket Privileges:
+      AEEPRIVID_PServerSocket - Server Socket API (Bind, Listen, Accept)
+      AEEPRIVID_PMCastClient - Socket usage for receiving MCast
+      AEEPRIVID_PSocketMem - Socket operations involving memory allocations 
+      AEEPRIVID_PNetworkTx - Socket operations controlling Network transmission  
+      AEEPRIVID_PPSProcessing - Socket operations that specifically effect PS processing
+      AEEPRIVID_PReuseAddr - REUSEADDR socket option.   
+
+See Also:
+   None
+=============================================================================*/
+
+/*
+===============================================================================
+   PRIVILEGE DOCUMENTATION
+===============================================================================
+
+AEEPRIVID_PStreamSocket
+
+Description:
+
+   A process with this privilege can create a socket with SocketType QDS_STREAM.
+
+See Also:
+   ds::Sock::ISocketFactory0::CreateSocket   
+   ds::Sock::SocketType
+
+===============================================================================
+
+AEEPRIVID_PDatagramSocket
+
+Description:
+
+   A process with this privilege can create a socket with SocketType QDS_DGRAM.
+
+See Also:
+   ds::Sock::ISocketFactory0::CreateSocket   
+   ds::Sock::SocketType
+
+================================================================================
+
+AEEPRIVID_PServerSocket
+
+Description:
+
+   A process with this privilege can employ Server Sockets functionality - 
+   specifically, Bind, Listen and Accept socket operations.
+
+See Also:
+   ds::Sock::ISocket::Bind
+   ds::Sock::ISocket::Listen
+   ds::Sock::ISocket::Accept
+
+================================================================================
+
+AEEPRIVID_PMCastClient
+
+Description:
+
+   A process with this privilege can employ MCast client Socket functionality.
+   Specifically, such process can have access to Bind a socket to a specific
+   MCast address and port.
+
+See Also:
+   ds::Sock::ISocket::Bind
+
+================================================================================
+
+AEEPRIVID_PSocketMem
+
+Description:
+
+   Access to the following operations is granted via this privilege:
+   ISocket::SetOpt option name QDS_SO_RCVBUF
+   ISocket::SetOpt option name QDS_SO_SNDBUF
+   ISocket::SetOpt option name QDS_SO_ERROR_ENABLE
+   ISocket::SetOpt option name QDS_IP_RECVERR
+   ISocket::SetOpt option name QDS_IPV6_RECVERR      
+
+See Also:
+   ds::Sock::ISocket::SetOpt
+   ds::Sock::OptName::QDS_SO_RCVBUF
+   ds::Sock::OptName::QDS_SO_SNDBUF
+   ds::Sock::OptName::QDS_SO_ERROR_ENABLE
+   ds::Sock::OptName::QDS_IP_RECVERR
+   ds::Sock::OptName::QDS_IPV6_RECVERR   
+
+================================================================================
+
+AEEPRIVID_PNetworkTx
+
+Description:
+
+   Access to the following operations is granted via this privilege:
+   ISocket::SetOpt option name QDS_IP_TOS
+   ISocket::SetOpt option name QDS_IPV6_TCLASS
+   ISocket::SetOpt option name QDS_IP_TTL
+   ISocket::SetOpt option name QDS_IP_MULTICAST_TTL
+   ISocket::SetOpt option name QDS_TCP_MAXSEG      
+   ISocket::SetOpt option name QDS_TCP_MAX_BACKOFF_TIME   
+
+See Also:
+   ds::Sock::ISocket::SetOpt
+   ds::Sock::OptName::QDS_IP_TOS
+   ds::Sock::OptName::QDS_IPV6_TCLASS
+   ds::Sock::OptName::QDS_IP_TTL
+   ds::Sock::OptName::QDS_IP_MULTICAST_TTL
+   ds::Sock::OptName::QDS_TCP_MAXSEG      
+   ds::Sock::OptName::QDS_TCP_MAX_BACKOFF_TIME
+
+================================================================================
+
+AEEPRIVID_PPSProcessing
+
+Description:
+
+   Access to the following operation is granted via this privilege:
+   ISocket::SetOpt option name QDS_TCP_NODELAY
+   ISocket::SetOpt option name QDS_IP_MULTICAST_LOOP
+
+See Also:
+   ds::Sock::ISocket::SetOpt
+   ds::Sock::OptName::QDS_TCP_NODELAY
+   ds::Sock::OptName::QDS_IP_MULTICAST_LOOP
+
+================================================================================
+
+AEEPRIVID_PReuseAddr
+
+Description:
+
+   Access to the following operation is granted via this privilege:
+   ISocket::SetOpt option name QDS_SO_REUSEADDR
+
+See Also:
+   ds::Sock::ISocket::SetOpt
+   ds::Sock::OptName::QDS_SO_REUSEADDR
+
+================================================================================
+
+AEEPRIVID_NetUrgent
+
+Description:
+
+   Access to the following operation is granted via this privilege:
+   ISocket::SendTo with Urgent flag. 
+
+See Also:
+   ds::Sock::ISocket::SendTo
+   ds::Sock::SendFlags::QDS_MSG_EXPEDITE
+   ds::Sock::SendFlags::QDS_MSG_FAST_EXPEDITE
+
+================================================================================
+*/
+
+#endif //DS_SOCK_PRIVILEGES_DEF_IDL
+
+

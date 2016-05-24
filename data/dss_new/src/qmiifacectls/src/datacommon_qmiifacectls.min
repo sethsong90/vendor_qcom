@@ -1,0 +1,24 @@
+#-------------------------------------------------------------------------------
+# DATACOMMON QMIIFACECTLS Sources MIN File
+# $Header: //source/qcom/qct/modem/datacommon/qmiifacectls/rel/09.02.01/src/datacommon_qmiifacectls.min#2 $
+#-------------------------------------------------------------------------------
+
+DATACOMMON_QMIIFACECTLS_SOURCES=\
+        ds_qmh.c\
+        ds_qmh_acl.c\
+        ds_qmh_hdlr.c\
+        ds_qmh_ioctl.c\
+        ds_qmh_llif.c\
+        ds_qmh_netplat.c\
+        ds_qmh_sm.c\
+        ds_qmh_sm_int.c
+
+vpath %.stm $(MODEM_DATACOMMON)/qmiifacectls/src
+
+# Variables for STM2 auto-generation of .stm file
+# Example: .\build JXDCAAASA -v 4473 -m M7200JXDCAAASA4473/ds_qmh_sm_ext.h
+#
+$(STM_OBJDIR)/ds_qmh_sm_ext.h: STUB_LOCATION    = $(MODEM_DATACOMMON)/qmiifacectls/src
+$(STM_OBJDIR)/ds_qmh_sm_ext.h: EXT_HDR_LOCATION = $(MODEM_DATACOMMON)/qmiifacectls/src
+$(STM_OBJDIR)/ds_qmh_sm_ext.h: INT_HDR_LOCATION = $(MODEM_DATACOMMON)/qmiifacectls/src
+$(STM_OBJDIR)/ds_qmh_sm_ext.h: INT_SRC_LOCATION = $(MODEM_DATACOMMON)/qmiifacectls/src

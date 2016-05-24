@@ -1,0 +1,42 @@
+#ifndef DS_NET_IQOSDEFAULTPRIV_IDL
+#define DS_NET_IQOSDEFAULTPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "ds_Net_IQoSPriv.idl"
+#include "ds_Net_QoS_Def.idl"
+#include "ds_Net_QoS_DefPriv.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IQoSDefaultPriv = 0x010a32b2;
+      /**
+       * ds Net QoS Default Private interface.
+       */
+      interface IQoSDefaultPriv : IQoSPriv
+      {
+         /**
+          * This function issues a request to modify the default QoS Flow specification 
+          * in either Rx direction, Tx direction or both directions.
+          * Note that this is a privileged operation.
+          * @param requestedSpec the QoS specification used for modifying the default QoS instance.
+          * @param mask The modification direction, can be RX_FLOW, TX_FLOW or RX_FLOW|TX_FLOW.
+          * @retval AEE_SUCCESS Modification request received successfully.
+          * @retval ds::EBADOPTS Bad options.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult ModifyDefaultPriv(in QoSSpecPrimaryType requestedSpec,
+                                     in QoSModifyMaskType  mask);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IQOSDEFAULTPRIV_IDL */

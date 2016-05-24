@@ -1,0 +1,65 @@
+#ifndef DS_NET_INETWORKIPV6_IDL
+#define DS_NET_INETWORKIPV6_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "ds_Addr_Def.idl"
+#include "ds_Net_IEventManager.idl"
+#include "ds_Net_IIPv6Address.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_INetworkIPv6 = 0x0106dcc5;
+      /**
+       * ds Network IPv6 interface.
+      */
+      interface INetworkIPv6 : IQI
+      {
+         /**
+          * This function requests to generate a private IPv6 address.
+          * This API is part of functionality based on RFC 3041 - 
+          * "Privacy Extensions for Stateless Address Autoconfiguration in IPv6".
+          * @param unique TRUE if the user wishes to generate a unique address,
+          *               FALSE if the user wishes to generate a shared address.
+          * @param addr Object that will hold the IPv6 address.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GeneratePrivAddr(in boolean unique, rout IIPv6Address addr);
+
+         /**
+          * This function return IIPv6Address object.
+          * Use this API to obtain an IIPv6Address object once the public IPv6
+          * address is fetched via INetwork::IPAddr. That object can be used to
+          * register for notification on state change of the address.
+          * @param inAddr6 Binary address to be used to build the IIPv6Address object.
+          * @param addr Object that will hold the IPv6 address.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          * @See INetwork::IPAddr
+          * @See IPv6AddrEvent::QDS_EV_STATE_CHANGED
+          */
+         AEEResult GetIPv6Address(in ds::INAddr6Type inAddr6, rout IIPv6Address addr);
+
+         /**
+          * This function returns the scope id 
+          * @param scopeID Object that will hold the scope id.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetScopeID(rout unsigned long scopeID);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_INETWORKIPV6_IDL */

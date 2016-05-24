@@ -1,0 +1,86 @@
+#ifndef DS_NET_IPHYSLINK_IDL
+#define DS_NET_IPHYSLINK_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "ds_Net_Def.idl"
+
+#include "ds_Net_IEventManager.idl"
+                         
+module ds
+{
+   module Net
+   {
+      module PhysLinkEvent
+      {
+         // Physical Link state changed event.
+         const EventType QDS_EV_STATE_CHANGED = 0;
+      };
+
+      // Physical Link State
+      typedef unsigned long PhysLinkStateType;
+      module PhysLinkState
+      {
+         const PhysLinkStateType QDS_DOWN       = 0x01;
+         const PhysLinkStateType QDS_RESUMING   = 0x02;
+         const PhysLinkStateType QDS_UP         = 0x04;
+         const PhysLinkStateType QDS_GOING_DOWN = 0x08;
+      };
+
+      const AEEIID AEEIID_IPhysLink = 0x0106d750;
+      /**
+       * ds physical link interface.
+       */
+      interface IPhysLink : IEventManager
+      {
+         /**
+          * This function is used to activate a dormant physical link.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GoActive();
+
+         /**
+          * This function is used to explicitly put into dormancy the Physical
+          * Link *regardless* of other entities that are using it when this
+          * function is called.
+          * Dormancy on a link implies the releasing of the traffic channel and
+          * other air interface channels to free up appropriate radio resources.
+          * The link is automatically brought out of dormancy when applicable
+          * operations are applied on it.
+          * This function requires special privilege. 
+          * @param dormantReason Reason why attempting to put the Physical Link
+          * into dormancy.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval AEE_EWOULDBLOCK Request is processed asynchronous.
+          *                         Application may register for Physical Link
+          *                         STATE_CHANGED events in order to identify
+          *                         when the Physical Link is DOWN.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GoDormant(in DormantReasonType dormantReason);
+
+         /**
+          * This attribute represents the state of the physical link.
+          * @see ds::Net::PhysLink::StateType
+          */
+         readonly attribute PhysLinkStateType State;
+
+         /**
+          * This attribute represents the previous phys link state.          
+          * @see ds::Net::PhysLink::StateType
+          */         
+         readonly attribute PhysLinkStateType PreviousState;
+
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IPHYSLINK_IDL */

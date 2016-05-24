@@ -1,0 +1,50 @@
+#ifndef DS_SOCK_ISOCKETANCDATAPRIV_IDL
+#define DS_SOCK_ISOCKETANCDATAPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+
+module ds
+{
+   module Sock
+   {
+      typedef long AncDataIDType;
+      module AncData
+      {
+         /**
+          * Ancillary Data ID for ICMP extended error information (used in RecvMsg)
+          */
+         const AncDataIDType ICMP_ERROR_INFO = 1;
+         /**
+          * Ancillary Data ID for RECVIF information (used in RecvMsg)
+          */
+         const AncDataIDType RECV_IF_INFO     = 2;
+      };
+  
+      const AEEIID AEEIID_IAncDataPriv = 0x0106c947;
+  
+      /**
+       * ds Socket Ancillary Data interface.
+       * This interface provides a common base for all the possible
+       * Ancillary data that may be defined in the future for use via SendMsg/RecvMsg.
+       */
+      interface IAncDataPriv : IQI
+      {
+        attribute AncDataIDType AncID;
+      };
+  
+      /**
+       * Ancillary data SendMsg and RecvMsg API
+       */
+      typedef sequence<IAncDataPriv> SeqIAncDataPrivType;
+   };
+};
+
+#endif /* #ifdef DS_SOCK_ISOCKETANCDATAPRIV_IDL */

@@ -1,0 +1,49 @@
+#ifndef DS_ADDR_DEF_IDL
+#define DS_ADDR_DEF_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2009-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+
+module ds
+{
+   typedef unsigned short AddrFamilyType;                           
+   module AddrFamily
+   {
+     // Network/Socket Address Family
+     const AddrFamilyType QDS_AF_UNSPEC = 0;
+     const AddrFamilyType QDS_AF_INET   = 2;
+     const AddrFamilyType QDS_AF_INET6  = 3;
+   };
+
+   /**
+    * SockAddrStorageType is to be used for both IPv4 and IPv6 addresses.
+    * Its content (including the family field) shall be in Network Byte Order.
+    * Size of sockAddrStorage is derived from length of IPv6 Socket Address.
+    * Usage:
+    * - Allocate SockAddrStorageType instance
+    * - Allocate a pointer to either AddrINType or AddrIN6Type (defined in separate, language specific headers)
+    * - Assign the address of SockAddrStorageType instance to the AddrINType/AddrIN6Type pointer
+    * - Fill in the address fields (in Network Byte order) using the AddrINType/AddrIN6Type pointer
+    * - Provide the address of SockAddrStorageType instance to the desired Socket API 
+    */
+   typedef octet SockAddrStorageType[28];
+
+   // The type INAddr6Type implies NETWORK BYTE ORDER.
+   typedef octet INAddr6Type[16];
+
+   // IP Addr type - addr member used for both IPv4 and IPv6. For IPv4 octets
+   // 4-15 of addr are ignored.
+   struct IPAddrType
+   {
+      AddrFamilyType family;
+      INAddr6Type    addr;
+   };
+};
+#endif /* #ifndef DS_ADDR_DEF_IDL */

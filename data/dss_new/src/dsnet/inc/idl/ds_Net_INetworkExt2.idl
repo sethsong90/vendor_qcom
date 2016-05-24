@@ -1,0 +1,82 @@
+#ifndef DS_NET_INETWORKEXT2_IDL
+#define DS_NET_INETWORKEXT2_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2011 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "ds_Addr_Def.idl"
+
+#include "ds_Net_Def.idl"
+#include "ds_Net_DownReasons_Def.idl"
+#include "ds_Net_IEventManager.idl"
+#include "ds_Net_IPhysLink.idl"
+#include "ds_Net_IFirewallManager.idl"
+#include "ds_Net_INatSession.idl"
+
+module ds
+{
+   module Net
+   {
+      struct FMCTunnelParamsType
+      {
+        long                 streamId;
+
+        SockAddrStorageType  tunnelEndPointAddr;
+        
+        unsigned short       addrLen;
+        
+        boolean              IsNatPresent;
+      };
+
+      // INetworkExt2 IID
+      const AEEIID AEEIID_INetworkExt2 = 0x010b37b1;
+
+      interface INetworkExt2 : IQI
+      {
+         /**
+          * This function creates an instance of IFirewallManager. IFirewallManager creation
+          * is supported only via INetwork.    
+          * @param newFirewallManagerObj Output The newly created IFirewallManager instance.
+          * @retval DS::SUCCESS IFirewallManager created successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreateNetFirewallManager(rout IFirewallManager newFirewallManagerObj);
+
+         /**
+          * This function creates an instance of INatSession. INatSession creation
+          * is supported only via INetwork.    
+          * @param newNatSessionObj Output The newly created INatSession instance.
+          * @retval DS::SUCCESS INatSession created successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see DS_Errors_Def.idl.
+          */
+         AEEResult CreateNetNatSession(rout INatSession newNatSessionObj);
+
+         /**
+          * This function sets the FMC tunnel parameters for this network.
+          * @param tunnelParams Structure representing FMC tunnel parameters
+          * @see FMCTunnelParamsType.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult SetFMCTunnelParams(in FMCTunnelParamsType tunnelParams);
+
+         /**
+          * This function resets the FMC tunnel parameters for this network.
+          * @param none 
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult ResetFMCTunnelParams();
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_INETWORKEXT2_IDL */

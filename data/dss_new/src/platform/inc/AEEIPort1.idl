@@ -1,0 +1,126 @@
+#ifndef AEEIPORT1_IDL
+#define AEEIPORT1_IDL
+//============================================================================
+                                                           //qidl copyright
+//% Copyright (c) 2007 Qualcomm Technologies, Inc.
+                                                           //qidl nested=false
+//% All Rights Reserved.
+//% Qualcomm Technologies Confidential and Proprietary
+//============================================================================
+
+#include "AEEIQI.idl"
+#include "AEEStdDef.idl"
+#include "AEEISignal.idl"
+
+const AEEIID AEEIID_IPort1 = 0x01056898;
+
+/**
+ * Generic interface for bidirectional data stream providing Read/Readable,
+ * Write/Writeable, Control, and Close operations.
+ *
+ * Instances of IPort1 usually come from a factory or some other object that
+ * owns or provides access to the data to be read or written.
+ *
+ * For example, if there is an IPort1-based implementation of file, you may
+ * get an instances of the file from the filesystem when the file is opened.
+ * Similarly, given an IPort1-based serial I/O implementation, an instance
+ * could be created to access serial I/O.
+ */
+interface IPort1 : IQI
+{ 
+   typedef sequence<byte> SeqBytes;
+
+   /**
+    * Copy bytes from the source stream to the specified buffer.  The read
+    * pointer is advanced.
+    *
+    * @param buf the buffer to receive the read bytes
+    * 
+    * @retval AEE_SUCCESS bytes were successfully read into the buffer.  If
+    *                     the buffer was of non-zero size but is returned
+    *                     empty, the end of the stream has been reached.
+    * @retval AEE_ENOTALLOWED caller does not have the necessary capability to
+    *                         perform the operation
+    * @retval AEE_EWOULDBLOCK no data available; call Readable() to wait
+    *
+    * @return Another appropriate error core may be returned if the operation
+    *         is not successful.
+    */
+   AEEResult Read(rout SeqBytes buf);
+
+   /**
+    * Register a signal to be set when Read() would return something other
+    * than AEE_EWOULDBLOCK.
+    * 
+    * @param ps the signal to register
+    *
+    * @return AEE_SUCCESS if successful, or another appropriate error code if
+    *         operation was not successful.
+    */
+   AEEResult Readable(in ISignal ps);
+
+   /**
+    * Copy bytes from the specified buffer to the source stream.  The write
+    * pointer is advanced.
+    *
+    * @param buf the buffer from which bytes are taken to write to the port
+    * @param written size of data written to the port
+    *
+    * @retval AEE_SUCCESS successfully wrote 'written' bytes to the port
+    * @retval AEE_ENOTALLOWED caller does not have the necessary capability to
+    *                         perform the operation
+    * @retval AEE_EWOULDBLOCK no data available; call Writeable() to wait
+    *
+    * @return Another appropriate error core may be returned if the operation
+    *         is not successful.
+    */
+   AEEResult Write(in SeqBytes buf, rout long written);
+
+   /**
+    * Register a signal to be set when Write() would return something other
+    * than AEE_EWOULDBLOCK. 
+    * 
+    * @param ps the signal to register
+    *
+    * @return AEE_SUCCESS if successful, or another appropriate error code if
+    *         operation was not successful.
+    */
+   AEEResult Writeable(in ISignal ps);
+
+   /**
+    * This function allows some implementation-specific control over the
+    * behavior of an IPort1, e.g. setting/getting configuration.
+    * 
+    * Control() here is analogous to SYSV's Control.  Its intended use is for
+    * special, out-of-object-signature behavior.  For that reason, it is
+    * super-generic.
+    *
+    * This method could also be used to selectively close the capabilities
+    * of the port.
+    *
+    * @par Comments:
+    *    Data passed in the buffer arguments must always be arranged as if
+    *    they've already been marshalled, i.e. the precise byte ordering must
+    *    be specified.  The data must not include pointers or objects. 
+    *
+    * @param uid uid of the control operation, defined by the class
+    *            implementing IPort1
+    * @param inbuf input buffer for the operation
+    * @param outbuf output buffer for the operation
+    *
+    * @return AEE_SUCCESS if successful, or another appropriate error code if
+    *         operation was not successful.
+    */
+   AEEResult Control(in AEEUID uid, in SeqBytes inbuf, rout SeqBytes outbuf);
+
+   /**
+    * This function closes the port.  Any further Read() and Write() on the
+    * port will fail, and the IPort1 will become readable and writeable.
+    *
+    * @return AEE_SUCCESS if successful, or another appropriate error code if
+    *         operation was not successful.
+    */
+   AEEResult Close();
+};
+
+#endif /* AEEIPORT1_IDL */

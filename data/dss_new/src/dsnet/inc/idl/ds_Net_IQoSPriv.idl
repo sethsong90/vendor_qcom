@@ -1,0 +1,39 @@
+#ifndef DS_NET_IQOSPRIV_IDL
+#define DS_NET_IQOSPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl" 
+
+#include "ds_Net_IQoSFlowPriv.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IQoSPriv = 0x010a32b0;
+      /**
+       * ds Net QoS Private interface.
+       */
+      interface IQoSPriv : IQI
+      {
+         /**
+          * This function returns the current Rx and Tx flow specification.
+          * @param rxFlow the current Rx flow specification.
+          * @param txFlow the current Tx flow specification.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval ds::EBADOPTS Bad options.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetGrantedFlowSpecPriv(rout IQoSFlowPriv rxFlow, rout IQoSFlowPriv txFlow);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IQOSPRIV_IDL */

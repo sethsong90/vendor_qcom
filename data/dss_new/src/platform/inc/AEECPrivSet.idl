@@ -1,0 +1,41 @@
+#ifndef AEECPRIVSET_IDL
+#define AEECPRIVSET_IDL
+/*qidl copyright
+==============================================================================
+        Copyright 2005 Qualcomm Technologies, Inc.
+               All Rights Reserved.
+            Qualcomm Technologies Proprietary/GTDR
+==============================================================================*/
+
+#include "AEEStdDef.idl"
+const AEECLSID AEECLSID_CPrivSet = 0x0103192c;
+
+/*qidl location=bottom target=all
+==========================================================================
+   CLASS DOCUMENTATION
+============================================================================
+
+AEECLSID_CPrivSet
+
+Description:
+   AEECLSID_CPrivSet is the privilege set bound to the current environment.
+   Pass this class ID to IEnv_CreateInstance() to get the current IPrivSet
+   for that instance of IEnv.
+
+Default Interface:
+   IPrivSet
+
+Other Supported Interfaces:
+   None
+
+See Also:
+   IPrivSet
+   IEnv
+   IPrivSet
+   IEnv_CreateInstance()
+
+=============================================================================
+*/
+
+#endif //AEECPRIVSET_IDL
+

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# set value for --prefix option
+if [ "$1" != "" ]; then
+  PREFIX_PREFIX=$1
+else
+  PLATFORM=`uname`
+  if [ "${PLATFORM}" = "CYGWIN_NT-5.1" ]; then
+    PREFIX_PREFIX=/usr/local/qdsp6
+  else
+    if [ "${PLATFORM}" = "Linux" ]; then
+      PREFIX_PREFIX=${HOME}/qdsp6
+    else
+      echo platform ${PLATFORM} not supported
+      exit 1
+    fi
+  fi
+fi
+
+#export CFLAGS="-O0 -g"
+#export CXXFLAGS="-O0 -g"
+
+PREFIX=${PREFIX_PREFIX}/qc
+
+# PREFIX is the path to hexagon_tools_install_dir/qc
+
+bash `dirname $0`/configure \
+  --target=hexagon-unknown-linux-gnu \
+  --prefix=${PREFIX} \
+  --enable-optimized=no \
+  --enable-assertions

@@ -1,0 +1,59 @@
+/*============================================================================
+                  Copyright (c) 2010 Qualcomm Technologies, Inc.
+                             All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================*/
+
+#ifndef DS_NET_INATSESSIONPRIV_IDL
+#define DS_NET_INATSESSIONPRIV_IDL
+
+#include "AEEStdDef.idl"
+#include "AEEIQI.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_INatSessionPriv = 0x010a9c0a;
+      /**
+      * ds Net Nat session priv interface.
+      */
+      interface INatSessionPriv : IQI
+      {
+          /**
+          * This function issues a request for enabling NAT interface.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Enable();
+
+         /**
+         * This function issues a request for disabling NAT interface.
+         * @retval ds::SUCCESS Request received successfully.
+         * @retval Other ds designated error codes might be returned.
+         * @see ds_Errors_Def.idl.
+         */
+        AEEResult Disable();
+
+        /**
+          * This function issues a request for enabling roaming 
+          * autoconnect on NAT interface. 
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult EnableRoamingAutoconnect();
+         
+         /**
+         * This function issues a request for disabling roaming 
+         * autoconnect on NAT interface. 
+         * @retval ds::SUCCESS Request received successfully.
+         * @retval Other ds designated error codes might be returned.
+         * @see ds_Errors_Def.idl.
+         */
+        AEEResult DisableRoamingAutoconnect();
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_INATSESSIONPRIV_IDL */

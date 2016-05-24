@@ -1,0 +1,22 @@
+/* ============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                          All Rights Reserved.
+                 Qualcomm Technologies Confidential and Proprietary
+============================================================================ */
+
+{
+   "name":"ds_Net_QoSSpecsListErrors.json",
+   "description":"This is the JSON Schema for a QoSSpecsListErrors. It provides error
+                  information pertaining to multiple QoS Specifications provided
+                  per ds_Net_QoSSpecsListErrors.json schema.",
+   "type":"object",
+   "properties":{
+      "QoSSpecs":{
+         "type":"array",
+         "items":{
+            "type":{"$ref":"ds_Net_QoSSpecError.json"}
+         },
+         "description":"an array of QoSSpec errors specification."
+      }
+   }
+}

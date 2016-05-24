@@ -1,0 +1,324 @@
+#ifndef DS_SOCK_ISOCKET_IDL
+#define DS_SOCK_ISOCKET_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+#include "AEEIQI.idl"
+#include "AEEISignal.idl"
+#include "AEEIPort1.idl"
+
+#include "ds_Addr_Def.idl"
+
+#include "ds_Sock_Def.idl"
+
+module ds
+{
+   module Sock
+   {
+      const AEEIID AEEIID_ISocket = 0x0106c549;
+
+      /**
+       * The Socket interface extends the IPort1 interface to provide 
+       * access to Sockets.
+       */
+      interface ISocket : IPort1
+      {
+         /**
+          * This function associates a local address and port value to the socket.
+          * @param localAddr A specification of the address and port to attach.
+          *                  @See SockAddrStorageType
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval AEE_EWOULDBLOCK Request is processed asynchronously.
+          *         Application should register to be notified when progress can
+          *         be made and call Bind again when the notification has been
+          *         received. Application should repeat this process until
+          *         AEE_SUCCESS is returned from the call.
+          *         Registration for the notification can be done via 
+          *         IPort1::Readable or ISocketExt::RegEvent (READ event).
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Bind(in SockAddrStorageType localAddr);
+
+         /**
+          * This function initiates passive open for TCP connections.
+          * @param backLog Maximum number of half-open TCP connections to track at one time.
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Listen(in long backLog);
+
+         /**
+          * This function returns a newly created socket for a new passively opened connection.
+          * @param remoteAddrOut Output Address of the remote end of the new connection.
+          *                             @See SockAddrStorageType
+          * @param newConnSock Output The newly created socket.
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval AEE_EWOULDBLOCK Request is processed asynchronously.
+          *         Application should register to be notified when progress can
+          *         be made and call Accept again when the notification has been
+          *         received. Application should repeat this process until
+          *         AEE_SUCCESS is returned from the call.
+          *         Registration for the notification can be done via 
+          *         IPort1::Readable or ISocketExt::RegEvent (ACCEPT event).
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Accept(rout SockAddrStorageType remoteAddrOut,
+                          rout ISocket             newConnSock);
+
+         /**
+          * This function initiates an active open for TCP connection;
+          * For UDP sockets this function sets the peer’s IP address and port value of the socket
+          * @param remoteAddr Address to connect.
+          *                   @See SockAddrStorageType
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval AEE_EWOULDBLOCK Request is processed asynchronously.
+          *         Application should register to be notified when progress can
+          *         be made and call Connect again when the notification has been
+          *         received. Application should repeat this process until
+          *         AEE_SUCCESS is returned from the call.
+          *         Registration for the notification can be done via 
+          *         IPort1::Writeable or ISocketExt::RegEvent (WRITE event).
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Connect(in SockAddrStorageType remoteAddr);
+
+         /**
+          * This function sends specified number of bytes across the UDP transport
+          * @param buf Byte array that contains the data to be sent.
+          * @param bufLen size in bytes of data to be sent.
+          * @param remoteAddr A specification of the address and port to send to.
+          *                   @See SockAddrStorageType 
+          * @param flags Supported values are:
+          *    <ul>
+          *       <li> 0: No special handling.
+          *       <li> MSG_EXPEDITE: Indicates that the packet should be sent on
+          *                          ACH or REACH if traffic channel is not UP
+          *       <li> MSG_FASTEXPEDITE: Indicates that the packet should be sent on REACH if
+          *                              traffic channel is not UP
+          *    </ul>
+          * @param numSent If AEE_SUCCESS is returned, indicates the number of bytes actually sent.
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval AEE_EWOULDBLOCK Request is processed asynchronously.
+          *         Application should register to be notified when progress can
+          *         be made and call SendTo again when the notification has been
+          *         received. Application should repeat this process until
+          *         AEE_SUCCESS is returned from the call.
+          *         Registration for the notification can be done via 
+          *         IPort1::Writeable or ISocketExt::RegEvent (WRITE event).
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult SendTo(in   SeqBytes            buf,
+                          in   SockAddrStorageType remoteAddr,
+                          in   unsigned long       flags,
+                          rout long                numSent);
+
+         /**
+          * This function reads specified number of bytes from the UDP transport
+          * @param buf Input/Output Bytes array into which data can be read.
+          *                         On output contains the received data.
+          * @param flags Not supported - must be set to zero.
+          * @param remoteAddr Output A specification of the address and port from which data was received.
+          *                          @See SockAddrStorageType 
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval AEE_EWOULDBLOCK Request is processed asynchronously.
+          *         Application should register to be notified when progress can
+          *         be made and call RecvFrom again when the notification has been
+          *         received. Application should repeat this process until
+          *         AEE_SUCCESS is returned from the call.
+          *         Registration for the notification can be done via 
+          *         IPort1::Readable or ISocketExt::RegEvent (READ event).
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult RecvFrom(rout SeqBytes            buf, 
+                            in   unsigned long       flags, 
+                            rout SockAddrStorageType remoteAddr);
+     
+         /**
+          * Use this function to get the local address assigned to the socket
+          * @param localAddr Output The address assigned to the socket.
+          *                         @See SockAddrStorageType
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetSockName(rout SockAddrStorageType localAddr);
+
+         /**
+          * Use this function to get the remote address of the connected socket.
+          * @param remoteAddr Output The remote address of the connected socket.
+          *                          @See SockAddrStorageType
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetPeerName(rout SockAddrStorageType remoteAddr);
+
+         /**
+          * This function causes all or part of a full-duplex connection to be terminated gracefully.
+          * @param how specifies which direction(s) of the connection to shutdown.
+          * @see ShutdownDirType
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Shutdown(in ShutdownDirType how);
+
+         /**
+          * Gets options for the socket. (compatible to socket options that use
+          * a 32 bit integer or boolean as the socket option data type).
+          * @param level option level (see ds::Sock::OptLevelType)
+          * @param name option name (see ds::Sock::OptNameType)
+          * @param value option value
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetOpt(in   OptLevelType level,
+                          in   OptNameType  name,
+                          rout long         value);
+
+         /**
+          * Sets options for the socket. (compatible to socket options that use
+          * a 32 bit integer or boolean as the socket option data type).
+          * @param level option level (see ds::Sock::OptLevelType)
+          * @param name option name (see ds::Sock::OptNameType)
+          * @param value option value
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult SetOpt(in OptLevelType level,
+                          in OptNameType  name,
+                          in long         value);
+
+         /**
+          * This function reads data and control (ancillary) data buffers over
+          * the transport specified by the socket. 
+          * The parameters with msg_ prefix follow the convention of the msghdr 
+          * defined in RFC 3542. 
+          * @param msg_name Output Address of the source. @See SockAddrStorageType
+          * @param msg_buf Output Message payload.
+          * @param msg_control Output Ancillary data, if applicable.
+          *
+          *        Note1: This sequence does *not* follow the regular 
+          *        "output sequence" semantics. The LenReq parameter
+          *        (implicitly included here) shall indicate the actual size of
+          *        AncillaryData returned, which may be smaller or equal to the 
+          *        buffer size provided by the application. Information on
+          *        additional Ancillary Data that is available but does not fit
+          *        into the buffer provided by the application is not supported.
+          *        @See socket options QDS_IP_RECVIF and QDS_IP_RECVERR.
+          *
+          *        Note2: Language specific headers may be available to
+          *        facilitate API usage of Ancillary Data. For C++/C see 
+          *        ds_Sock_CMsg_Helpers.h
+          *
+          *        Note3: The ancillary header (len, level, type) inside the
+          *        msg_control buffer is on little-endian byte order. For the
+          *        byte ordering of the specific ancillary data part (currently
+          *        ExtendedErrInfoType or RecvIfaceInfoType) please refer to
+          *        its definition.
+          *  
+          *        Note4: Ancillary Data types:
+          *
+          *               cmsg_level: QDS_LEVEL_IP
+          *               cmsg_type: QDS_IP_RECVIF
+          *               structure of data: ds::Sock::RecvIfaceInfoType
+          *
+          *               cmsg_level: QDS_LEVEL_IP
+          *               cmsg_type: QDS_IP_RECVERR
+          *               structure of data: ds::Sock::ExtendedErrInfoType
+          *
+          * @See ds::Sock::RecvIfaceInfoType, ds::Sock::ExtendedErrInfoType
+          *
+          * @param msg_flags Output Output flags.
+          *        <ul>
+          *           <li> MSG_CTRUNC: Indicates amount of incoming ancillary
+          *                            data that is larger than buffer supplied
+          *                            by the application. The part of 
+          *                            ancillary data that fits into the buffer
+          *                            is provided to the application. The rest
+          *                            of the ancillary data cannot be fetched.
+          *           <li> MSG_TRUNC:  Indicates amount of incoming data that is
+          *                            larger than buffer supplied by the
+          *                            application. The part of data that fits 
+          *                            into the buffer is provided to the 
+          *                            application. The rest of the data cannot be fetched.
+          *        </ul>
+          * @param flags Input flags.
+          *        <ul>
+          *           <li> 0: No special handling.
+          *           <li> MSG_ERRQUEUE: Retrieve ICMP errors.
+          *                              @See QDS_IP_RECVERR socket option
+          *        </ul>
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval AEE_EWOULDBLOCK Request is processed asynchronously.
+          *         Application should register to be notified when progress can
+          *         be made and call RecvMsg again when the notification has been
+          *         received. Application should repeat this process until
+          *         AEE_SUCCESS is returned from the call.
+          *         Registration for the notification can be done via 
+          *         IPort1::Readable or ISocketExt::RegEvent (READ event).
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult RecvMsg(rout SockAddrStorageType msg_name,
+                           rout SeqBytes            msg_buf,
+                           rout SeqBytes            msg_control,
+                           rout unsigned long       msg_flags,
+                           in   unsigned long       flags);
+
+         /**
+          * This function sends data from the provided data and ancillary buffers
+          * over the transport specified by the socket.
+          * The parameters with msg_ prefix follow the convention of the msdhdr 
+          * defined in RFC 3542. 
+          * @param msg_name Address of the destination. @See SockAddrStorageType
+          * @param msg_buf Message payload.
+          * @param numWritten Output Number of bytes actually sent.
+          * @param msg_control Ancillary data, if applicable. 
+          *        For SendMsg AncillaryData is an input only parameter.
+          *
+          * @param flags Input flags. Currently none are supported.
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval AEE_EWOULDBLOCK Request is processed asynchronously.
+          *         Application should register to be notified when progress can
+          *         be made and call SendMsg again when the notification has been
+          *         received. Application should repeat this process until
+          *         AEE_SUCCESS is returned from the call.
+          *         Registration for the notification can be done via 
+          *         IPort1::Writeable or ISocketExt::RegEvent (WRITE event).
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult SendMsg(in   SockAddrStorageType  msg_name,
+                           in   SeqBytes             msg_buf,
+                           rout long                 numWritten,
+                           in   SeqBytes             msg_control,
+                           in   unsigned long        flags);
+
+         /**
+          * This attribute represents the SO_LINGER_RESET socket option.
+          * Level: Socket
+          * Value type: LingerType
+          * Description: Linger and reset on timeout.
+          */
+         attribute LingerType SOLingerReset;
+      };
+   };
+};
+
+#endif /* #ifdef DS_SOCK_ISOCKET_IDL */

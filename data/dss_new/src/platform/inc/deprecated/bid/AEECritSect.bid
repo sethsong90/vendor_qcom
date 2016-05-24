@@ -1,0 +1,45 @@
+#ifndef AEECRITSECT_BID
+#define AEECRITSECT_BID
+/*=============================================================================
+
+   Please use AEECCritSect.idl or AEECCritSect.h instead.
+   This file is deprecated.
+
+        Copyright (c) 2010 Qualcomm Technologies, Inc.
+               All Rights Reserved
+        Qualcomm Technologies Confidential and Proprietary
+===============================================================================*/
+
+#include "AEECCritSect.h"
+#define AEECLSID_CritSect AEECLSID_CCritSect
+#define AEECLSID_InterProcessCritSect AEECLSID_CInterProcessCritSect
+
+
+/*=============================================================================
+   CLASS DOCUMENTATION
+===============================================================================
+
+AEECLSID_CritSect
+
+Description:
+  This class is deprecated, please use AEECLSID_CCritSect instead.
+
+See Also:
+  AEECLSID_CCritSect
+
+=============================================================================*/
+/*=============================================================================
+   CLASS DOCUMENTATION
+===============================================================================
+
+AEECLSID_InterProcessCritSect
+
+Description:
+  This class is deprecated, please use AEECLSID_CInterProcessCritSect instead.
+
+See Also:
+  AEECLSID_CInterProcessCritSect
+
+=============================================================================*/
+
+#endif // AEECRITSECT_BID

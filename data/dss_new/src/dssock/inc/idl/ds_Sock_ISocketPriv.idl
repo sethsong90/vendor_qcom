@@ -1,0 +1,63 @@
+#ifndef DS_SOCK_ISOCKETPRIV_IDL
+#define DS_SOCK_ISOCKETPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+
+/**
+ * This is a privileged external interface for ds::Socket.
+ *
+ * This interface exposes extra socket functionality for use by BrewMP.
+ */
+module ds
+{
+   module Sock
+   {
+
+      const AEEIID AEEIID_ISocketPriv = 0x0109dcf2;
+
+      interface ISocketPriv : IQI
+      {
+			/**
+          * This function enables the feature to close the socket after
+			 * a transition to Null bearer was detected and the bearer has 
+			 * remained Null during the given timeout period.
+			 *
+			 * This internal feature is used by BrewMP Out-of-Coverage feature.
+			 *
+          * @param timeoutSec Timeout, in seconds. An input value of 0 means
+			 *        the feature will remain disabled.
+			 * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+		    */
+         AEEResult SetCloseOnNullBearerTimeout(in long timeoutSec);
+
+         /**
+          * This function brings up the underlying Network of Socket if 
+			 * applicable.
+          *
+			 * This is required for BREW Networking backward compatibility 
+			 * for socket operations that require to bring UP the network 
+			 * before Bind is applied on the socket (e.g. Realize). 
+			 * Note: The network is brought up automatically when Bind is 
+			 * applied on the socket.
+			 *
+          * @param None
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult StartNetwork();
+      };
+   };
+};
+
+#endif /* #ifdef DS_SOCK_ISOCKETPRIV_IDL */

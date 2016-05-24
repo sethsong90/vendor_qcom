@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (c) 2012, Qualcomm Technologies, Inc.
+    All Rights Reserved.
+    Qualcomm Technologies Proprietary and Confidential.
+    Developed by QRD Engineering team.
+-->
+<resources>
+    <string name="screenshot_notification_title">LogKit</string>
+    <string name="screenshot_notification_text">saved</string>
+</resources>

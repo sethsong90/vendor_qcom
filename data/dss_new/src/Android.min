@@ -1,0 +1,82 @@
+# Refer to platform\inc\custdatacommon.h for feature set definition
+# required by IQI
+LOCAL_CFLAGS += -DAEEINTERFACE_CPLUSPLUS
+# required by dsc_utils.h to figure out where to direct dsc_log
+LOCAL_CFLAGS += -DFEATURE_DATA_LOG_QXDM
+# this will prefix searchable directories for "file"
+LOCAL_CFLAGS += -DFEATURE_LINUX
+#FEATURE_SMD for diag
+LOCAL_CFLAGS += -DFEATURE_SMD
+LOCAL_CFLAGS += -DFEATURE_DIAG_MP_MASTER_APPS
+
+LOCAL_CFLAGS += -DFEATURE_DS_LINUX_ANDROID
+LOCAL_CFLAGS += -DFEATURE_DSS_LINUX
+#LOCAL_CFLAGS += -DFEATURE_DS_LINUX_DRIVER_LEGACY  
+# need feature multiprocessor to have max proc set to 3 in netiface
+LOCAL_CFLAGS += -DFEATURE_MULTIPROCESSOR
+LOCAL_CFLAGS += -DFEATURE_Q_NO_SELF_QPTR
+
+LOCAL_CPPFLAGS += -Wno-non-virtual-dtor
+
+
+# Target-specific flags
+ifeq ($(call is-board-platform,msm7630_fusion),true)
+LOCAL_CFLAGS += -DFEATURE_DS_FUSION
+endif
+
+#For debugging only, suppress code optimization
+#LOCAL_CFLAGS += -O0 -g2
+#LOCAL_CPPFLAGS += -O0 -g2
+#FORCE_ARM_DEBUGGING := true
+
+#Generate linker map file
+#LOCAL_LDFLAGS += -Xlinker -Map=linker.map
+
+# Platform include path should be first to permit overriding other headers
+# dsbcms_defs.h etc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/platform/inc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../qmi/inc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../qmi/src
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../qmi/platform
+
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../inc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/api/
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/api/dss
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/api/netiface
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/api/utils
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/dss/inc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/dsnet/inc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/dssock/inc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/dssock/src
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/dssvc/inc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/inet/inc/
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/utils/src
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/utils/inc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/tasks/inc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/netiface/src
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/netiface/inc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/qmiifacectls/src
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/qmiifacectls/inc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../dsutils/inc
+
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../netmgr/inc
+
+
+# amssassert.h nv_items.h
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../services/inc
+
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../common/inc
+# msg.h
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../diag/include
+# err.h
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../oncrpc/inc/oncrpc
+# dsm.h
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../oncrpc/dsm
+# qw.h
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../mm-video/8k/venc-omx/device/src
+
+
+LOCAL_LDLIBS += -lpthread
+
+LOCAL_PRELINK_MODULE := false
+

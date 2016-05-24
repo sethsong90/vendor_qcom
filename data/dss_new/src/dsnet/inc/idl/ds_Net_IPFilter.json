@@ -1,0 +1,210 @@
+/* ============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                          All Rights Reserved.
+                 Qualcomm Technologies Confidential and Proprietary
+============================================================================ */
+
+{
+   "name":"ds_Net_IPFilter",
+   "description":"This is the JSON Schema for an IPFilter",
+   "type":"object",
+   "properties":{
+      "IPVsn":{
+         "type":"integer",
+         "enum":[4,
+                 6],
+         "description":"IP version associated with the filter
+                       This is a mandatory parameter and each filter must
+                       be associated with an IP version (v4 or v6), and only
+                       the parameters defined by that IP version can be
+                       specified by the filter. 
+                       The following values are
+                       defined:
+                       4 – Indicates an IPv4 filter
+                       6 – Indicates an IPv6 filter"
+      },
+      "NextHdrProt":{
+         "type":"integer",
+         "enum":[6,
+                 17,
+                 50,
+                 51],
+         "optional":true,        
+         "description":"Identifies the higher layer
+                        protocol that needs to be considered for filtering an IP
+                        packet
+                        If this field is specified, only IP packets belonging to
+                        the specified higher layer protocol are considered for
+                        filtering. The filtering can be further enhanced by
+                        specifying parameters from that protocol header fields
+                        as described below.
+                        IPROTO_TCP – Protocol is TCP (IETF assigned
+                        6 - Protocol is TCP.
+                        17 - Protocol is UDP.
+                        50 - Protocol is ESP.
+                        51 – Protocol is AH."
+      },
+      "SrcPort":{
+         "type":"object",
+         "Port":{
+            "type":"integer",
+            "maximum":65535
+         },
+         "Range":{
+            "type":"integer",
+            "maximum":65535
+         },
+         "optional":true,
+         "description":"The value of range specifies the number of ports to
+                        be included in the filter starting from the value port.
+                        The filter will match if the source port in the IP
+                        packet lies between port and port+range. A range
+                        value of 0 implies that only one value of the source 
+                        port is valid as specified by the port.
+                        NextHdrProt property must be specified together with
+                        this property."
+      },
+      "DstPort":{
+         "type":"object",
+         "propertes":{
+            "Port":{
+               "type":"integer",
+               "maximum":65535
+            },
+            "Range":{
+               "type":"integer",
+               "maximum":65535
+            }
+         },
+         "optional":true,
+         "description":"The value of range specifies the number of ports to
+                        be included in the filter starting from the value port.
+                        The filter will match if the destination port in the
+                        IP packet lies between port and port+range. A range
+                        value of 0 implies that only one value of the destination 
+                        port is valid as specified by the the port.
+                        NextHdrProt property must be specified together with
+                        this property."
+      },
+      "SrcAddr":{
+         "type":"object",
+         "properties":{
+            "Addr":{
+               "type":"string",
+               "format":["ip-address",
+                         "ipv6"]
+            },
+            "SubnetMask":{
+               "type":"string",
+               "format":["ip-address",
+                         "ipv6"]
+            }
+         },
+         "optional":true,
+         "description":"Filtering is performed by comparing the addr field
+                        logical ANDed with the subnet_mask against the
+                        source address from an IP packet logical ANDed with
+                        the subnet_mask. subnet_mask allows callers to set
+                        up a filter with a range of the source addresses, if
+                        needed."
+      },
+      "DstAddr":{
+         "type":"object",
+         "properties":{
+            "Addr":{
+               "type":"string",
+               "format":["ip-address",
+                         "ipv6"]
+            },
+            "SubnetMask":{
+               "type":"string",
+               "format":["ip-address",
+                         "ipv6"]
+            }
+         },
+         "optional":true,
+         "description":"Filtering is performed by comparing the addr field
+                        logical ANDed with the subnet_mask against the
+                        destination address from an IP packet logical ANDed
+                        with the subnet_mask. subnet_mask allows callers to
+                        set up a filter with a range of the destination
+                        addresses, if needed."
+      },
+      "ToS":{
+         "type":"object",
+         "properties":{
+            "Val":{
+               "type":"integer",
+               "maximum":255
+            },
+            "Mask":{
+               "type":"integer",
+               "maximum":255
+            }
+         },
+         "optional":true,
+         "description":"Filtering is performed by comparing val field logical
+                        ANDed with the mask against the TOS field from an
+                        IP packet logical ANDed with the mask. The mask
+                        should have a bit set if the corresponding bit in the
+                        TOS field in the IP packet should be considered for a
+                        match. The val should have a bit set if the
+                        corresponding bit in the TOS field in the IP packet
+                        should also be set and vice versa. In other words,
+                        only those bits in val are matched against the TOS
+                        field bits in the IP packet for which the corresponding
+                        bit is on in the mask.
+                        Example:
+                           val = 00101000
+                           mask = 11111100
+                        The filter will compare only the first 6 bits in the val
+                        with the first 6 bits in the TOS field of the IP packet.
+                        The first 6 bits in the TOS field of the IP packet must
+                        be 001010 to match the filter. The last 2 bits can be
+                        anything since they are ignored by filtering."
+      },
+      "FlowLabel":{
+         "type":"integer",
+         "optional":true,
+         "description":"IP flow label field"
+      },
+      "TrafficClass":{
+         "type":"object",
+         "properties":{
+            "Val":{
+               "type":"integer",
+               "maximum":255
+            },
+            "Mask":{
+               "type":"integer",
+               "maximum":255
+            }
+         },
+         "optional":true,
+         "description":"ANDed with the mask against the traffic class field
+                        from an IP packet logical ANDed with the mask. The
+                        mask should have a bit set if the corresponding bit in
+                        the traffic class field in the IP packet should be
+                        considered for a match. The val should have a bit set
+                        if the corresponding bit in the traffic class field in
+                        the IP packet should also be set and vice versa. In
+                        other words, only those bits in val are matched against
+                        the traffic class field bits in the IP packet for which
+                        the corresponding bit is on in the mask.
+                        Example:
+                           val = 00101000
+                           mask = 11111100
+                        The filter will compare only the first 6 bits in the val
+                        with the first 6 bits in the traffic class field of the 
+                        IP packet. The first 6 bits in the traffic class field
+                        of the IP packet must be 001010 to match the filter. The
+                        last 2 bits can be anything since they are ignored by
+                        filtering."
+      },
+      "EspSpi":{
+         "type":"integer",
+         "optional":true,
+         "description":"Filtering of specific values in Security Parameters
+                        Index field of ESP header of IP packets"
+      }
+}

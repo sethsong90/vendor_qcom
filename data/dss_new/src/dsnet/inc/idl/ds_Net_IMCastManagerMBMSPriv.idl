@@ -1,0 +1,55 @@
+#ifndef DS_NET_IMCASTMANAGERMBMSPRIV_IDL
+#define DS_NET_IMCASTMANAGERMBMSPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+#include "AEEStdDef.idl"
+
+#include "ds_Addr_Def.idl"
+
+#include "ds_Net_IMCastSession.idl"
+#include "ds_Net_IMCastMBMSCtrlPriv.idl"
+
+module ds
+{
+   module Net
+   {
+      typedef long MCastInfoCodeTypePriv;
+      module MCastInfoCode
+      {
+         /**
+          * MCastInfoCodeTypePriv is part of the enumeration in MCastInfoCodeType.
+          * MBMS related info code is moved here until MBMS feature is released
+          * publicly.
+          */         
+         const MCastInfoCodeTypePriv MBMS_SYSTEM_UNAVAILABLE = MCAST_INFO_CODE_RESERVED1;
+      };
+
+      const AEEIID AEEIID_IMCastManagerMBMSPriv = 0x0106df81;
+      /**
+       * ds Net MCast Manager MBMS interface.
+       * This Object is received from IMCastManagerPriv via Query Interface.
+       */
+      interface IMCastManagerMBMSPriv : IQI
+      {
+         /**
+          * This function is used to setup the MBMS context over the air.
+          * @param addr Multicast address to be used.
+          * @param pdpNumber PDP number to be used.
+          * @see ds::IPAddrType.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Activate(in ds::IPAddrType addr, in long pdpNumber, rout IMCastMBMSCtrlPriv ppMCastMBMSCtrlPriv);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_IMCASTMANAGERMBMSPRIV_IDL */

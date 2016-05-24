@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---/**************************************************************************
+* Copyright (c) 2013 Qualcomm Technologies, Inc.
+* All Rights Reserved.
+* Qualcomm Technologies Confidential and Proprietary.
+*  **************************************************************************-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+	<!-- Applications granted NFCEE access on user builds
+	See packages/apps/Nfc/etc/sample_nfcee_access.xml for full documentation.
+	-->
+	<debug />
+
+</resources>

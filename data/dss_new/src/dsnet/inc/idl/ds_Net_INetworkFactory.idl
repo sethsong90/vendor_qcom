@@ -1,0 +1,89 @@
+#ifndef DS_NET_INETWORKFACTORY_IDL
+#define DS_NET_INETWORKFACTORY_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEIQI.idl"
+#include "AEEStdDef.idl"
+
+#include "ds_Net_INetwork.idl"
+#include "ds_Net_IPolicy.idl"
+#include "ds_Net_ITechUMTS.idl"
+
+module ds
+{
+   module Net
+   {
+      /**
+       * INetwork mode that allows Factory API to know which mode to use in INetwork creation
+      */
+      typedef long NetworkModeType;
+      module NetworkMode
+      {
+         /**
+          * Active INetwork. This mode should be used unless special needs are required.
+          * Data Network is brought up upon instantiation of this mode of INetwork.
+          */
+         const NetworkModeType QDS_ACTIVE      = 0x010762b4;
+         /**
+          * Monitored mode INetwork. This mode is intended for listening to network 
+          * events without bringing up the Data Network. 
+          * Some API of INetwork interface are unsupported in MONITORED MODE when
+          * the underlying network interface is down.
+          */
+         const NetworkModeType QDS_MONITORED   = 0x010762b5;
+      };
+
+      const AEEIID AEEIID_INetworkFactory = 0x0106d851;
+      interface INetworkFactory : IQI
+      {
+         /**    
+          * This function creates an instance of INetwork. INetwork creation is
+          * supported only via INetworkFactory. In this API the Application
+          * specifies the network policy to be used for the creation of the
+          * network object.
+          * 
+          * @param networkMode Specification of which INetwork type to create.
+          * @param policy Network policy. If NULL default policy shall be used.
+          * @param newNetwork Output The newly created INetwork instance.
+          * @retval AEE_SUCCESS INetwork created successfully. In the case of
+          *                     ACTIVE Network Mode, the application should
+          *                     register to ds::Net::NetworkEvent::STATE_CHANGED
+          *                     events on the new Network object and wait for
+          *                     the Network state to become OPEN.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreateNetwork(in NetworkModeType networkMode, in IPolicy policy, rout INetwork newNetwork);
+
+         /**    
+          * This function creates an instance of Policy. Policy creation is supported only
+          * via INetworkFactory. 
+          * @param newPolicy Output The newly created Policy instance.
+          * @retval AEE_SUCCESS Policy created successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreatePolicy(rout IPolicy newPolicy);
+
+         /**    
+          * This function creates an instance of ITechUMTS. ITechUMTS creation is supported only
+          * via INetworkFactory. 
+          * @param newTechUMTS Output The newly created ITechUMTS instance.
+          * @retval AEE_SUCCESS ITechUMTS created successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult CreateTechUMTS(rout ITechUMTS newTechUMTS);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_INETWORKFACTORY_IDL */
+
+

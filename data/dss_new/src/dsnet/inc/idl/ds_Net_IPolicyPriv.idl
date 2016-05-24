@@ -1,0 +1,42 @@
+#ifndef DS_NET_IPOLICYPRIV_IDL
+#define DS_NET_IPOLICYPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl" 
+
+#include "ds_Net_Def.idl"
+#include "ds_Net_IPolicy.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IPolicyPriv = 0x01072d07;
+      /**
+       * ds Network Policy Privileged interface.
+       * This interface allows for additional, non public, policy attributes.
+       */
+      interface IPolicyPriv : IPolicy
+      {
+         /**
+          * This attribute indicates an iface id for the policy.
+          * @See INetwork::IfaceId
+          */
+         attribute IfaceIdType IfaceId;
+
+         /**
+          * This attribute indicates the UMTS Access Point name as part of the
+          * network policy.
+          */
+         attribute string      UMTSAPNName;
+      };
+   };// module Net
+};// module ds
+#endif /* #ifndef DS_NET_IPOLICYPRIV_IDL */

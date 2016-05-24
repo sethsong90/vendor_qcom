@@ -1,0 +1,157 @@
+#ifndef DS_ERRORS_DEF_IDL
+#define DS_ERRORS_DEF_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+
+module ds
+{
+   typedef AEEResult ErrorType;
+
+   module Error
+   {
+      // The ERRORS_BASE* definitions are not error codes. Their purpose is to avoid conflicts
+      // with error codes values from other sub systems.
+      const AEEResult QDS_ERRORS_BASE_UNIQUE   = 0x0106d075;
+      const AEEResult QDS_ERRORS_BASE          = 0x06d07500; //(QDS_ERRORS_BASE_UNIQUE<<8); // DSS errors base
+
+      // For SUCCESS, "AEE_SUCCESS" is used (defined in AEEStdErr.h).
+      // Additional errors from AEEStdErr.h may be returned from ds subsystem
+      // for example, AEE_EFAILED, AEE_ENOMEMORY, AEE_EWOULDBLOCK and others. 
+
+      const AEEResult QDS_EEOF                 = QDS_ERRORS_BASE + 1;       /* end of file */
+      const AEEResult QDS_EINTR                = QDS_ERRORS_BASE + 2;       /* Reserve for error in BSD clbk function */
+      const AEEResult QDS_EBADF                = QDS_ERRORS_BASE + 3;       /* Invalid socket descriptor */
+      const AEEResult QDS_EFAULT               = QDS_ERRORS_BASE + 4;       /* Invalid buffer or argument */
+      const AEEResult QDS_EAFNOSUPPORT         = QDS_ERRORS_BASE + 5;       /* Address family not supported */
+      const AEEResult QDS_EPROTOTYPE           = QDS_ERRORS_BASE + 6;       /* Wrong protocol for socket type */
+      const AEEResult QDS_ESOCKNOSUPPORT       = QDS_ERRORS_BASE + 7;       /* Socket parameter not supported */
+      const AEEResult QDS_EPROTONOSUPPORT      = QDS_ERRORS_BASE + 8;       /* Protocol not supported */
+      const AEEResult QDS_EMFILE               = QDS_ERRORS_BASE + 9;       /* No more sockets available for opening */
+      const AEEResult QDS_EOPNOTSUPP           = QDS_ERRORS_BASE + 10;      /* Operation not supported */
+      const AEEResult QDS_EADDRINUSE           = QDS_ERRORS_BASE + 11;      /* Address already in use */
+      const AEEResult QDS_EADDRREQ             = QDS_ERRORS_BASE + 12;      /* Destination address required */
+      const AEEResult QDS_EINPROGRESS          = QDS_ERRORS_BASE + 13;      /* Connection establishment in progress */
+      const AEEResult QDS_EISCONN              = QDS_ERRORS_BASE + 14;      /* Connection already established */
+      const AEEResult QDS_EIPADDRCHANGED       = QDS_ERRORS_BASE + 15;      /* IP address changed, causing TCP reset */
+      const AEEResult QDS_ENOTCONN             = QDS_ERRORS_BASE + 16;      /* socket not connected */
+      const AEEResult QDS_ECONNREFUSED         = QDS_ERRORS_BASE + 17;      /* Connection attempt refused */
+      const AEEResult QDS_ETIMEDOUT            = QDS_ERRORS_BASE + 18;      /* Connection attempt timed out */
+      const AEEResult QDS_ECONNRESET           = QDS_ERRORS_BASE + 19;      /* Connection reset */
+      const AEEResult QDS_ECONNABORTED         = QDS_ERRORS_BASE + 20;      /* Connection aborted */
+      const AEEResult QDS_EPIPE                = QDS_ERRORS_BASE + 21;      /* Broken pipe */
+      const AEEResult QDS_ENETDOWN             = QDS_ERRORS_BASE + 22;      /* Network subsystem unavailable */
+      const AEEResult QDS_EMAPP                = QDS_ERRORS_BASE + 23;      /* no more applications available */
+      const AEEResult QDS_EBADAPP              = QDS_ERRORS_BASE + 24;      /* Invalid application ID */
+      const AEEResult QDS_ESOCKEXIST           = QDS_ERRORS_BASE + 25;      /* there are existing sockets */
+      const AEEResult QDS_EINVAL               = QDS_ERRORS_BASE + 26;      /* invalid operation */
+      const AEEResult QDS_EMSGSIZE             = QDS_ERRORS_BASE + 27;      /* dss_sendto() error condition: 
+                                                                               The message is too large */
+      const AEEResult QDS_EMSGTRUNC            = QDS_ERRORS_BASE + 28;      /* msg truncated, supplied buffer too small */
+      const AEEResult QDS_ENOROUTE             = QDS_ERRORS_BASE + 29;      /* IP Routing error condition: 
+                                                                               No route to destination found */
+      const AEEResult QDS_ESHUTDOWN            = QDS_ERRORS_BASE + 30;      /* Shutdown error condition: 
+                                                                               can't send after shutting down write-half */
+      const AEEResult QDS_INTERNAL             = QDS_ERRORS_BASE + 31;      /* Internal error */
+
+      /*---------------------------------------------------------------------------
+                                 Socket Option Errors
+      ---------------------------------------------------------------------------*/
+      // QDS_ERRORS_SO_BASE is not an error code and should not be used by applications.
+      // It is defined in order to allow addition of error codes to the previous group of error codes.
+      const AEEResult QDS_ERRORS_SO_BASE       = QDS_ERRORS_BASE + 200;
+      
+      const AEEResult QDS_ENOPROTOOPT          = QDS_ERRORS_SO_BASE + 1;     /* The option is unknown at the level indicated */
+
+
+      /*---------------------------------------------------------------------------
+                                 Extra ICMP(v6) errors.
+      ---------------------------------------------------------------------------*/
+      // QDS_ERRORS_ICMP_BASE is not an error code and should not be used by applications.
+      // It is defined in order to allow addition of error codes to the previous group of error codes.
+      const AEEResult QDS_ERRORS_ICMP_BASE     = QDS_ERRORS_BASE + 300;
+
+      const AEEResult QDS_ENETUNREACH          = QDS_ERRORS_ICMP_BASE + 1;      /* Network is unreachable    */
+      const AEEResult QDS_EHOSTUNREACH         = QDS_ERRORS_ICMP_BASE + 2;      /* No route to host          */
+      const AEEResult QDS_EHOSTDOWN            = QDS_ERRORS_ICMP_BASE + 3;      /* Host is down              */
+      const AEEResult QDS_ENONET               = QDS_ERRORS_ICMP_BASE + 4;      /* Machine is not on network */
+      const AEEResult QDS_EPROTO               = QDS_ERRORS_ICMP_BASE + 5;      /* Protocol error            */
+      const AEEResult QDS_EACCES               = QDS_ERRORS_ICMP_BASE + 6;      /* Permission denied         */
+
+      /*---------------------------------------------------------------------------
+                                       QoS Errors
+      ---------------------------------------------------------------------------*/
+      // QDS_ERRORS_QOS_BASE is not an error code and should not be used by applications.
+      // It is defined in order to allow addition of error codes to the previous group of error codes.
+      const AEEResult QDS_ERRORS_QOS_BASE      = QDS_ERRORS_BASE + 400;
+
+      const AEEResult QDS_EQOSUNAWARE          = QDS_ERRORS_QOS_BASE + 1;        /* Mobile is in a QoS Unaware System */
+
+      /*---------------------------------------------------------------------------
+                                       IPv6 Errors
+      ---------------------------------------------------------------------------*/
+      // QDS_ERRORS_IPv6_BASE is not an error code and should not be used by applications.
+      // It is defined in order to allow addition of error codes to the previous group of error codes.
+      const AEEResult QDS_ERRORS_IPv6_BASE     = QDS_ERRORS_BASE + 500;
+
+      const AEEResult QDS_ENOSRCADDR           = QDS_ERRORS_IPv6_BASE + 1;       /* No valid src addr could be found  */
+
+      /*---------------------------------------------------------------------------
+                              Network Subsystem Errors
+      ---------------------------------------------------------------------------*/
+      
+      // QDS_ERRORS_NET_BASE is not an error code and should not be used by applications.
+      // It is defined in order to allow addition of error codes to the previous group of error codes.
+      const AEEResult QDS_ERRORS_NET_BASE      = QDS_ERRORS_BASE + 600;
+
+      const AEEResult QDS_ENETISCONN           = QDS_ERRORS_NET_BASE + 1;  /* subsystem established and available */
+      const AEEResult QDS_ENETINPROGRESS       = QDS_ERRORS_NET_BASE + 2;  /* subsystem establishment in progress */
+      const AEEResult QDS_ENETNONET            = QDS_ERRORS_NET_BASE + 3;  /* network subsystem unavailable */
+      const AEEResult QDS_ENETCLOSEINPROGRESS  = QDS_ERRORS_NET_BASE + 4;  /* PPP is closing */
+      const AEEResult QDS_ENETEXIST            = QDS_ERRORS_NET_BASE + 5;  /* existing net subsystem resources */
+      const AEEResult QDS_ENETGOINGDORMANT     = QDS_ERRORS_NET_BASE + 6;  /* Physlink going dormant */
+
+     /*---------------------------------------------------------------------------
+                              DNS/Resolver Errors
+      ---------------------------------------------------------------------------*/
+
+      // QDS_ERRORS_DNS_BASE is not an error code and should not be used by applications.
+      // It is defined in order to allow addition of error codes to the previous group of error codes.
+      const AEEResult QDS_ERRORS_DNS_BASE      = QDS_ERRORS_BASE + 700;
+
+      const AEEResult QDS_ENAMEERR             = QDS_ERRORS_DNS_BASE + 1; /* Resolver Error: Malformed Domain Name */
+      const AEEResult QDS_EINUSE               = QDS_ERRORS_DNS_BASE + 2; /* Resolver Synchronous Error: The resolver is in use. */
+
+      const AEEResult QDS_EHOSTNOTFOUND        = QDS_ERRORS_DNS_BASE + 3; /* DNS Lookup Error: Host not found */
+      const AEEResult QDS_ETRYAGAIN            = QDS_ERRORS_DNS_BASE + 4; /* DNS Lookup Error: Temporary error */
+      const AEEResult QDS_ENORECOVERY          = QDS_ERRORS_DNS_BASE + 5; /* DNS Lookup Error: Irrecoverable error */
+      const AEEResult QDS_ENOADDRESS           = QDS_ERRORS_DNS_BASE + 6; /* DNS Lookup Error: No address for the domain name */
+
+      const AEEResult QDS_ETRUNCATED           = QDS_ERRORS_DNS_BASE + 7; /* Response is truncated */
+      const AEEResult QDS_ESYSTEM              = QDS_ERRORS_DNS_BASE + 8; /* System error occurred */
+      const AEEResult QDS_EMAXQUERIES          = QDS_ERRORS_DNS_BASE + 9; /* Reached max number of queries supported */
+
+     /*---------------------------------------------------------------------------
+                              BCMCS DB Errors
+      ---------------------------------------------------------------------------*/
+
+      // QDS_ERRORS_BCMCSDB_BASE is not an error code and should not be used by applications.
+      // It is defined in order to allow addition of error codes to the previous group of error codes.
+      const AEEResult QDS_ERRORS_BCMCSDB_BASE      = QDS_ERRORS_BASE + 800;
+
+      const AEEResult QDS_BCMCSDB_OVERFLOW         = QDS_ERRORS_BCMCSDB_BASE + 1; /* The DataBase is full. Cannot add new record */
+      const AEEResult QDS_BCMCSDB_NO_OVERWRITE     = QDS_ERRORS_BCMCSDB_BASE + 2; /* BCMCSDB specification already present in the DB (and overwrite flag is set to FALSE) */
+
+   };// module Error
+
+};// module ds
+
+#endif /* #ifndef DS_ERRORS_DEF_IDL */
+

@@ -1,0 +1,54 @@
+#ifndef DS_NET_IQOSSECONDARIESINPUT_IDL
+#define DS_NET_IQOSSECONDARIESINPUT_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+#include "AEEIQI.idl"
+
+#include "ds_Net_IQoSSecondary.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IQoSSecondariesInput = 0x0109b6d0;
+      /**
+       * ds Net IQoSSecondariesInput interface.
+       * This interface represents a group of QoS Secondary Sessions.
+       * The Group does not hold a reference to the QoS Secondary objects.
+       * A QoS Secondary object is disassociated from the group upon its
+       * destruction.
+       * @See IQoSManager::Close, IQoSManager::Resume, 
+       *      IQoSManager::Suspend.
+       */
+      interface IQoSSecondariesInput : IQI
+      {
+         /**    
+          * This function associates a QoS Secondary with the group.
+          * @param qosSecondary QoS Secondary to be associated with the group.
+          * @retval ds::SUCCESS QoS Secondary successfully associated.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Associate(in IQoSSecondary qosSecondary);
+
+         /**    
+          * This function disassociates a QoS Secondary from the group.
+          * @param qosSecondary QoS Secondary to be disassociated from the group.
+          * @retval ds::SUCCESS QoS Secondary successfully disassociated.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult Disassociate(in IQoSSecondary qosSecondary);
+      };
+   };// module Net
+};// module ds
+
+#endif /* #ifdef DS_NET_IQOSSECONDARIESINPUT_IDL */

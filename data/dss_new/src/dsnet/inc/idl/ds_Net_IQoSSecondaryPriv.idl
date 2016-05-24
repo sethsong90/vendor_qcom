@@ -1,0 +1,43 @@
+#ifndef DS_NET_IQOSSECONDARYPRIV_IDL
+#define DS_NET_IQOSSECONDARYPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "ds_Net_IQoSPriv.idl"
+#include "ds_Net_QoS_Def.idl"
+#include "ds_Net_QoS_DefPriv.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IQoSSecondaryPriv = 0x010a32b3;
+      /**
+       * ds QoS Secondary Private interface.
+       */
+      interface IQoSSecondaryPriv : IQoSPriv
+      {
+         /**
+          * This function issues the following modification requests:
+          *  - Modify an existing QoS Session either in Rx, Tx or both directions.
+          *  - Add a new QoS in a specific direction.
+          *  - Remove a granted QoS in a specific direction.
+          * The modification requests can be performed on Rx blocks, Tx blocks or both.
+          * @param requestedSpec the QoS specification used for modifying the QoS instance
+          * @param modifyMask bit mask which indicates the QoS specification blocks to be modified 
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval ds::EBADOPTS Bad options.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult ModifySecondaryPriv(in QoSSpecType requestedSpec, in QoSModifyMaskType modifyMask);
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IQOSSECONDARYPRIV_IDL */

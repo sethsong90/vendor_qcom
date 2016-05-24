@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="org.codeaurora.ims"
+      android:sharedUserId="android.uid.phone"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-sdk android:minSdkVersion="10" />
+
+    <permission android:name="org.codeaurora.permission.ACCESS_CSVT_SERVICE"
+                android:protectionLevel="signatureOrSystem"/>
+
+    <application>
+        <service android:exported="true" android:name=".ImsService" android:enabled="true" android:process="com.android.phone">
+            <intent-filter>
+                 <!--These are the interfaces supported by the service, which
+                     you can bind to.  -->
+                <action android:name="org.codeaurora.ims.IImsService"/>
+            </intent-filter>
+        </service>
+        <service android:exported="true" android:name="com.qualcomm.ims.csvt.CsvtService" android:enabled="true"
+            android:process="com.android.phone" android:permission="org.codeaurora.permission.ACCESS_CSVT_SERVICE">
+            <intent-filter>
+                <action android:name="org.codeaurora.ims.csvt.ICsvtService"/>
+            </intent-filter>
+        </service>
+    <uses-library android:name="org.codeaurora.imslibrary"/>
+    </application>
+</manifest>

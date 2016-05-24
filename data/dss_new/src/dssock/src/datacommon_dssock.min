@@ -1,0 +1,23 @@
+#-------------------------------------------------------------------------------
+# DATACOMMON DSSOCK Sources MIN File
+# $Header: //source/qcom/qct/modem/datacommon/dssock/rel/09.02.01/src/datacommon_dssock.min#2 $
+# $Author: stzahi $
+# $DateTime: 2009/11/23 07:14:50 $
+#-------------------------------------------------------------------------------
+
+DATACOMMON_DSSOCK_CPP_SOURCES=\
+    DS_Sock_Init.cpp \
+    DS_Sock_RecvIFInfo.cpp \
+    DS_Sock_ICMPErrInfo.cpp \
+    DS_Sock_ICMPSocket.cpp \
+    DS_Sock_Socket.cpp \
+    DS_Sock_SocketIPSec.cpp \
+    DS_Sock_AddrUtils.cpp \
+    DS_Sock_ClassIDInstantiator.cpp \
+    DS_Sock_EventManager.cpp \
+    DS_Sock_SocketFactory.cpp \
+    DS_Sock_SocketFactoryPriv.cpp \
+    DS_Sock_MemManager.cpp \
+    DS_Sock_RoutingManager.cpp \
+    DS_Sock_TCPSocket.cpp \
+    DS_Sock_UDPSocket.cpp

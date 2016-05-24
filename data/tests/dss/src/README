@@ -1,0 +1,209 @@
+Copyright (c) 2008 Qualcomm Technologies, Inc. All Rights Reserved. Qualcomm Technologies Proprietary and Confidential.
+
+Running DSS Smoke Tests
+-----------------------
+
+Author: Vaibhav Kumar (vaibhavk@)
+
+Note: This information is current as of CRM 6064. 
+
+A. Prerequisites:
+-----------------
+
+0. A setup that is configured for packet data calls. For some of the tests that
+are run as part of the smoke test suite, multiple PDP capability is needed. The 
+setup must support up to three primary PDP contexts simultaneously.
+
+1. Current directory must be included in PATH in the console; this is a 
+prerequisite for some of the scripts. This can be done using:
+
+> export PATH=$PATH:./
+
+2. Need data (PDP) profiles to be created; dss tests assume the existence of the
+following profiles, in addition to the default profile (#1) which already exists:
+
+Profile #2: a non-empty APN (1)
+Profile #3: a non-empty APN (2) (distinct from APN1)
+Profile #4: same APN as profile #1
+Profile #5: same APN as profile #2
+Profile #6: same APN as profile #3
+
+Note that these profiles must be created for the RMNET family of profiles. One
+way to create these is to use AT commands to create same profiles for ATCOP family 
+and then copy over these profiles to rmnet folder using efs explorer. The profiles
+can be found in EFS under /pdp_profile directory.
+
+To create, for instance Profile #2 using AT commands, using apn "testapn", do:
+
+> echo -ne "at+cgdcont=2,\"IP\",\"testapn\"\r" > /dev/smd0
+
+3. "DSC" application must be running. This application is the server process 
+that serves client applications that need to use DSS API. To start this process
+use the script 'dsc.sh'. Both dsc and dsc.sh are in /apps/ on target. 
+
+Note that in CRM 6064 this script is broken. Please manually edit the script to
+fix the absolute paths of the prorgam and scripts. Subsequent CRMs should be ok,
+as I fixed the script to not require the absolute paths to be specified.
+
+
+You are now ready to run DSS smoke tests. 
+
+B. Test Procedure:
+------------------
+
+0. Change to directory on target where the tests are installed. 
+
+In CRM 6064 tests are not installed on the ramdisk. Manually copy over the tests
+to an appropriate location on a mounted directory (such as /prj/happyfeet/).
+You will also need to copy over the library libdsstest once the tests have been 
+built.
+
+1. Make sure that the loader knows where to pick up the dsstest library from.
+
+To do this, add the directory where libdsstest was copied over to the path 
+specified in environment variable LD_LIBRARY_PATH:
+
+> export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<dir containing libdsstest>
+
+2. To run the smoke test suite, use script 'dss_smoke_test.sh'. Use the following
+syntax:
+
+> dss_smoke_test.sh -f <log file name>
+
+Once the script exits, open the log file and make sure that each test that was 
+run is indicated as having "passed".
+
+3. Optionally, you can run an individual test. Just run the test on the command
+line, such as:
+
+> dss_test_1
+
+Once the program exits, make sure that it indicates "passed" on the terminal. 
+
+
+C. Running Data Transfer Tests:
+-------------------------------
+
+Data transfer tests test DSS sockets API. These tests require additional setup 
+to start a peer server/client application to sink/source data. Because 
+additional setup is needed, these are not automatically enabled as part of smoke
+tests. The starting and stopping of the appropriate peer application is 
+automatically handled by the script wrappers provided for these tests, provided
+that a "master" server is running on a remote (UNIX/LINUX) machine. 
+
+The procedure to run data transfer tests, in addition to network control tests, 
+is the following:
+
+0. A peer application package needs to be installed on a remote machine. 
+
+This package is provided in the build. Installation script is available in the
+dsstest src directory. To install, login to the remote machine, change dir 
+to the dsstest src directory and then run the install script:
+
+> dss_test_peer_install.sh -i <installation dir path>
+
+The installation directory will be created if it doesn't exist. Please use a 
+new/empty directory specifically for installing the application package.
+
+Installation copies the necessary source/header files and scripts.
+
+1. Build the application package. 
+
+The necessary makefile is present in the install dir. Change to the install dir
+and build the package:
+
+> make
+
+2. Start the master server on the remote machine. 
+
+The master server app is built in the previous step. Run this app:
+
+> dss_test_master -i <ip address> -p <port #> -m dss_test_dispatch.sh
+
+The master app requires the IP address of the local machine to be specified on
+the command line. Also, the port number to use has to be specified. Any unique
+port number can be used. 
+
+Essentially, the master app is a simple UDP server that reads text "commands"
+in the form of UDP packets and invokes a "master script" to execute each command
+received. 
+
+3. Run the smoke test script with the noskip option to run all tests. 
+
+Use the following command to run smoke test script to run all available tests
+while passing the necessary options to run the data transfer tests:
+
+> dss_smoke_test.sh -ns -f <log file name> -ps " -mi <master's ip address> -mp <master's port> -pp <peer port> -f <data file> -fo <remote file>"
+
+-ns option indicates to smoke test script to not skip any tests. 
+Master's IP address and port number are the ones specified in step 2. 
+Peer port is any unique port number to use for the peer server app.
+Data file is the name of the data file to transfer (to peer) or to write 
+incoming data (from peer) to. 
+Remote file is the name of the file to write incoming data to or to send to 
+the UE, at the peer. 
+
+3b. It is also possible to run each data transfer test individually, using the
+following syntax:
+
+> <wrapper script name> -mi <master's ip> -mp <master's port> -pp <peer port> -f <data file> -fo <remote file>
+
+The wrapper script name, for instance, is dss_test_2.sh for running dss_test_2. 
+
+4. Don't forget to kill the master, when the smoke tests are complete. It is 
+a big security hole!!
+
+
+D. Running Native Linux Sockets Applications
+--------------------------------------------
+
+Applications using the BSD sockets API for data can be compiled and run on 
+target. However, unless these applications are modified to bring up network 
+connectivity over the cellular radio interface using the DSS network API, 
+the network must be externally brought up before these applications can be 
+used. A test application is provided to allow the user to easily control 
+network connectivity from the command line. 
+
+The procedure to enable network connectivity using this test application 
+for running native linux sockets applications is given below:
+
+1. Start the dss network controller application. 
+
+The network controller application is an app that uses DSS network API to bring
+up network connectvity when requested by the user. The user interacts using a
+client interface, implemented by the dssnetc.sh script. Invoke this script in 
+the following way to start the network controller app :
+
+> dssnetc.sh -c run [ -o "--profile <profile id>" ]
+
+As shown above, the user can override the default profile which is otherwise
+used by specifying a profile id on the command line. (The -o script option 
+passes the following option to the net controller app it is started.)
+
+2. Command the network controller app to bring network interface up. 
+
+Use the client script in the following way to begin data call establishment 
+and bring network interface up:
+
+> dssnetc.sh -c netup
+
+Note that you must wait a few seconds after step 1 to allow the controller app
+time to initialize itself. Once the interface is up, you should be able to 
+see a new network interface named qdid0 be activated, for instance by using 
+ifconfig command.
+
+3. Add routing entries to ensure data from application on UE gets routed 
+correctly over the WWAN interface, i.e. over qdid0.
+
+For instance, to add a host route to reach a server running on a m/c with a
+known server ip address, use the following:
+
+> ip route add <server ip address> dev qdid0
+
+At this point you are ready to run the native application.
+
+4. Once testing is complete, you can bring down the network interface and 
+terminate the net controller app using the following sequence of commands:
+
+> dssnetc.sh -c netdown
+> dssnetc.sh -c exit

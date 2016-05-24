@@ -1,0 +1,216 @@
+#ifndef DS_SOCK_ISOCKETEXT_IDL
+#define DS_SOCK_ISOCKETEXT_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+#include "AEEIQI.idl"
+#include "AEEISignal.idl"
+
+#include "ds_Addr_Def.idl"
+
+#include "ds_Net_Def.idl"
+#include "ds_Net_IPolicy.idl"
+
+module ds
+{
+   module Sock
+   {
+      /**
+       * This module includes socket events
+       */
+      typedef long SocketEventType;
+      module SocketEvent
+      {
+         /**
+          * Socket events to be used with RegEvent API.
+          * The values do not imply any specific meaning.
+          */
+         const SocketEventType QDS_EV_WRITE   =    0x1;  // The application should now re-attempt the output operation
+         const SocketEventType QDS_EV_READ    =    0x2;  // The application should now re-attempt the input operation
+         const SocketEventType QDS_EV_CLOSE   =    0x4;  // The application should now re-attempt the close operation
+         const SocketEventType QDS_EV_ACCEPT  =    0x8;  // The application should now re-attempt the accept operation
+         const SocketEventType QDS_EV_DOS_ACK = 0x8000;  // Ack for DoS (Data Over Signaling) transmission
+      };
+  
+      /*
+       * IPMembershipInfoType. Used with AddIPMemberShip and DropIPMembership.
+       * @See INetwork::IfaceId
+       */
+      struct IPMembershipInfoType
+      {
+         ds::Net::IfaceIdType ifaceId; /* @See AddIPMembership */
+         ds::IPAddrType  mcastGroup;   /**< IP address of the Multicast group. */
+      };
+  
+      typedef long DoSAckStatusType;
+  
+      module DoSAckStatus
+      {         
+
+         /**
+          * Status is not available.
+          */
+         const DoSAckStatusType DOSACK_NONE = -1;
+         
+         /**
+          * Packet is sent successfully.
+          */
+         const DoSAckStatusType DOSACK_OK = 0;
+         
+         /**
+          * Hold orig timer expired and hence failed to send the packet.
+          */
+         const DoSAckStatusType HOLD_ORIG_RETRY_TIMEOUT = 1;
+         
+         /**
+          * Unable to process the packet because hold orig is true.
+          */
+         const DoSAckStatusType HOLD_ORIG = 2;
+         
+         /**
+          * Failed to send the packet due to lack of service.
+          */
+         const DoSAckStatusType DOSACK_NO_SRV = 3;
+         
+         /**
+          * Aborted the operation.
+          */
+         const DoSAckStatusType DOSACK_ABORT = 4;
+         
+         /**
+          * DOS is not supported in analog mode.
+          */
+         const DoSAckStatusType NOT_ALLOWED_IN_AMPS = 5;
+         
+         /**
+          * DOS is not supported when in a HDR call.
+          */
+         const DoSAckStatusType NOT_ALLOWED_IN_HDR = 6;
+         
+         /**
+          * Failed to receive Layer 2 ACK.
+          */
+         const DoSAckStatusType L2_ACK_FAILURE = 7;
+         
+         /**
+          * Unable to process the packet because of lack of resources.
+          */
+         const DoSAckStatusType OUT_OF_RESOURCES = 8;
+         
+         /**
+          * Packet is too big to be sent over access channel.
+          */
+         const DoSAckStatusType ACCESS_TOO_LARGE = 9;
+         
+         /**
+          * Packet is too big to be sent over DTC.
+          */
+         const DoSAckStatusType DTC_TOO_LARGE = 10;
+               
+         /**
+          * Access channel is blocked for traffic based on service option.
+          */
+         const DoSAckStatusType ACCT_BLOCK = 11;
+         
+         /**
+          * Failed to receive Layer 3 ACK.
+          */
+         const DoSAckStatusType L3_ACK_FAILURE = 12;
+
+         /**
+          * Failed for some other reason.
+          */
+         const DoSAckStatusType DOSACK_OTHER = 13;
+      };
+  
+      const AEEIID AEEIID_ISocketExt = 0x01098bc6;
+  
+      /**
+       * The ISocketExt interface provides extended socket functionality.
+       */
+      interface ISocketExt : IQI
+      {
+         /**
+          * This function registers a signal to be set when event eventID occurs.
+          * Cannot use the signal for more than one eventID. Can use more than one
+          * signal for the same event.
+          * @param signal The signal to Set() when the state associated with
+          *               the eventID changes. To cancel the registration the
+          *               application should release this signal. 
+          * @param eventID The event for which the signal shall be fired.
+          * @param regObj Output The application must hold this output registration
+          *                      object to ensure its Signal stays registered. The
+          *                      application should release this object once it has
+          *                      released the signal object.
+          * @retval AEE_SUCCESS Signal set completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult RegEvent(in ISignal signal, in SocketEventType eventID, rout IQI regObj);
+     
+         /**
+          * Join a multicast group.
+          * @param ipMembership Information of the Multicast group to join and
+          *                     an iface identification. If supported, 
+          *                     applications can join the same Multicast group
+          *                     on different ifaces.
+          *                     If INVALID_IFACE_ID is specified for ifaceId an
+          *                     appropriate iface would be selected for the
+          *                     operation or an applicable error returned if 
+          *                     appropriate iface cannot be found. 
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult AddIPMembership(in IPMembershipInfoType ipMembership);
+     
+         /**
+          * Leave a multicast group.
+          * @param ipMembership Information of the multicast group to leave.
+          *                     @See AddIPMembership
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult DropIPMembership(in IPMembershipInfoType ipMembership);
+     
+         /**
+          * Get DoS (Data Over Signaling) Ack information.
+          * DoS and SDB (Short Data Burst) are parallel terms.
+          * DoS is the term used in 1xEVDO
+          * SDB is the term used in CDMA 1x.      
+          * @param dosAckInfo Information of DoS Ack.
+          * @param overflow Set to a nonzero value, if the number of outstanding
+          *                 SDB/DOS packets (the packets for which mobile is
+          *                 still waiting for an ACK) is more than that the
+          *                 mobile can handle.
+          * @retval AEE_SUCCESS The operation completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Sock_DoSAckStatusType
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetDoSAckInfo(rout DoSAckStatusType dosAckInfo,
+                                 rout long             overflow);
+
+         /**
+          * This function sets the network policy to be used with the socket. For TCP sockets,
+          * policy change is not supported after listen or connect have been issued on the socket.
+          * For UDP sockets, policy change is supported as long as the socket is not connected.
+          * @param policy Network Policy (specifies technology, profile etc.). See IPolicy.
+          * @retval AEE_SUCCESS Network Selection completed successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult SetNetPolicy(in ds::Net::IPolicy policy);
+      };
+   };
+};
+
+#endif /* #ifdef DS_SOCK_ISOCKETEXT_IDL */

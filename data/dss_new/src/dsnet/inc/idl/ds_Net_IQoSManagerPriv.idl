@@ -1,0 +1,88 @@
+#ifndef DS_NET_IQOSMANAGERPRIV_IDL
+#define DS_NET_IQOSMANAGERPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl" 
+
+#include "ds_Net_Def.idl"
+#include "ds_Net_IQoSSecondary.idl"
+#include "ds_Net_QoS_Def.idl"
+#include "ds_Net_QoS_DefPriv.idl"
+#include "ds_Net_IQoSSecondariesInput.idl"
+#include "ds_Net_IQoSSecondariesOutput.idl"
+
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IQoSManagerPriv = 0x010a32b1;
+      /**
+       * ds Net QoS Manager Private interface.
+       */
+      interface IQoSManagerPriv : IQI
+      {
+         /**
+          * This function issues a secondary QoS request.
+          * @param requestedQoSSpec The requested QoS specification.
+          * @param session The secondary QoS session opened for handling the request.
+          * @see IQoSSecondary
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval ds::EBADOPTS Bad options.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */   
+         AEEResult RequestSecondary(in QoSSpecType requestedQoSSpec, rout IQoSSecondary session);
+
+         /**
+          * This function issues QoS requests for multiple QoS sessions.
+          * @param specs The QoS specifications.
+          * @param opCode The operation.
+          * @param sessions The QoS sessions.
+          * @see ds::Net::QoS::BundleOpCodeType
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval ds::EBADOPTS Bad options.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */   
+         AEEResult RequestBundle(in SeqQoSSpecType specs,
+                                 in QoSRequestOpCodeType opCode,
+                                 rout IQoSSecondariesOutput sessions);
+
+         /**
+          * The function closes multiple QoS sessions.
+          * @param sessions The QoS sessions.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */   
+         AEEResult Close(in IQoSSecondariesInput qosSessions);
+
+         /**
+          * The function resumes multiple QoS sessions.
+          * @param sessions The QoS sessions.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */   
+         AEEResult Resume(in IQoSSecondariesInput qosSessions);
+
+         /**
+          * The function suspends multiple QoS sessions.
+          * @param sessions The QoS sessions.
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */   
+         AEEResult Suspend(in IQoSSecondariesInput qosSessions);
+
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IQOSMANAGERPRIV_IDL */

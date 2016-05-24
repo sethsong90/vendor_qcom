@@ -1,0 +1,259 @@
+#ifndef DS_NET_IMCASTMANAGERBCMCS_IDL
+#define DS_NET_IMCASTMANAGERBCMCS_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2008-2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+
+#include "AEEStdDef.idl"
+#include "AEEIQI.idl"
+
+#include "ds_Addr_Def.idl"
+
+module ds
+{
+   module Net
+   {
+      typedef long BCMCSZoneValsType;
+      module BCMCSZone
+      {
+         const BCMCSZoneValsType QDS_CDMA1X = 0;
+         const BCMCSZoneValsType QDS_HDR    = 1;
+      };
+
+      const long BCMCS_HDR_ADDR_LEN = 16;
+      typedef octet BCMCSHDRAddrType[BCMCS_HDR_ADDR_LEN];
+
+      struct BCMCSZoneType
+      {
+         BCMCSZoneValsType type;
+         BCMCSHDRAddrType  subnet;
+      };
+
+      typedef long BCMCSFramingValsType;
+      module BCMCSFraming
+      {
+         /**
+          * Framing not specified. Service shall use a default value.
+          */
+         const BCMCSFramingValsType FRMV_NOT_SET  = -1;
+
+         /**
+          * Segment based framing.
+          */
+         const BCMCSFramingValsType FRMV_SEGMENT  =  0;
+
+         /**
+          * HDLC-like framing.
+          */
+         const BCMCSFramingValsType FRMV_HDLC     =  1;
+      };
+
+      typedef long BCMCSProtocolValsType;
+      module BCMCSProtocol
+      {
+         /**
+          * Protocol not specified. Service shall use a default value.
+          */
+         const BCMCSProtocolValsType PRTV_NOT_SET = -1;
+
+         /**
+          * The packet is PPP encapsulated (there are one or two protocol bytes
+          * preceding the IP packet).
+          */
+         const BCMCSProtocolValsType PRTV_PPP     =  0;
+
+         /**
+          * The packet obtained after deframing is an IPv4 packet without any
+          * further encapsulation.
+          */
+         const BCMCSProtocolValsType PRTV_IPV4    =  1;
+
+         /**
+          * The packet obtained after deframing is an IPv6 packet without any
+          * further encapsulation.
+          */
+         const BCMCSProtocolValsType PRTV_IPV6    =  2;
+      };
+
+      struct BCMCSDBSpecType
+      {
+         /**
+          * Zone type corresponding to the entry. Mandatory field.
+          */
+         BCMCSZoneType         zone;
+         
+         /**
+          * Multicast address of the flow. Mandatory field.
+          */
+         ds::IPAddrType        multicastAddr;
+
+         /**
+          * Identifier for the BCMCS program. Ignored if flowFormat is 0.
+          * The program ID shall uniquely identify a program under a BCMCS
+          * controller.
+          */
+         long                  programID;
+
+         /**
+          * Program ID length in bits. Ignored if flowFormat is 0.
+          */
+         octet                 programIDLength;
+
+         /**
+          * Flow discriminator length in bits. Ignored if flowFormat is 0.
+          * Within the scope of an operator’s network for a given program, the
+          * length of flow id and the length of flow discriminator shall be
+          * fixed for all flows.
+          */
+         octet                 flowDiscriminatorLength;
+
+         /**
+          * Identifier for the BCMCS IP flow. Ignored if flowFormat is 0.
+          * Flow discriminator is irrelevant if there is only one flow in a
+          * program.
+          * For a given program, the value of the flow discriminator shall
+          * uniquely identify a flow.
+          */
+         octet                 flowDiscriminator;
+
+         /**
+          * Port number of the flow. Mandatory field.
+          */
+         unsigned short        BCMCSPort;
+
+         /**
+          * Type of framing. Default value of FRMV_HDLC is used if
+          * FRMV_NOT_SET is specified.
+          */
+         BCMCSFramingValsType  framing;
+
+         /**
+          * Encapsulating protocol. Default value of PRTV_PPP is used if
+          * PRTV_NOT_SET is specified.
+          */
+         BCMCSProtocolValsType protocol;
+
+         /**
+          * crc length in bytes. Default value of 2 is used if 0xFF is
+          * specified.
+          */
+         octet                 crcLength;
+
+         /**
+          * flow_format. Valid values are 0 or 1. Mandatory field.
+          * 0 - Flow id is specified by flowID. The Service shall directly use 
+          *     the content of flowID to update the database.
+          * 1 - Flow id is specified by programID and flowDiscriminator. The
+          *     service shall create internally the flow id based on the
+          *     provided program ID and flow discriminator and use that flow id
+          *     to update the database.         
+          */
+         octet                 flowFormat;
+
+         /**
+          * Flow id corresponding to multicastAddr:BCMCSPort pair.
+          * Three MSBs that specify the length of the flow discriminator.
+          * Variable length program ID that is an identifier for the BCMCS
+          * program.
+          * Flow discriminator that is an identifier for the BCMCS IP flow.
+          *
+          * When there is only one flow in a program, flow discriminator shall
+          * not be specified in the BCMCS flow ID and the value of the three
+          * MSBs of the flow ID shall be set to 000.
+          *
+          * Within the scope of an operator’s network for a given program, the
+          * length of flow id and the length of flow discriminator shall be
+          * fixed for all flows.
+          *
+          * The program ID shall uniquely identify a program under a BCMCS
+          * controller. For a given program, the value of the flow
+          * discriminator shall uniquely identify a flow.
+          */
+         unsigned long         flowID;
+
+         /**
+          * Flow id length in bits. Valid values are 16, 24 and 32 bits.
+          */
+         octet                 flowIDLen;
+         
+         /**
+          * TRUE means to overwrite a matching entry in the database. In
+          * addition, if the database is full and there is no mathching entry,
+          * the oldest entry in the database shall be replaces with the new one.
+          *
+          * FALSE means the new entry shall not be added to the database if
+          * there is already a matching entry. In addition, if the
+          * database is full (and there is no mathching entry) the new entry
+          * shall not be added to the database.
+          * UpdateDB shall fail on both of those cases.
+          * 
+          * Matching criteria covers only the following fields:
+          * - multicastAddr
+          * - BCMCSPort
+          * - zone          
+          */
+         boolean               overwrite;
+
+         /**
+          * Flow priority.
+          */
+         octet                 flowPriority;
+      };
+
+      const AEEIID AEEIID_IMCastManagerBCMCS = 0x0107fc38;
+
+      /**
+       * ds Net MCast Manager BCMCS interface.
+       * @See IMCastManager::GetTechObject.
+       * @See IMCastManagerExt::GetTechObject.
+       * IMCastManagerBCMCS may be obtained (via IMCastManager/IMCastManager)
+       * from a Network that was set with BCAST iface name/group policy).
+       */
+      interface IMCastManagerBCMCS : IQI
+      {
+         typedef sequence<SockAddrStorageType> SeqSockAddrStorageType;
+
+         /**
+          * This function appends the given spec to the device's BCMCS database.
+          * Based on the value of "overwrite" parameter in bcmcsDBSpec, a 
+          * matching record in the BCMCS database may be overwritten by the
+          * BCMCS specification provided in this API. In addition, the oldest
+          * entry may be deleted from the database to allow addition of the new
+          * one.          
+          * 
+          * @param bcmcsDBSpec Structure that holds all the information to 
+          * be updated.          
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval QDS_BCMCSDB_OVERFLOW The DataBase is full.
+          * @retval QDS_BCMCSDB_NO_OVERWRITE BCMCSDB specification already
+          *                                  present in the DB (and overwrite
+          *                                  flag is set to FALSE).
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult UpdateDB(in BCMCSDBSpecType bcmcsDBSpec);
+
+         /**    
+          * This function instructs setup of the provided MCast addresses for
+          * registration to multicast groups using handoff optimization.
+          * It is supported in conjunction with the API in IMcastManagerExt: 
+          * The application should Join the Multicast groups and register to
+          * them using the API in IMCastManagerExt in addition to the call to
+          * this API.
+          * @param addrSeq Multicast group addresses.          
+          * @see IMCastSession
+          * @retval AEE_SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult RegisterUsingHandoffOpt(in SeqSockAddrStorageType addrSeq);
+      };
+   };// module Net
+};// module ds
+
+#endif /* #ifdef DS_NET_IMCASTMANAGERBCMCS_IDL */

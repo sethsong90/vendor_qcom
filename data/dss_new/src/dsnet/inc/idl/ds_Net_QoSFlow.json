@@ -1,0 +1,318 @@
+/* ============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                          All Rights Reserved.
+                 Qualcomm Technologies Confidential and Proprietary
+============================================================================ */
+
+{
+   "name":"ds_Net_QoSFlow.json",
+   "description":"This is the JSON Schema for a QoSFlow",
+   "type":"object",
+   "properties":{
+      "TrfClass":{
+         "type":"string",
+         "optional":true,
+         "enum":["conversational",
+                 "streaming",
+                 "interactive",
+                 "background"],
+         "description":"Overall traffic characteristics exhibited by the IP flow"
+      },
+      "DataRateFormat":{
+         "type":"string",
+         "optional":true,
+         "enum":["min_max",
+                 "token_bucket"],                 
+         "description":"Data Rate can be specified in more than one format.
+                        Use min_max if Data Rate is specified using the
+                        DataRateMinMax property.
+                        Use token_bucket if Data Rate is specified using the
+                        DataRateTokenBucket property."
+      },
+      "DataRateMinMax":{
+         "type":"object",
+         "properties":{
+            "MaxRate":{
+               "type":"integer",
+               "minimum":1,
+               "description":"Maximum required data rate (in bits per second)
+                              Must be greater than or equal to the
+                              GuaranteedRate"
+            },
+            "GuaranteedRate":{
+               "type":"integer",
+               "minimum":1,
+               "description":"Minimum guaranteed data rate (in bits per second)"
+            }
+         },
+         "optional":true,
+         "requires":"DataRateFormat",
+         "description":"Required rate for data transmission over the network.
+                        This format for specifying Data Rate more closely
+                        represents a circuit-switched behavior with a fixed
+                        bandwidth guaranteed over a certain time duration with
+                        no burst support"
+      },
+      "DataRateTokenBucket":{
+         "type":"object",
+         "properties":{
+            "PeakRate":{
+               "type":"integer",
+               "minimum":1,
+               "description":"Maximum rate at which the data can be transmitted
+                              when token bucket is full (in bits per second)"
+            },
+            "TokenRate":{
+               "type":"integer",
+               "minimum":1,
+               "description":"Rate at which the tokens will be put in the token
+                              bucket (in bits per second). a token is required
+                              to be present in the bucket to send a byte of data"
+            },
+            "Size":{
+               "type":"integer",
+               "minimum":1,
+               "description":"Maximum tokens that can be accumulated at any
+                              instance (in bytes); controls the size of the
+                              burst that is allowed at any given time"
+            }
+         },
+         "optional":true,
+         "requires":"DataRateFormat",         
+         "description":"Required rate for data transmission over the network.
+                        This format for specifying Data Rate more closely
+                        represent a packet-switched behavior with support for
+                        packet bursts"
+      },
+      "Latency":{
+         "type":"integer",
+         "optional":true,
+         "minimum":1,
+         "description":"maximum delay (in milliseconds) that can be tolerated
+                        by an IP packet during the transfer through the wireless
+                        link. The delay is defined as the time from a request to
+                        transfer the packet on the MS to the time when it is
+                        received by the next hop IP node across a wireless link
+                        and vice versa."
+      },
+      "LatencyVariance":{
+         "type":"integer",
+         "optional":true,
+         "minimum":0,
+         "description":"The difference between the maximum and minimum latency
+                        (in milliseconds) that can be tolerated by an IP packet
+                        during the transfer through the wireless link. This is
+                        essentially the maximum tolerated delay jitter. This
+                        parameter is not supported by the UMTS network and hence
+                        is ignored if the underlying network is UMTS"
+      },
+      "PktErrRate":{
+         "type":"object",
+         "properties":{
+            "Multiplier":{
+               "type":"integer",
+               "minimum":0,
+               "description":"The Multiplier for calculation of tolerated
+                              packet error rate"
+            },
+            "Exponent":{
+               "type":"integer",
+               "minimum":0,
+               "description":"The Exponent for calculation of tolerated
+                              packet error rate"
+            }
+         },
+         "optional":true,
+         "description":"The maximum packet error rate that can be tolerated by
+                        an IP flow. The error rate is defined as a ratio of
+                        packets received in error over a wireless link to total
+                        packets transmitted over the wireless link and is
+                        specified by a combination of two parameters, a
+                        multiplier m and a negative base 10 exponent. So the
+                        packet error rate is defined as:	E = m * 10 ** (-p).
+                        The interface may use an alternate packet error rate
+                        value nearest to the one specified, depending upon the
+                        network technology"
+      },
+      "MinPolicedPktSize":{
+         "type":"integer",
+         "optional":true,
+         "minimum":0,
+         "description":"The minimum packet size (in bytes) that will be policed
+                        for QoS guarantees. Any IP packets that are smaller than
+                        the minimum specified policed size may not receive the
+                        requested QoS. This parameter is not supported by the
+                        UMTS network and hence is ignored if the underlying
+                        network is UMTS"
+      },
+      "MaxAllowedPktSize":{
+         "type":"integer",
+         "optional":true,
+         "minimum":1,
+         "description":"The maximum packet size (in bytes) allowed in the IP
+                        flow. The parameter is used for QoS policing and
+                        admission control. Any IP packets that are greater in
+                        size than the maximum allowed packet size are not
+                        queued for transmission over the QoS link and may get
+                        discarded."
+      },
+      "NominalSDUSize":{
+         "type":"object",
+         "properties":{
+            "Fixed":{
+               "type":"boolean",
+               "description":"true means the application always uses a constant
+                              packet size."
+            },
+            "Size":{
+               "type":"integer",
+               "minimum":1,
+               "description":"If Fixed is true and MaxAllowedPktSize is
+                              specified, Size must equal MaxAllowedPktSize.
+                              If Fixed is false and MaxAllowedPktSize is
+                              specified, Size must be less than or equal to
+                              MaxAllowedPktSize."
+            }
+         },
+         "optional":true,
+         "description":"specifies the typical packet size used by the
+                        application while writing data to the socket."
+      },
+      "UmtsResidualBer":{
+         "type":"integer",
+         "optional":true,
+         "minimum":0,
+         "maximum":9,
+         "description":"indicates the undetected bit error ratio for each IP
+                        flow in the delivered packets. For equal error
+                        protection, only one value is needed. If no error
+                        detection is requested for a subflow, the residual bit
+                        error ratio indicates the bit error ratio in that
+                        subflow of the delivered SDUs.
+                        This parameter is supported by 3GPP networks only and
+                        is ignored by all other network technologies."
+      },
+      "UmtsTrfPri":{
+         "type":"integer",
+         "optional":true,
+         "minimum":0,
+         "maximum":2,
+         "description":"defines the relative priority between various subflows
+                        of an IP flow; it also allows the network to
+                        differentiate between bearer qualities and schedule
+                        traffic accordingly.
+                        This parameter is supported by 3GPP networks only and
+                        is ignored by all other network technologies."
+      },
+      "UmtsImCnFlag":{
+         "type":"boolean",
+         "optional":true,
+         "description":"parameter indicates that the application wants to
+                        establish this QoS instance for IMS signalling. This
+                        parameter is supported by 3GPP networks only and
+                        ignored by all other network technologies."
+      },
+      "UmtsSigInd":{
+         "type":"boolean",
+         "optional":true,
+         "description":"indicates that the data on this QoS instance has high
+                        priority and requests the network to expedite processing
+                        of the data. This parameter is supported by 3GPP
+                        networks only and ignored by all other network
+                        technologies."
+      },
+      "CdmaProfileID":{
+         "type":"integer",
+         "optional":true,
+         "description":"defines a set of standard/well-known flow specification
+                        parameters for specific applications. Flow specification
+                        is hence called a profile and is indicated by a profile
+                        ID. If this parameter is specified, all other flow
+                        specification parameters are ignored and the profile ID
+                        is used to request QoS from the network. Essentially, a
+                        profile ID maps to a set of predefined parameters
+                        serving a specific purpose, e.g., a profile ID for VoIP
+                        will define suitable parameters necessary for the proper
+                        functioning of various VoIP applications. 
+                        This parameter is supported by 3GPP2 networks only and
+                        is ignored by all other network technologies.
+                        Applications that require a seamless behavior on other
+                        network technologies should also specify other flow
+                        specification parameters in addition to a profile ID.
+                        Otherwise, if only a profile ID is specified and the
+                        underlying network technology is something other than
+                        3GPP2, then the interface may not be able to provide any
+                        specific QoS. For best results, the flow specification
+                        parameter values specified should correspond to the
+                        values defined by the profile ID. This parameter is also
+                        mandatory for 3GPP2 networks and QoS specification is
+                        considered as invalid by 3GPP2 networks if this
+                        parameter is not specified."
+      },
+      "CdmaFlowPriority":{
+         "type":"integer",
+         "optional":true,
+         "minimum":0,
+         "maximum":15,
+         "default":15,
+         "description":"defines relative priority among QoS flows. The value
+                        could be used by the network to provide admission
+                        control and resource allocation.
+                        This parameter is supported by 3GPP2 networks only and
+                        is ignored by all other network technologies."
+      },
+      "WlanUserPriority":{
+         "type":"string",
+         "optional":true,
+         "enum":["best_effort",
+                 "background",
+                 "reserved",
+                 "excellent_effort",
+                 "controlled_load",
+                 "video",
+                 "voice",
+                 "network_control"],
+         "description":"defines the priority of the packets sent by the
+                        application. This information can be used by the
+                        routers in packet scheduling.
+                        This parameter is supported by WLAN networks only and
+                        is ignored by all other network technologies."
+      },
+      "WlanMinServiceInterval":{
+         "type":"integer",
+         "optional":true,
+         "minimum":1,
+         "description":"defines the minimum interval, in microseconds, between
+                        the start of two service periods (a contiguous period
+                        of time in which the mobile is scheduled to receive
+                        data from the router).
+                        This parameter is supported by WLAN networks only and
+                        is ignored by all other network technologies."
+      },
+      "WlanMaxServiceInterval":{
+         "type":"integer",
+         "optional":true,
+         "minimum":1,
+         "description":"defines the maximum interval, in microseconds, between
+                        the start of two service periods (a contiguous period
+                        of time in which the mobile is scheduled to receive
+                        data from the router). The application may use
+                        0xFFFFFFFF to specify a value of infinity.
+                        This parameter is supported by WLAN networks only and
+                        is ignored by all other network technologies."
+      },
+      "WlanInactivityInterval":{
+         "type":"integer",
+         "optional":true,
+         "minimum":1,
+         "description":"defines the minimum interval, in microseconds, which
+                        may elapse without arrival or transfer of data matching
+                        the filters specified in the QoS specification. Once
+                        this interval is elapsed, the router may release the
+                        QoS. The application may use 0xFFFFFFFF to specify a
+                        value of infinity.
+                        This parameter is supported by WLAN networks only and
+                        is ignored by all other network technologies."
+      }
+   }
+}

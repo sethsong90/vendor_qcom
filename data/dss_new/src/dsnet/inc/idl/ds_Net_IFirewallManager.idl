@@ -1,0 +1,68 @@
+
+/*============================================================================
+                  Copyright (c) 2010 Qualcomm Technologies, Inc.
+                             All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================*/
+#ifndef DS_NET_IFIREWALLMANAGER_IDL
+#define DS_NET_IFIREWALLMANAGER_IDL
+
+#include "ds_Net_IIPFilterPriv.idl"
+#include "ds_Net_IFirewallRule.idl"
+module ds
+{
+   module Net
+   {
+      const AEEIID AEEIID_IFirewallManager = 0x0109e2f6;
+      /**
+       * DS network Firewall manager interface.
+       * This interface manages the firewall rules defined on INetwork object.
+       * Application creates INetwork object and call IQI with IIPFirewallMgr
+       * This is privileged - internal interface
+       */
+      interface IFirewallManager : IQI
+      {
+         typedef sequence<IIPFilterPriv> IFirewallListType;
+         /**
+          * This function adds firewall rules on specific DS Network object.
+          * @param filter Firewall rule to be defined on the DS Network object.
+          * @param firewallRule Output Returned Firewall rule interface.
+          * @retval ds::SUCCESS Registration succeeded.
+          * @retval ds::EBADOPTS Bad options.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */ 
+         AEEResult AddFirewallRule
+             (in IIPFilterPriv filter, rout IFirewallRule firewallRule);
+
+          /**
+          * This function used to enable firewall on an interface
+          * @param isallowed Specify if data is to be passed/dropped.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult EnableFirewall(in boolean isAllowed);
+
+         /**
+          * This function used to disable firewall on an interface
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */
+         AEEResult DisableFirewall();
+
+         typedef sequence<IFirewallRule> SeqFirewallRulesType;
+         /**
+          * This function retrieves the firewall rules:
+          * @param firewallRules Output Retrieved firewall spec
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other DS designated error codes might be returned.
+          * @see ds_Errors.idl.
+          */
+         AEEResult GetFirewallTable(rout SeqFirewallRulesType firewallRules);
+
+      };
+   };// module Net
+};// module ds
+#endif /* #ifdef DS_NET_IFIREWALLMANAGER_IDL */

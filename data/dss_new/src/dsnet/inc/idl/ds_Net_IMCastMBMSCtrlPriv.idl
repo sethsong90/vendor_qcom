@@ -1,0 +1,61 @@
+#ifndef DS_NET_IMCASTMBMSCTRLPRIV_IDL
+#define DS_NET_IMCASTMBMSCTRLPRIV_IDL
+
+/*qidl copyright nested=false
+============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                            All Rights Reserved.
+                    Qualcomm Technologies Confidential and Proprietary
+============================================================================
+*/
+         
+#include "AEEStdDef.idl"
+
+#include "ds_Net_INetwork.idl"
+
+module ds
+{
+   module Net
+   {
+      module MBMSEvent
+      {
+         const EventType QDS_EV_ACTIVATE_STATE = 0x0106e618;
+      };
+
+      typedef long MBMSStateType;
+      module MBMSState
+      {
+         const MBMSStateType QDS_ACTIVATED   = 0;
+         const MBMSStateType QDS_DEACTIVATED = 1;
+      };
+
+      const AEEIID AEEIID_IMCastMBMSCtrlPriv = 0x0107a97c;
+      /**
+       * ds Net MBMS Control interface.
+       * Events that can be registered on this interface via OnStateChange (as part of IEventManager interface): 
+       * - ds::Net::MBMSEvent::ACTIVATE_STATE. Use GetState to get activate state information.
+       */
+      interface IMCastMBMSCtrlPriv : IEventManager
+      {
+         /**
+          * This function is used to deactivate the MBMS context over the air.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult DeActivate();
+
+         /**
+          * This function is used to retrieve the state of the MBMS context.
+          * @param state structure that will hold the MBMS context state.
+          * @see ds::Net::MBMS::StateType.
+          * @retval ds::SUCCESS Request received successfully.
+          * @retval Other ds designated error codes might be returned.
+          * @see ds_Errors_Def.idl.
+          */
+         AEEResult GetState(rout MBMSStateType state);
+      };
+   };// module Net
+};// module ds
+
+#endif /* #ifndef DS_NET_IMCASTMBMSCTRLPRIV_IDL */

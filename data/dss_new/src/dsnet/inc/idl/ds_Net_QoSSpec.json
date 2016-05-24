@@ -1,0 +1,91 @@
+/* ============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                          All Rights Reserved.
+                 Qualcomm Technologies Confidential and Proprietary
+============================================================================ */
+
+{
+   "name":"ds_Net_QoSSpec.json",
+   "description":"This is the JSON Schema for a QoSSpec",
+   "type":"object",
+   "properties":{
+      "RxFlows":{
+         "type":"array",
+         "items":{
+            "type":{"$ref":"ds_Net_QoSFlow.json"}
+         },
+         "description":"An array of QoSFlow specifications for the Rx side of
+                        the request. The QoSFlow specifications should be
+                        ordered by precedence: The first associated flow is the
+                        'required flow'. Additional flows are 'auxiliary flows'
+                        and represent lesser QoS requirements, in order, from
+                        higher requirements to lesser requirements. The system
+                        will try to grant the highest requirement (represented
+                        by the 'required flow'). If this requirement cannot be
+                        met, the system will try to grant QoS per the lesser
+                        requirement specified by the 'auxiliary flow', in order,
+                        from first to last."
+      },
+      "RxMinFlow":{
+         "type":"boolean",
+         "optional":true,
+         "description":"if this property is true, the last element of RxFlows
+                        will be considered a minimum requirement. If this
+                        requirement cannot be met QoS will not be granted per
+                        this specification. If RxMinFlow is false, the system
+                        may still grant QoS per this specification even if the
+                        requirement cannot be met. The granted QoS in such
+                        circumstances will represent lesser specification than
+                        the one specified in the required or auxiliary Flow
+                        Specs. The application can call IQoS::GetGrantedFlowSpec
+                        to get specification of the QoS actually granted."
+      },
+      "TxFlows":{
+         "type":"array",
+         "items":{
+            "type":{"$ref":"ds_Net_QoSFlow.json"}
+         },
+         "description":"An array of QoSFlow specifications for the Tx side of
+                        the request. The QoSFlow specifications should be
+                        ordered by precedence: The first associated flow is the
+                        'required flow'. Additional flows are 'auxiliary flows'
+                        and represent lesser QoS requirements, in order, from
+                        higher requirements to lesser requirements. The system
+                        will try to grant the highest requirement (represented
+                        by the 'required flow'). If this requirement cannot be
+                        met, the system will try to grant QoS per the lesser
+                        requirement specified by the 'auxiliary flow', in order,
+                        from first to last."
+      },
+      "TxMinFlow":{
+         "type":"boolean",
+         "optional":true,
+         "description":"if this property is true, the last element of TxFlows
+                        will be considered a minimum requirement. If this
+                        requirement cannot be met QoS will not be granted per
+                        this specification. If TxMinFlow is false, the system
+                        may still grant QoS per this specification even if the
+                        requirement cannot be met. The granted QoS in such
+                        circumstances will represent lesser specification than
+                        the one specified in the required or auxiliary Flow
+                        Specs. The application can call IQoS::GetGrantedFlowSpec
+                        to get specification of the QoS actually granted."
+      },
+      "RxFilters":{
+         "type":"array",
+         "items":{
+            "type":{"$ref":"ds_Net_IPFilter.json"}
+         },
+         "description":"an array of IPFilters to qualify the Rx side of the
+                        request"
+      },
+      "TxFilters":{
+         "type":"array",
+         "items":{
+            "type":{"$ref":"ds_Net_IPFilter.json"}
+         },
+         "description":"an array of IPFilters to qualify the Tx side of the
+                        request"
+      }
+   }
+}

@@ -1,0 +1,47 @@
+#============================================================================
+#  Name:
+#    LIB_DATAMODEM_INTERFACE_NETIFACE.MIN
+#
+#  Description:
+#    An includable component of the makefile to build the DMSS software.
+#============================================================================
+#
+#                        EDIT HISTORY FOR MODULE
+#
+#  $Header: //source/qcom/qct/modem/datamodem/interface/netiface/rel/11.03/src/lib_datamodem_interface_netiface.min#1 $
+#  $Author: zhasan $
+#  $DateTime: 2011/06/17 12:02:33 $
+#
+# when       who     what, where, why
+# --------   ---     --------------------------------------------------------
+# 01/17/11   sa      New min file according to the new perforce layout.
+#============================================================================
+
+# Library Header files internal to library that are _not_ for external release
+# Use only when V6 is active
+
+LIB_DATAMODEM_INTERFACE_NETIFACE_IPV6_SOURCES=\
+  ps_iface_addr_v6.c
+
+LIB_DATAMODEM_INTERFACE_NETIFACE_IPV4_SOURCES=\
+  ps_iface_addr_mgmt.c \
+  ps_iface_handoff.c \
+  ps_iface_logical.c \
+  ps_iface_logicali.c
+
+LIB_DATAMODEM_INTERFACE_NETIFACE_SOURCES := $(LIB_DATAMODEM_INTERFACE_NETIFACE_IPV6_SOURCES)
+LIB_DATAMODEM_INTERFACE_NETIFACE_SOURCES += $(LIB_DATAMODEM_INTERFACE_NETIFACE_IPV4_SOURCES)
+
+LIB_DATAMODEM_INTERFACE_NETIFACE_OBJS = $(addprefix $(LIBDIR)/, $(LIB_DATAMODEM_INTERFACE_NETIFACE_SOURCES:%.c=%.o) )
+
+vpath %.c $(MODEM_DATAMODEM_INTERFACE_NETIFACE_SRC)
+
+$(LIBDIR)/datamodem_interface_netiface.lib : $(LIB_DATAMODEM_INTERFACE_NETIFACE_OBJS)
+	@echo ------------------------------------------------------------------
+	@echo LIBRARY $@
+	@if test -f $@; then rm -f $@; fi
+	$(ARMAR) -r $@ $(LIB_DATAMODEM_INTERFACE_NETIFACE_OBJS)
+	@echo ------------------------------------------------------------------
+
+LIBOBJECTS := $(LIB_DATAMODEM_INTERFACE_NETIFACE_OBJS) $(LIBOBJECTS)
+

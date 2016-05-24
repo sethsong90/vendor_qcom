@@ -1,0 +1,140 @@
+/* ============================================================================
+               Copyright (c) 2010 Qualcomm Technologies, Inc.
+                          All Rights Reserved.
+                 Qualcomm Technologies Confidential and Proprietary
+============================================================================ */
+
+{
+   "name":"ds_Net_QoSSpecError.json",
+   "description":"This is the JSON Schema for a QoSSpecError. It provides
+                  specification of a single error pertaining to a single QoS
+                  Specification provided per ds_Net_QoSSpec.json schema.",
+   "type":"object",
+   "properties":
+   {
+      "QoSSpecIndex":{
+         "type":"integer",
+         "optional":false,
+         "minimum":0,
+         "description":"Represents the index of the QoS Spec in 
+                        ds_Net_QoSSpecList.json."
+      },
+      "Context":{
+         "type":"string",
+         "optional":false,
+         "enum":["TxFlow",
+                 "RxFlow",
+                 "TxFilter",
+                 "RxFilter"],                 
+         "description":"Indicates if the error is in TxFlows list, RxFlows
+                        list, Txfilters list or Rxfilters list."
+      },
+      "Index":{
+         "type":"integer",
+         "optional":false,
+         "minimum":0,
+         "description":"Represents the index of the Flow/Filter in the QoS
+                        Spec."
+      },
+      "FlowOption":{
+         "type":"string",
+         "optional":true,
+         "enum":["TrfClass",
+                 "DataRateFormat",
+                 "DataRateMinMax",
+                 "DataRateMinMax.MaxRate", 
+                 "DataRateMinMax.GuaranteedRate", 
+                 "DataRateTokenBucket",
+                 "DataRateTokenBucket.PeakRate",
+                 "DataRateTokenBucket.TokenRate",
+                 "DataRateTokenBucket.Size",
+                 "Latency", 
+                 "LatencyVariance",
+                 "PktErrRate",
+                 "PktErrRate.Multiplier",
+                 "PktErrRate.Exponent",
+                 "MinPolicedPktSize",
+                 "MaxAllowedPktSize",
+                 "NominalSDUSize",
+                 "NominalSDUSize.Fixed",
+                 "NominalSDUSize.Size",
+                 "UmtsResidualBer",
+                 "UmtsTrfPri",
+                 "UmtsImCnFlag",
+                 "UmtsSigInd",
+                 "CdmaFlowPriority",
+                 "WlanUserPriority",
+                 "WlanMinServiceInterval",
+                 "WlanMaxServiceInterval",
+                 "WlanInactivityInterval"],                 
+         "description":"Indicates the erroneous Flow Option. Values are based 
+                        on the Flow Options in ds_Net_QoSFlow.json.
+                        This property should be included in the string only if
+                        the Context property is TxFlow or RxFlow."
+      },
+      "FilterOption":{
+         "type":"string",
+         "optional":true,
+         "enum":["IPVsn",
+                 "NextHdrProt",
+                 "SrcPort",
+                 "SrcPort.port", 
+                 "SrcPort.range",
+                 "DstPort",
+                 "DstPort.port",
+                 "DstPort.range",
+                 "SrcAddr",
+                 "SrcAddr.Addr", 
+                 "SrcAddr.SubnetMask", 
+                 "DstAddr",
+                 "DstAddr.Addr", 
+                 "DstAddr.SubnetMask",
+                 "Tos",
+                 "Tos.val", 
+                 "Tos.Mask",
+                 "FlowLabel",
+                 "TrafficClass",
+                 "TrafficClass.val",
+                 "TrafficClass.Mask",
+                 "EspSpi"],                 
+         "description":"Indicates the erroneous Filter Option. Values are based 
+                        on the Filter options in ds_Net_IPFilter.json.
+                        This property should be included in the string only if
+                        the Context property is TxFilter or RxFilter."
+      },
+      "ErrorType":{
+         "type":"string",
+         "optional":false,
+         "enum":["UNSPEC",       
+                 "MISSING",      
+                 "EMPTY",        
+                 "INVALID",      
+                 "CONFLICT",     
+                 "TOO_MANY_AUX_FLOWS"],                 
+         "description":"Indicates the type of error for the erroneous option.
+                        UNSPEC:   Missing value.
+                        MISSING:  A mandatory property is missing.
+                        EMPTY:    There was no property name or no value.
+                        INVALID:  wrong value.
+                        CONFLICT: confliced properties are specified (mutualy
+                                  exclusive properties or a property that is
+                                  specified twice).
+                        TOO_MANY_AUX_FLOWS:Too many auxiliary flows."
+      }
+   }
+}
+
+
+
+         
+                
+                      
+                        
+            
+            
+             
+                     
+                        
+           
+              
+                    
