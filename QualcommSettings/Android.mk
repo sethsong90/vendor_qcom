@@ -14,7 +14,7 @@ LOCAL_SRC_FILES += src/com/qualcomm/qualcommsettings/IDun.aidl
 
 LOCAL_PACKAGE_NAME := QualcommSettings
 LOCAL_CERTIFICATE := platform
-LOCAL_JAVA_LIBRARIES := qcnvitems qcrilhook imslibrary
+LOCAL_JAVA_LIBRARIES := qcnvitems qcrilhook
 
 LOCAL_MODULE_OWNER := qcom
 

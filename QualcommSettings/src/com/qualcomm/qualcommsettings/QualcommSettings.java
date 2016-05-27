@@ -60,9 +60,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.codeaurora.ims.IImsService;
-import org.codeaurora.ims.IImsServiceListener;
-
 import android.telephony.MSimTelephonyManager;
 import android.telephony.TelephonyManager;
 
@@ -123,8 +120,6 @@ public class QualcommSettings extends PreferenceActivity implements
    // These values are from the message Registration in imsIF.proto
    private static final int IMS_REG_STATE_REGISTER = 1;
    private static final int IMS_REG_STATE_DEREGISTER = 2;
-   private static final int IMS_STATE_CHANGED_MSG = 1;
-   private boolean mIsImsListenerRegistered = false;
 
    /* Phone service name */
    private static final String MSIM_PHONE_SERVICE = "phone_msim";
@@ -172,7 +167,6 @@ public class QualcommSettings extends PreferenceActivity implements
 
    private AudioManager mAudioManager;
    private QcRilHook mQcRilHook;
-   private static IImsService mImsService = null;
    private ITelephonyMSim mPhoneMsim;
    private ITelephony mPhone;
 
@@ -192,7 +186,6 @@ public class QualcommSettings extends PreferenceActivity implements
          mContext = getApplicationContext();
          mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
          mQcRilHook = new QcRilHook(mContext, mQcrilHookCb);
-         bindImsService();
          SharedPreferences qcSharedPref = getSharedPreferences("settings_preferences", 0);
          addPreferencesFromResource(R.xml.settings_preferences);
          QSettings = (PreferenceCategory) findPreference(QCOM_SETTINGS);
@@ -306,78 +299,6 @@ public class QualcommSettings extends PreferenceActivity implements
          }
       }
 
-    private void bindImsService() {
-        try {
-            // send intent to start ims service and get phone from ims service
-            boolean bound = bindService(new Intent(
-                    "org.codeaurora.ims.IImsService"), ImsServiceConnection,
-                    Context.BIND_AUTO_CREATE);
-            Log.d(TAG, "IMSService bound request : " + bound);
-        } catch (NoClassDefFoundError e) {
-            mImsService = null;
-            Log.w(TAG, "Ignoring IMS class not found exception " + e);
-        } catch (SecurityException ex) {
-            mImsService = null;
-            Log.e(TAG, "Ignoring SecurityException - check permissions" + ex);
-        }
-    }
-
-    private ServiceConnection ImsServiceConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(TAG, "Ims Service Connected");
-            //Enable the UI option only when service is connected
-            ImsRegistration.setEnabled(true);
-            mImsService = IImsService.Stub.asInterface(service);
-            loadImsRegistration(getIMSRegistrationState());
-        }
-
-        public void onServiceDisconnected(ComponentName arg0) {
-            Log.w(TAG, "Ims Service onServiceDisconnected");
-            ImsRegistration.setEnabled(false);
-            mImsService = null;
-        }
-    };
-
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case IMS_STATE_CHANGED_MSG:
-                    loadImsRegistration(msg.arg1);
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
-        }
-    };
-
-    /* Listener for IMS Registration */
-    IImsServiceListener imsServListener = new IImsServiceListener.Stub() {
-
-        public void imsRegStateChanged(int imsRegState) {
-            Log.d(TAG, "imsRegState: " + imsRegState);
-            mHandler.sendMessage(mHandler.obtainMessage(IMS_STATE_CHANGED_MSG, imsRegState, 0));
-        }
-
-        public void imsRegStateChangeReqFailed() {
-            Log.d(TAG, "imsRegStatechange req failed");
-            int imsRegState = IMS_REG_STATE_DEREGISTER;
-            try {
-                if (mImsService != null) {
-                    imsRegState = mImsService.getRegistrationState();
-                } else {
-                    Log.d(TAG, "imsRegStateChangeReqFailed: no ims service");
-                }
-            } catch (RemoteException e) {
-                Log.e(TAG, "Exception - getRegistrationState");
-            }
-            mHandler.sendMessage(mHandler.obtainMessage(IMS_STATE_CHANGED_MSG, imsRegState, 0));
-        }
-
-        public void imsUpdateServiceStatus(int service, int status) {
-        }
-    };
-
     private QcRilHookCallback mQcrilHookCb = new QcRilHookCallback() {
         public void onQcRilHookReady() {
         }
@@ -402,9 +323,6 @@ public class QualcommSettings extends PreferenceActivity implements
          updateANCStatus();
          updateSensorsStatus();
          updateGesturesTouchInjectionStatus();
-         if (mImsService != null) {
-             loadImsRegistration(getIMSRegistrationState());
-         }
       }
 
    @Override
@@ -455,14 +373,6 @@ public class QualcommSettings extends PreferenceActivity implements
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Log.d(TAG, "onPreferenceChange");
         String value = (newValue == null) ? "" : newValue.toString();
-        if (preference == ImsRegistration)
-        {
-            Log.d(TAG, "Update IMS Registration");
-            ImsRegistration.setSummary(value);
-            Log.d(TAG, "onPreferencechange value is " + value);
-            ImsRegistration.setValue(value);
-            updateImsRegistration();
-        }
         return true;
     }
 
@@ -516,83 +426,6 @@ public class QualcommSettings extends PreferenceActivity implements
       Settings.System.putInt(getContentResolver(), Settings.System.STAY_ON_WHILE_PLUGGED_IN,
             StayOnValue ? (BatteryManager.BATTERY_PLUGGED_AC | BatteryManager.BATTERY_PLUGGED_USB) : 0);
    }
-
-    /*
-     * Update IMS Registration state
-     */
-    private void updateImsRegistration() {
-        // Register IMS Service Listener
-        if (mIsImsListenerRegistered == false) {
-            try {
-                int result = mImsService.registerCallback(imsServListener);
-                if (result == 0) {
-                    mIsImsListenerRegistered = true;
-                } else {
-                    Log.e(TAG, "updateImsRegistration: listener reg FAILED");
-                }
-            } catch (RemoteException e) {
-                Log.e(TAG, "updateImsRegistration Exception");
-            }
-
-        }
-
-        Log.i(TAG,
-                "updateImsRegistration Called with value - "
-                        + ImsRegistration.getValue());
-
-        ImsRegistration.setEnabled(false);
-        if (IMS_REG_STATE_REGISTERED.equalsIgnoreCase(ImsRegistration.getValue())) {
-            ImsRegistration.setSummary("Registering...");
-            setIMSRegistrationState(IMS_REG_STATE_REGISTER);
-        } else {
-            ImsRegistration.setSummary("Deregistering...");
-            setIMSRegistrationState(IMS_REG_STATE_DEREGISTER);
-        }
-    }
-
-    /*
-     * Load IMS Registration state
-     */
-    private void loadImsRegistration(int imsRegState) {
-        ImsRegistration.setEnabled(true);
-
-        Log.i(TAG, "loadImsRegistration: imsRegState = " + imsRegState);
-        if (imsRegState == IMS_REG_STATE_REGISTER) {
-            Log.i(TAG, "loadImsRegistration: setval IMS_REG_STATE_REGISTERED");
-            ImsRegistration.setValue(IMS_REG_STATE_REGISTERED);
-            ImsRegistration.setSummary(IMS_REG_STATE_REGISTERED);
-        } else {
-            Log.i(TAG, "loadImsRegistration: setval IMS_REG_STATE_DEREGISTERED");
-            ImsRegistration.setValue(IMS_REG_STATE_DEREGISTERED);
-            ImsRegistration.setSummary(IMS_REG_STATE_DEREGISTERED);
-        }
-    }
-
-    /*
-     * Set IMS Registration state
-     */
-    private void setIMSRegistrationState(int imsRegState) {
-        Log.d(TAG, "setIMSRegistrationState: " + imsRegState);
-        try {
-            mImsService.setRegistrationState(imsRegState);
-        } catch (RemoteException e) {
-            Log.d(TAG, "setIMSRegistrationState Exception");
-        }
-    }
-
-    /*
-     * Get IMS Registration state
-     */
-    private int getIMSRegistrationState() {
-        int imsRegState = IMS_REG_STATE_DEREGISTER;
-        try {
-            imsRegState = mImsService.getRegistrationState();
-        } catch (RemoteException e) {
-            Log.d(TAG, "getIMSRegistrationState Exception");
-        }
-        Log.d(TAG, "getIMSRegistrationState: " + imsRegState);
-        return imsRegState;
-    }
 
    private void changeCABLSettings() {
       Intent intent = new Intent();
@@ -1306,17 +1139,6 @@ public class QualcommSettings extends PreferenceActivity implements
       if (DunConnection != null) {
           unbindService(DunConnection);
           DunConnection = null;
-      }
-
-      if (mIsImsListenerRegistered == true) {
-          try {
-              Log.d(TAG, "Deregister Callback");
-              mImsService.deregisterCallback(imsServListener);
-              mIsImsListenerRegistered = false;
-              unbindService(ImsServiceConnection);
-          } catch (RemoteException e) {
-              Log.e(TAG, "Exception in deregisterCallback");
-          }
       }
 
       getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(

@@ -26,8 +26,6 @@
          android:name="com.qualcomm.qcrilhook"></uses-library>
       <uses-library
          android:name="com.qualcomm.qcnvitems"></uses-library>
-      <uses-library android:name="org.codeaurora.imslibrary"
-         android:required="true"></uses-library>
 
       <receiver android:name=".Dun_Autoboot"
          android:enabled="true"
