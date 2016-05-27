@@ -4,7 +4,6 @@
 #*******************************************************************************/
 
 LOCAL_PATH:= $(call my-dir)
-ifeq ($(PWV_ENGINER_APP_SUPPORT),true)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional debug
@@ -22,5 +21,4 @@ LOCAL_MODULE_OWNER := qcom
 include $(BUILD_PACKAGE)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
-endif
 
