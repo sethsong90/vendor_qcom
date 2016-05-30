@@ -14537,7 +14537,7 @@ void qcril_qmi_util_handle_centralized_short_long_eons(char *mcc_str, char *mnc_
       }
       else
       {
-          snprintf( long_eons, sizeof (long_eons), "%s-%s", mcc_str, mnc_str );
+          snprintf( long_eons, NAS_OPERATOR_RESP_MAX_EONS_LEN - 1, "%s-%s", mcc_str, mnc_str );
       }
 
       if ( NULL != internal_short_name )
@@ -14546,7 +14546,7 @@ void qcril_qmi_util_handle_centralized_short_long_eons(char *mcc_str, char *mnc_
       }
       else
       {
-          snprintf( short_eons, sizeof (short_eons), "%s-%s", mcc_str, mnc_str );
+          snprintf( short_eons, NAS_OPERATOR_RESP_MAX_EONS_LEN - 1, "%s-%s", mcc_str, mnc_str );
       }
     } // fallback to RIL internal table case
   }
@@ -22176,7 +22176,7 @@ void qcril_qmi_nas_get_neighboring_cells_cb
                            qmi_response->lte_inter_valid, qmi_response->lte_inter.freqs_len
                            );
 
-            memset( ril_resp_helper, 0, sizeof( ril_resp_helper ) );
+            memset( ril_resp_helper, 0, sizeof( *ril_resp_helper ) );
 
             if (qcril_qmi_nas_is_using_radio_if( NAS_RADIO_IF_GSM ))
             {
@@ -23066,7 +23066,7 @@ void qcril_qmi_nas_initialize_cdma_ril_cellinfo
   uint64_t *timestamp
 )
 {
-  memset(cell_info, 0, sizeof(cell_info));
+  memset(cell_info, 0, sizeof(*cell_info));
   cell_info->cellInfoType = RIL_CELL_INFO_TYPE_CDMA;
   cell_info->registered = registered;
   if (timestamp)
@@ -23814,7 +23814,7 @@ void qcril_qmi_nas_get_cell_info_list_ncl
     {
       memcpy(nas_cached_info.cell_location_info,
               &get_cell_location_info_resp,
-              sizeof(nas_cached_info.cell_location_info));
+              sizeof(*nas_cached_info.cell_location_info));
     }
     else
     {
@@ -25430,7 +25430,7 @@ void qcril_qmi_nas_dsds_subscription_info_ind_handler( nas_subscription_info_ind
         QCRIL_LOG_DEBUG ("Voice System ID %x\n", vsid);
         NAS_CACHE_STORE_TINY_ENTRY( nas_cached_info.voice_system_id, ind_msg->voice_system_id );
         // Send QCRIL_EVT_HOOK_UNSOL_VOICE_SYSTEM_ID response
-        qcril_hook_unsol_response( QCRIL_DEFAULT_INSTANCE_ID, QCRIL_EVT_HOOK_UNSOL_VOICE_SYSTEM_ID, &vsid, sizeof(vsid));
+        qcril_hook_unsol_response( QCRIL_DEFAULT_INSTANCE_ID, QCRIL_EVT_HOOK_UNSOL_VOICE_SYSTEM_ID, (char *)&vsid, sizeof(vsid));
         qcril_am_set_vsid(QCRIL_AM_VS_VOICE, vsid);
     }
     if (ind_msg->is_active_valid)

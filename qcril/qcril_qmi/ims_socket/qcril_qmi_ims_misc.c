@@ -1152,7 +1152,7 @@ Ims__Handover* qcril_qmi_ims_create_ims_handover_from_imsa_rat_info(const imsa_r
 
         if (failure)
         {
-            qcril_qmi_ims_free_srvstatuslist(ims_handover_ptr);
+            qcril_qmi_ims_free_ims_handover(ims_handover_ptr);
             ims_handover_ptr = NULL;
         }
     }
