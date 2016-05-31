@@ -1161,6 +1161,10 @@ void qcril_data_process_wds_ind
 
     /* handle individual wds indications */
     reti = SUCCESS;
+
+    QCRIL_LOG_DEBUG("%s %d ind","qcril_data_process_wds_ind",ind_id);
+
+
     switch (ind_id)
     {
     case QMI_WDS_SRVC_EVENT_REPORT_IND_MSG:
@@ -1315,7 +1319,7 @@ void qcril_data_qmi_wds_ind_cb
   qcril_data_wds_event_data_t* event_data = NULL;
   int lock_result = 0;
 
-  QCRIL_LOG_DEBUG( "%s", "qcril_data_qmi_wds_ind_cb: ENTRY" );
+  QCRIL_LOG_DEBUG( "%s: ENTRY (%d)", "qcril_data_qmi_wds_ind_cb", ind_id );
 
   if ((event_data = malloc(sizeof(qcril_data_wds_event_data_t))) != NULL)
   {
@@ -8781,6 +8785,22 @@ void qcril_data_qmi_wds_init(boolean from_ssr)
                     "qmi_err_code is set to [%d]", global_qmi_wds_hndl,
                     qmi_err_code);
 
+    /* Register for data call status indications */
+    event_report_params.param_mask |= QMI_WDS_EVENT_DATA_CALL_STATUS_CHG_IND;
+    event_report_params.report_data_call_status_chg = TRUE;
+
+    rc = qmi_wds_set_event_report(global_qmi_wds_hndl,
+                                  &event_report_params,
+                                  &qmi_err_code);
+
+    if (rc != QMI_NO_ERR)
+    {
+      QCRIL_LOG_ERROR("qmi_wds_set_event_report failed with err [%d][%d]",
+                      rc, qmi_err_code);
+      break;
+    }
+
+
     /* Call flow for data registration indications:
      *
      * If persist.radio.dont_use.dsd is TRUE
@@ -8836,13 +8856,27 @@ void qcril_data_qmi_wds_init(boolean from_ssr)
                                     &bind_resp_msg,
                                     sizeof(bind_resp_msg),
                                     QCRIL_DATA_QMI_DSD_SYNC_MSG_TIMEOUT);
-      if (QMI_NO_ERR != rc) {
-        QCRIL_LOG_ERROR("failed to bind subscription, err=%d",
-                        rc);
-      }
-      else if (QMI_NO_ERR != bind_resp_msg.resp.result) {
-        QCRIL_LOG_ERROR("failed to bind subscription, err=%d",
-                          bind_resp_msg.resp.error);
+
+     if(qmi_ril_is_multi_sim_feature_supported())
+     {
+       if ((QMI_NO_ERR != rc) ||
+            (QMI_NO_ERR != bind_resp_msg.resp.result))
+        {
+          QCRIL_LOG_ERROR("failed to bind subscription, rc err=%d, resp_error=%d",
+                            rc,bind_resp_msg.resp.error);
+
+          qmi_client_release( global_qmi_dsd_hndl );
+          global_qmi_dsd_hndl = NULL;
+
+          QCRIL_LOG_DEBUG("%s", "Subs binding failed for Multisim, using NAS indications");
+
+          qcril_arb_set_pref_data_tech(global_instance_id, QCRIL_ARB_PREF_DATA_TECH_INVALID);
+          global_dsd_info.service = QCRIL_DATA_DSD_SERVICE_TYPE_LEGACY;
+          global_dsd_info.legacy.dsd_mode = QCRIL_DATA_LEGACY_DSD_MODE_NAS;
+
+          goto continue_init;
+
+        }
       }
 
       /* Query the current system status from QMI-DSD service */
@@ -8937,20 +8971,7 @@ void qcril_data_qmi_wds_init(boolean from_ssr)
       global_dsd_info.legacy.dsd_mode = QCRIL_DATA_LEGACY_DSD_MODE_NAS;
     }
 
-    /* Register for data call status indications */
-    event_report_params.param_mask |= QMI_WDS_EVENT_DATA_CALL_STATUS_CHG_IND;
-    event_report_params.report_data_call_status_chg = TRUE;
-
-    rc = qmi_wds_set_event_report(global_qmi_wds_hndl,
-                                  &event_report_params,
-                                  &qmi_err_code);
-
-    if (rc != QMI_NO_ERR)
-    {
-      QCRIL_LOG_ERROR("qmi_wds_set_event_report failed with err [%d][%d]",
-                      rc, qmi_err_code);
-      break;
-    }
+continue_init:
 
 #ifdef FEATURE_QCRIL_USE_QDP
     /* init qdp */
