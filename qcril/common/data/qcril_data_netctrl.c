@@ -9232,17 +9232,6 @@ void qcril_data_init()
   qcril_data_set_default_port();
 #endif
 
-  /* If the multisim property is enabled
-     set the dont_use_dsd property to true  */
-  if(qmi_ril_is_multi_sim_feature_supported()){
-      QCRIL_LOG_DEBUG("Multisim feature enabled. Setting dont_use_dsd to [true]");
-      property_set(QCRIL_DATA_PROP_DONT_USE_DSD, "true");
-  }
-  else
-  {
-      property_set(QCRIL_DATA_PROP_DONT_USE_DSD, "false");
-  }
-
   qcril_data_qmi_wds_init(FALSE);
 
   qcril_data_util_update_partial_retry_enabled_flag();
