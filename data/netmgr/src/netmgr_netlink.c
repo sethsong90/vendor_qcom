@@ -281,6 +281,16 @@ netmgr_nl_socklthrd_main (void * arg)
     /* Call select to block on incoming message on all registered fds */
     if ((ret = select(info->maxfd+1, &info->fdset, NULL, NULL, NULL)) < 0)
     {
+      netmgr_log_err("select returned with errno=[%d,%s]\n",
+                     errno,
+                     strerror(errno));
+
+      /* Ignore select errors due to EINTR */
+      if (-1 == ret && EINTR == errno)
+      {
+        continue;
+      }
+
       NETMGR_ABORT("netmgr_nl_socklthrd_main: select failed!");
       return NULL;
     }
