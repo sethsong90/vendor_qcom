@@ -190,10 +190,10 @@ extern boolean function_debug;
 #define  NETMGR_LOG_FUNC_EXIT     if(function_debug){ ds_log_func_exit();  }
 
 #define NETMGR_LOG_IPV4_ADDR(level, prefix, ip_addr)                        \
-        DS_LOG_IPV4_ADDR(level, prefix, ip_addr)
+        DS_INET4_NTOP(level, prefix, ((unsigned char *)&ip_addr))
 
 #define NETMGR_LOG_IPV6_ADDR(level, prefix, ip_addr)                        \
-        DS_LOG_IPV6_ADDR(level, prefix, ip_addr)
+        DS_INET6_NTOP(level, prefix, ((unsigned char *)&ip_addr))
 
 
 /*===========================================================================

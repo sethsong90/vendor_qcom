@@ -3292,17 +3292,17 @@ qdi_get_addr_info
   /* Print the interface addresses being returned */
   if (AF_INET == ip_family)
   {
-    DS_LOG_IPV4_ADDR(med,"Interface",    *(uint32*)&(SASTORAGE_DATA(addr_info->iface_addr_s.addr)));
-    DS_LOG_IPV4_ADDR(med,"Gateway",      *(uint32*)&(SASTORAGE_DATA(addr_info->gtwy_addr_s.addr)));
-    DS_LOG_IPV4_ADDR(med,"DNS Primary",  *(uint32*)&(SASTORAGE_DATA(addr_info->dnsp_addr_s.addr)));
-    DS_LOG_IPV4_ADDR(med,"DNS Secondary",*(uint32*)&(SASTORAGE_DATA(addr_info->dnss_addr_s.addr)));
+    DS_LOG_IPV4_ADDR(med,"Interface",    (SASTORAGE_DATA(addr_info->iface_addr_s.addr)));
+    DS_LOG_IPV4_ADDR(med,"Gateway",      (SASTORAGE_DATA(addr_info->gtwy_addr_s.addr)));
+    DS_LOG_IPV4_ADDR(med,"DNS Primary",  (SASTORAGE_DATA(addr_info->dnsp_addr_s.addr)));
+    DS_LOG_IPV4_ADDR(med,"DNS Secondary",(SASTORAGE_DATA(addr_info->dnss_addr_s.addr)));
   }
   else
   {
-    DS_LOG_IPV6_ADDR(med,"Interface",    ((uint64*)&(SASTORAGE_DATA(addr_info->iface_addr_s.addr))));
-    DS_LOG_IPV6_ADDR(med,"Gateway",      ((uint64*)&(SASTORAGE_DATA(addr_info->gtwy_addr_s.addr))));
-    DS_LOG_IPV6_ADDR(med,"DNS Primary",  ((uint64*)&(SASTORAGE_DATA(addr_info->dnsp_addr_s.addr))));
-    DS_LOG_IPV6_ADDR(med,"DNS Secondary",((uint64*)&(SASTORAGE_DATA(addr_info->dnss_addr_s.addr))));
+    DS_LOG_IPV6_ADDR(med,"Interface",    (SASTORAGE_DATA(addr_info->iface_addr_s.addr)));
+    DS_LOG_IPV6_ADDR(med,"Gateway",      (SASTORAGE_DATA(addr_info->gtwy_addr_s.addr)));
+    DS_LOG_IPV6_ADDR(med,"DNS Primary",  (SASTORAGE_DATA(addr_info->dnsp_addr_s.addr)));
+    DS_LOG_IPV6_ADDR(med,"DNS Secondary",(SASTORAGE_DATA(addr_info->dnss_addr_s.addr)));
   }
 
   ret = QDI_SUCCESS;

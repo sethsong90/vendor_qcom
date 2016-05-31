@@ -83,18 +83,18 @@ uint32                   nl_seqno = 0;
 
 #define NETMGR_NL_REPORT_ADDR( level, prefix, addr )                              \
         if( AF_INET6 == (addr).ss_family ) {                                      \
-          NETMGR_LOG_IPV6_ADDR( level, prefix, ((uint64*)&(addr).__data) );       \
+          NETMGR_LOG_IPV6_ADDR( level, prefix, addr.__data );                     \
         } else {                                                                  \
-          NETMGR_LOG_IPV4_ADDR( level, prefix, (*(unsigned int*)&(addr).__data) );\
+          NETMGR_LOG_IPV4_ADDR( level, prefix, addr.__data );                     \
         }
 
 #else/*(!defined(NETMGR_OFFTARGET) && defined(FEATURE_DS_LINUX_ANDROID))*/
 
 #define NETMGR_NL_REPORT_ADDR( level, prefix, addr )                                    \
         if( AF_INET6 == (addr).ss_family ) {                                            \
-          NETMGR_LOG_IPV6_ADDR( level, prefix, ((uint64*)&(addr).__ss_padding) );       \
+          NETMGR_LOG_IPV6_ADDR( level, prefix, addr.__ss_padding );                     \
         } else {                                                                        \
-          NETMGR_LOG_IPV4_ADDR( level, prefix, (*(unsigned int*)&(addr).__ss_padding) );\
+          NETMGR_LOG_IPV4_ADDR( level, prefix, addr.__ss_padding );                     \
         }
 
 #endif/*(!defined(NETMGR_OFFTARGET) && defined(FEATURE_DS_LINUX_ANDROID))*/
@@ -1144,7 +1144,7 @@ LOCAL int netmgr_nl_decode_rtm_prefix
                         prefix_info->prefixinfo.autoconf,
                         prefix_info->prefixinfo.onlink,
                         prefix_info->prefixinfo.prefered );
-        NETMGR_LOG_IPV6_ADDR( med, "Attribute: Prefix", ((uint64*)(prefix_info->prefixinfo.prefix.s6_addr)) );
+        NETMGR_LOG_IPV6_ADDR( med, "Attribute: Prefix", (prefix_info->prefixinfo.prefix.s6_addr) );
         break;
 
       case PREFIX_CACHEINFO:

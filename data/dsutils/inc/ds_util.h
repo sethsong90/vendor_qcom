@@ -318,27 +318,22 @@ typedef struct {
         __FUNCTION__               \
     )
 
+#define DS_INET4_NTOP(level,prefix,data)                                              \
+  ds_log_##level(prefix "IPv4 addr [%d.%d.%d.%d]",                                    \
+               data[0], data[1], data[2], data[3])
+
+#define DS_INET6_NTOP(level,prefix,data)                                              \
+  ds_log_##level(prefix "IPv6 addr [%.2x%.2x:%.2x%.2x:%.2x%.2x:%.2x%.2x:"             \
+                      "%.2x%.2x:%.2x%.2x:%.2x%.2x:%.2x%.2x]",                         \
+               data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],       \
+               data[8],data[9],data[10],data[11],data[12],data[13],data[14],data[15])
+
+
 #define DS_LOG_IPV4_ADDR(level, prefix, ip_addr)                            \
-        ds_log_##level(                                                     \
-                    "%s IPV4 Address %d.%d.%d.%d\n",                        \
-                    prefix,                                                 \
-                    (unsigned char)(ip_addr),                               \
-                    (unsigned char)(ip_addr >> 8),                          \
-                    (unsigned char)(ip_addr >> 16) ,                        \
-                    (unsigned char)(ip_addr >> 24));
+        DS_INET4_NTOP(level, prefix, ((unsigned char*)&ip_addr))
 
 #define DS_LOG_IPV6_ADDR(level, prefix, ip_addr)                            \
-        ds_log_##level(                                                     \
-               "%s IPV6 Address %04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x\n", \
-               prefix,                                                      \
-               (uint16)(ntohs(ip_addr[0])),                                 \
-               (uint16)(ntohs(ip_addr[0] >> 16)),                           \
-               (uint16)(ntohs(ip_addr[0] >> 32)) ,                          \
-               (uint16)(ntohs(ip_addr[0] >> 48)),                           \
-               (uint16)(ntohs(ip_addr[1])),                                 \
-               (uint16)(ntohs(ip_addr[1] >> 16)),                           \
-               (uint16)(ntohs(ip_addr[1] >> 32)) ,                          \
-               (uint16)(ntohs(ip_addr[1] >> 48)) );
+        DS_INET6_NTOP(level, prefix, ((unsigned char*)&ip_addr))
 
 #define DS_LOG_MULTICAST_LOW(fmt, ...) \
   ds_log_multicast(DS_DBG_LEVEL_LOW, fmt, __VA_ARGS__)
