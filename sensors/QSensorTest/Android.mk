@@ -1,6 +1,5 @@
 LOCAL_PATH:= $(call my-dir)
 
-ifeq ($(PWV_ENGINER_APP_SUPPORT),true)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional
@@ -13,4 +12,3 @@ LOCAL_CERTIFICATE := platform
 LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 
 include $(BUILD_PACKAGE)
-endif
