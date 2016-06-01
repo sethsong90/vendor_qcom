@@ -25,6 +25,7 @@
 #include "sns_acm_priv.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <cutils/properties.h>
 
 #ifdef SNS_BLAST
   #include "sns_debug_str_mdm.h"
@@ -94,6 +95,11 @@ static qmi_service_info service_info[ SNS_ACM_MAX_SVC_ID ];
 static bool service_enabled[ SNS_ACM_MAX_SVC_ID ];
 static qmi_cci_os_signal_type os_params;
 static sns_acm_ext_client_handle external_clients[ SNS_ACM_MAX_CLIENTS ];
+
+#define SNS_SVC_TIMEOUT_DEF  2000
+#define SNS_SVC_TIMEOUT_MAX  30000
+static int service_timeout_ms = SNS_SVC_TIMEOUT_DEF;
+static bool service_skipped[ SNS_ACM_MAX_SVC_ID ];
 
 /*============================================================================
   Function Definitions and Documentation
@@ -434,6 +440,41 @@ sns_acm_qcci_resp_cb( qmi_client_type user_handle, unsigned int msg_id, void *bu
   sns_acm_mr_queue_add( buf );
 }
 
+int sns_acm_get_services_params(void)
+{
+  char prop[PROPERTY_VALUE_MAX];
+  int plen, i, svc_num;
+  char * snum;
+  char * s;
+
+  service_timeout_ms = SNS_SVC_TIMEOUT_DEF;
+  plen = property_get("ro.qc.sensors.init_svc_timeout", prop, "");
+  if (plen > 0) {
+    plen = strtol(prop, NULL, 10);
+    if (plen > 0 && plen < LONG_MAX) {
+      service_timeout_ms = plen;
+      if (service_timeout_ms > SNS_SVC_TIMEOUT_MAX)
+        service_timeout_ms = SNS_SVC_TIMEOUT_MAX;
+    }
+  }
+
+  for (i = 0; i < SNS_ACM_MAX_SVC_ID; i++) {
+    service_skipped[i] = false;
+  }
+  plen = property_get("ro.qc.sensors.skip_svc_list", prop, "");
+  if (plen > 0) {
+    s = prop;
+    while ((snum = strsep(&s, ",")) != NULL) {
+      svc_num = strtol(snum, NULL, 10);
+      if (svc_num >= 0 && svc_num < SNS_ACM_MAX_SVC_ID) {
+        service_skipped[ svc_num ] = true;
+      }
+    }
+  }
+
+  return 0;
+}
+
 /**
  * Acquire QMI information for a single QMI/sensor1 service
  *
@@ -446,7 +487,7 @@ void* sns_acm_mr_client_init( void *svc_id )
   sns_err_code_e sns_err;
   uint32_t j,
            svc_num = *((uint32_t *)svc_id);
-  int timeout_ms = (svc_num == 0) ? 10000 : 2000;
+  int timeout_ms = (svc_num == 0) ? 10000 : service_timeout_ms;
   qmi_idl_service_object_type service;
 
   service = sns_smr_get_svc_obj( svc_num );
@@ -456,6 +497,12 @@ void* sns_acm_mr_client_init( void *svc_id )
   }
   else
   {
+    if (svc_num > 0 && service_skipped[ svc_num ]) {
+      SNS_PRINTF_STRING_HIGH_1( SNS_DBG_MOD_ACM, "Service %i skipped", svc_num );
+      service_enabled[ svc_num ] = false;
+      goto skip_svc;
+    }
+
     SNS_PRINTF_STRING_LOW_1( SNS_DBG_MOD_ACM, "Initializing connection for svc %i", svc_num );
 
     sns_err = sns_smr_get_qmi_service_info( &service, timeout_ms, &service_info[ svc_num ] );
@@ -470,6 +517,7 @@ void* sns_acm_mr_client_init( void *svc_id )
       service_enabled[ svc_num ] = false;
     }
 
+skip_svc:
     for( j = 0; j < SNS_ACM_MAX_CLIENTS; j++ )
     {
       external_clients[ j ].cb_data[ svc_num ] = NULL;
@@ -498,6 +546,11 @@ sns_acm_mr_init( OS_FLAG_GRP *sig_grp_ptr, OS_FLAGS sig_flag )
   uint8_t os_err = 0;
   pthread_t thread_id[SNS_ACM_MAX_SVC_ID];
   pthread_attr_t thread_attr;
+  char prop[PROPERTY_VALUE_MAX];
+  int plen;
+  char * snum;
+  char * s;
+  int skip_svc_num;
 
   sns_acm_mr_msg_queue_first = NULL;
   sns_acm_mr_msg_queue_last = NULL;
@@ -514,6 +567,8 @@ sns_acm_mr_init( OS_FLAG_GRP *sig_grp_ptr, OS_FLAGS sig_flag )
     SNS_PRINTF_STRING_FATAL_1( SNS_DBG_MOD_ACM, "Cannot create semaphore %i", errno );
     return SNS_ERR_FAILED;
   }
+
+  sns_acm_get_services_params();
 
   pthread_attr_init( &thread_attr );
   pthread_attr_setdetachstate( &thread_attr, PTHREAD_CREATE_JOINABLE );
