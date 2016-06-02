@@ -288,7 +288,7 @@ int isp_stats_start_streams(
   uint32_t handle;
   memset(&cmd, 0, sizeof(cmd));
 
-  CDBG("%s: start = %d\n", __func__, start);
+  CDBG("%s: stats_mask = %d\n", __func__, stats_mask);
   cmd.enable = 1;
   for (i = 0; i < MSM_ISP_STATS_MAX; i++) {
     if (stats_mask & (1 << i)) {
@@ -322,7 +322,7 @@ int isp_stats_stop_streams(
 
   memset(&cmd, 0, sizeof(cmd));
 
-  CDBG("%s: start = %d\n", __func__, start);
+  CDBG("%s: stats_mask = %d\n", __func__, stats_mask);
   cmd.enable = 0;
   for (i = 0; i < MSM_ISP_STATS_MAX; i++) {
     if (stats_mask & (1 << i)) {

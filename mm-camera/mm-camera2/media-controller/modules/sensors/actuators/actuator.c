@@ -13,7 +13,7 @@
 #include "af_tuning.h"
 #include "actuator.h"
 
-static actuator_ctrl_t actuators[ACTUATOR_CAM_MODE_MAX][6] = {
+static actuator_ctrl_t actuators[ACTUATOR_CAM_MODE_MAX][7] = {
 /*ACTUATOR_CAM_MODE_CAMERA*/
 {
   #include "af_main_cam_camera_0.h"
@@ -22,6 +22,7 @@ static actuator_ctrl_t actuators[ACTUATOR_CAM_MODE_MAX][6] = {
   #include "af_main_cam_camera_3.h"
   #include "af_main_cam_camera_4.h"
   #include "af_main_cam_camera_5.h"
+  #include "af_main_cam_camera_6.h"
 },
 /*ACTUATOR_CAM_MODE_CAMCORDER*/
 {
@@ -31,6 +32,7 @@ static actuator_ctrl_t actuators[ACTUATOR_CAM_MODE_MAX][6] = {
   #include "af_main_cam_camcorder_3.h"
   #include "af_main_cam_camcorder_4.h"
   #include "af_main_cam_camcorder_5.h"
+  #include "af_main_cam_camcorder_6.h"
 }
 };
 

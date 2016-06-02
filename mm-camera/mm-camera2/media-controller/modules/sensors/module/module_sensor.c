@@ -200,6 +200,7 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
   s_bundle->regular_led_trigger = 0;
   s_bundle->regular_led_af = 0;
   s_bundle->torch_on = 0;
+  s_bundle->longshot = 0;
 
   for (i = 0; i < SUB_MODULE_MAX; i++) {
     SLOW("sensor_sd_name=%s", s_bundle->sensor_sd_name[i]);
@@ -370,6 +371,8 @@ static boolean module_sensor_deinit_session(
   module_sensor_bundle_info_t *s_bundle)
 {
   uint16_t i = 0;
+  af_update_t af_update;
+  module_sensor_params_t *module_params = NULL ;
 
   if (!s_bundle->ref_count) {
     SERR("ref count 0");
@@ -380,6 +383,16 @@ static boolean module_sensor_deinit_session(
     SLOW("ref_count %d", s_bundle->ref_count);
     return TRUE;
   }
+  
+  //add by cneyo
+  af_update.reset_lens = TRUE;
+  /*before camera exit, move lens to default position*/
+  module_params = s_bundle->module_sensor_params[SUB_MODULE_ACTUATOR] ;
+  if(module_params!=NULL && module_params->func_tbl.process!=NULL){
+    module_params->func_tbl.process(module_params->sub_module_private,
+    ACTUATOR_MOVE_FOCUS,&af_update);
+  }   
+//add by cneyo
 
   for (i = 0; i < SUB_MODULE_MAX; i++) {
     if (s_bundle->module_sensor_params[i]->func_tbl.close) {
@@ -434,6 +447,7 @@ static boolean module_sensor_start_session(
 
   /* initialize the "torch on" flag to 0 */
   s_bundle->torch_on = 0;
+  s_bundle->longshot = 0;
 
   /* this init session includes
      power up sensor, config init setting */
@@ -985,9 +999,14 @@ static boolean module_sensor_stream_on(mct_module_t *module,
           led_module_params = s_bundle->module_sensor_params[SUB_MODULE_LED_FLASH];
           if (led_module_params != NULL &&
               led_module_params->func_tbl.process != NULL) {
+            int flash_mode;
+            if(s_bundle->longshot)
+              flash_mode = LED_FLASH_SET_LOW;
+            else
+              flash_mode  = LED_FLASH_SET_HIGH;
             rc = led_module_params->func_tbl.process(
               led_module_params->sub_module_private,
-              LED_FLASH_SET_HIGH , NULL);
+              flash_mode, NULL);
             if (rc < 0) {
               s_bundle->sensor_params.flash_mode = CAM_FLASH_MODE_OFF;
               SERR("failed: LED_FLASH_SET_HIGH");
@@ -1578,6 +1597,11 @@ static boolean module_sensor_event_control_set_parm(
       ret = FALSE;
     }
     break;
+  case CAM_INTF_PARM_LONGSHOT_ENABLE : {
+    int8_t mode = *((int8_t *)event_control->parm_data);
+     s_bundle->longshot = mode;
+     break;
+  }
   case CAM_INTF_PARM_LED_MODE: {
     int32_t mode = *((int32_t *)event_control->parm_data);
     module_sensor_params_t        *led_module_params = NULL;
@@ -2093,7 +2117,8 @@ static boolean module_sensor_module_process_event(mct_module_t *module,
     }
       /*If streaming offf preview, then turn off LED*/
       if (stream_info->stream_type == CAM_STREAM_TYPE_SNAPSHOT ||
-          stream_info->stream_type == CAM_STREAM_TYPE_POSTVIEW)
+          stream_info->stream_type == CAM_STREAM_TYPE_POSTVIEW ||
+          bundle_info.s_bundle->longshot)
       {
         SLOW ("stream off preview or snapshot, turn off LED");
         module_sensor_params_t        *led_module_params = NULL;
@@ -2232,9 +2257,15 @@ static boolean module_sensor_module_process_event(mct_module_t *module,
               module_sensor_params_t        *led_module_params = NULL;
               led_module_params = bundle_info.s_bundle->module_sensor_params[SUB_MODULE_LED_FLASH];
               if (led_module_params->func_tbl.process != NULL) {
+                int flash_mode;
+                if(bundle_info.s_bundle->longshot)
+                  flash_mode = LED_FLASH_SET_LOW;
+                else
+                  flash_mode  = LED_FLASH_SET_HIGH;
+
                 rc = led_module_params->func_tbl.process(
                   led_module_params->sub_module_private,
-                  LED_FLASH_SET_HIGH , NULL);
+                  flash_mode , NULL);
                 if (rc < 0) {
                   bundle_info.s_bundle->sensor_params.flash_mode =
                     CAM_FLASH_MODE_OFF;

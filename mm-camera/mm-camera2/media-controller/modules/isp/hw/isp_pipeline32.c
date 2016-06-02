@@ -1175,8 +1175,7 @@ static void isp32_util_get_params(void *in_params, uint32_t in_params_size,
     tintless_mesh_rolloff_array_t *rolloff = (tintless_mesh_rolloff_array_t *)out_param;
     int rc = 0;
     if (pipeline->mod_ops[ISP_MOD_ROLLOFF] && pipeline->mod_ops[ISP_MOD_ROLLOFF]->get_params) {
-      CDBG("%s: module id = %d, ISP_HW_MOD_GET_TINTLESS_RO\n",
-        __func__, i);
+      CDBG("%s:  ISP_HW_MOD_GET_TINTLESS_RO\n", __func__);
       rc = pipeline->mod_ops[ISP_MOD_ROLLOFF]->get_params(pipeline->mod_ops[ISP_MOD_ROLLOFF]->ctrl,
              ISP_HW_MOD_GET_TINTLESS_RO, in_params, in_params_size,
              rolloff, sizeof(tintless_mesh_rolloff_array_t));

@@ -19,6 +19,11 @@
 #endif
 
 
+#define AWB_SUBSAMPLE               (4)
+#define MIN_AWB_SUBSAMPLE           (1)
+#define AWB_STATS_PROC_FREQ_PREVIEW (2)
+#define AWB_STATS_PROC_FREQ_VIDEO   (2)
+
 typedef enum {
   AWB_STATS_YUV,
   AWB_STATS_BAYER
@@ -87,6 +92,11 @@ typedef enum _awb_set_parameter_type {
 
 typedef q3a_operation_mode_t awb_operation_mode_t;
 
+typedef struct _awb_tunable_params {
+  uint32_t             awb_subsampling_factor;
+  uint8_t              awb_stats_proc_freq;
+} awb_tuning_params_t;
+
 typedef struct _awb_set_parameter_init {
   awb_stats_type_t     stats_type;
 
@@ -95,6 +105,7 @@ typedef struct _awb_set_parameter_init {
 
   /* op_mode can be derived from stream info */
   awb_operation_mode_t op_mode;
+  awb_tuning_params_t  awb_tuning_params;
 
 } awb_set_parameter_init_t;
 
@@ -319,6 +330,7 @@ typedef struct _awb_output_data {
   uint32_t frame_id;
   awb_output_type_t type;
   awb_output_eztune_data_t eztune_data;
+  uint8_t   awb_stats_proc_freq;
 } awb_output_data_t;
 /*Data structure for awb ends */
 

@@ -1399,7 +1399,7 @@ Qualcomm Technologies Proprietary and Confidential.
       ,
 
       /* intial_code */
-      0,
+      30,
       /* region_size */
       2,
 
@@ -1431,13 +1431,13 @@ Qualcomm Technologies Proprietary and Confidential.
               /* region 1 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 14000,
+                .damping_delay = 0,
                 .hw_params = 0x0000000A,
               },
               /* region 2 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 14000,
+                .damping_delay = 9500,
                 .hw_params = 0x00000007,
               },
             },
@@ -1448,13 +1448,13 @@ Qualcomm Technologies Proprietary and Confidential.
               /* region 1 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 1500,
+                .damping_delay = 0,
                 .hw_params = 0x0000000A,
               },
               /* region 2 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 14000,
+                .damping_delay = 9500,
                 .hw_params = 0x00000006,
               },
             },
@@ -1465,13 +1465,13 @@ Qualcomm Technologies Proprietary and Confidential.
               /* region 1 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 1500,
+                .damping_delay = 0,
                 .hw_params = 0x0000000A,
               },
               /* region 2 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 14000,
+                .damping_delay = 9500,
                 .hw_params = 0x00000006,
               },
             },
@@ -1482,13 +1482,13 @@ Qualcomm Technologies Proprietary and Confidential.
               /* region 1 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 1500,
+                .damping_delay = 0,
                 .hw_params = 0x0000000A,
               },
               /* region 2 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 14000,
+                .damping_delay = 9500,
                 .hw_params = 0x00000006,
               },
             },
@@ -1503,13 +1503,13 @@ Qualcomm Technologies Proprietary and Confidential.
               /* region 1 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 14000,
+                .damping_delay = 0,
                 .hw_params = 0x0000000A,
               },
               /* region 2 */
               {
-                .damping_step = 0x3FF,
-                .damping_delay = 14000,
+                .damping_step = 0x30,
+                .damping_delay = 9500,
                 .hw_params = 0x00000007,
               },
             },
@@ -1520,14 +1520,14 @@ Qualcomm Technologies Proprietary and Confidential.
               /* region 1 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 1500,
+                .damping_delay = 0,
                 .hw_params = 0x0000000A,
               },
               /* region 2 */
               {
-                .damping_step = 0x3FF,
-                .damping_delay = 14000,
-                .hw_params = 0x00000006,
+                .damping_step = 0x30,
+                .damping_delay = 9500,
+                .hw_params = 0x00000007,
               },
             },
           },
@@ -1537,14 +1537,14 @@ Qualcomm Technologies Proprietary and Confidential.
               /* region 1 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 1500,
+                .damping_delay = 0,
                 .hw_params = 0x0000000A,
               },
               /* region 2 */
               {
-                .damping_step = 0x3FF,
-                .damping_delay = 14000,
-                .hw_params = 0x00000006,
+                .damping_step = 0x30,
+                .damping_delay = 9500,
+                .hw_params = 0x00000007,
               },
             },
           },
@@ -1554,14 +1554,14 @@ Qualcomm Technologies Proprietary and Confidential.
               /* region 1 */
               {
                 .damping_step = 0x3FF,
-                .damping_delay = 1500,
+                .damping_delay = 0,
                 .hw_params = 0x0000000A,
               },
               /* region 2 */
               {
-                .damping_step = 0x3FF,
-                .damping_delay = 14000,
-                .hw_params = 0x00000006,
+                .damping_step = 0x30,
+                .damping_delay = 9500,
+                .hw_params = 0x00000007,
               },
             },
           },

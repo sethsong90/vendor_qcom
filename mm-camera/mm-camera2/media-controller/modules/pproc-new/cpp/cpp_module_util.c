@@ -87,6 +87,74 @@ cpp_module_ack_t* cpp_module_find_ack_from_list(cpp_module_ctrl_t *ctrl,
   return NULL;
 }
 
+static
+boolean clk_rate_find_by_identity_func(void* data, void* userdata)
+{
+  if(!data || !userdata) {
+    CDBG_ERROR("%s:%d: failed, data=%p, userdata=%p\n",
+                __func__, __LINE__, data, userdata);
+    return FALSE;
+  }
+
+  cpp_module_stream_clk_rate_t *clk_rate_obj =
+    (cpp_module_stream_clk_rate_t*) data;
+  uint32_t identity = *(uint32_t*)userdata;
+
+  if(clk_rate_obj->identity == identity) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+cpp_module_stream_clk_rate_t *
+cpp_module_find_clk_rate_by_identity(cpp_module_ctrl_t *ctrl,
+  uint32_t identity)
+{
+  mct_list_t *templist;
+
+  templist = mct_list_find_custom(ctrl->clk_rate_list.list, &identity,
+    clk_rate_find_by_identity_func);
+  if(templist) {
+    return (cpp_module_stream_clk_rate_t *)(templist->data);
+  }
+  return NULL;
+}
+
+static
+boolean clk_rate_find_by_value_func(void* data, void** userdata)
+{
+  if(!data) {
+    CDBG_ERROR("%s:%d: failed, data=%p\n",
+                __func__, __LINE__, data);
+    return FALSE;
+  }
+  cpp_module_stream_clk_rate_t *curent_clk_obj =
+    (cpp_module_stream_clk_rate_t *) data;
+  uint64_t  *total_load = *(uint64_t *)userdata;
+
+  *total_load += curent_clk_obj->total_load;
+
+  return TRUE;
+}
+
+int64_t cpp_module_get_total_load_by_value(cpp_module_ctrl_t *ctrl)
+{
+  int32_t rc;
+  uint64_t total_load;
+  uint64_t *ptr_total_load;
+
+  ptr_total_load = &total_load;
+
+  rc = mct_list_traverse(ctrl->clk_rate_list.list,
+    clk_rate_find_by_value_func, &ptr_total_load);
+
+  if (rc < 0) {
+    return rc;
+  }
+
+  return total_load;
+}
+
 cam_streaming_mode_t cpp_module_get_streaming_mode(mct_module_t *module,
   uint32_t identity)
 {
@@ -560,8 +628,8 @@ int32_t cpp_module_util_post_diag_to_bus(mct_module_t *module,
 int32_t cpp_module_util_update_session_diag_params(mct_module_t *module,
   cpp_hardware_params_t* hw_params)
 {
-  cpp_module_stream_params_t *stream_params;
-  cpp_module_session_params_t *session_params;
+  cpp_module_stream_params_t *stream_params = NULL;
+  cpp_module_session_params_t *session_params = NULL;
   cpp_module_ctrl_t *ctrl;
 
   /* Check whether the current stream type needs update diag params */

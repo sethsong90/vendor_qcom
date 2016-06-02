@@ -70,6 +70,7 @@ typedef struct _aec_port_private {
   uint8_t             aec_state;
   cam_ae_state_t      aec_last_state;
   boolean             locked_from_hal;
+  boolean             in_longshot_mode;
   boolean             aec_enabled;
   boolean             aec_precap_start;
   boolean             aec_precap_for_af;
@@ -80,6 +81,7 @@ typedef struct _aec_port_private {
   boolean             in_zsl_capture;
   int                 preview_width;
   int                 preview_height;
+  uint32_t            algo_opt_mask;
   /* HAL 3*/
   cam_area_t          aec_roi;
   aec_led_est_state_t est_state;

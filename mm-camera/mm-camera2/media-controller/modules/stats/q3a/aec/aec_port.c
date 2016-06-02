@@ -167,7 +167,7 @@ static void aec_port_send_event(mct_port_t *port, int evt_type,
 
   MCT_OBJECT_LOCK(port);
   if (private->aec_update_flag == FALSE ||
-    private->in_zsl_capture == TRUE) {
+    (private->in_zsl_capture == TRUE && private->in_longshot_mode == 0)) {
     CDBG("No AEC update event to send");
     MCT_OBJECT_UNLOCK(port);
     return;
@@ -465,6 +465,10 @@ static boolean aec_port_proc_downstream_ctrl(mct_port_t *port,
           case AEC_SET_PARAM_LOCK:
             private->locked_from_hal = q3a_param->u.aec_param.u.aec_lock;
             break;
+          case AEC_SET_PARAM_LONGSHOT_MODE:
+            private->in_longshot_mode = q3a_param->u.aec_param.u.longshot_mode;
+            CDBG("%s longshot_mode: %d", __func__, private->in_longshot_mode);
+            break;
           case AEC_SET_PARAM_PREPARE_FOR_SNAPSHOT:
             if(q3a_param->u.aec_param.u.aec_trigger.trigger ==
               AEC_PRECAPTURE_TRIGGER_START) {
@@ -558,6 +562,10 @@ static boolean aec_port_proc_downstream_ctrl(mct_port_t *port,
           }
           rc = q3a_aecawb_thread_en_q_msg(private->thread_data, aec_msg);
         }
+      } else if (common_param->type == COMMON_SET_PARAM_ALGO_OPTIMIZATIONS_MASK) {
+        /* Save the algo opt mask in port private. It will be used to send the
+           mask value along with init chromatix*/
+        private->algo_opt_mask = common_param->u.algo_opt_mask;
       }
     }
   }
@@ -982,6 +990,11 @@ static boolean aec_port_proc_downstream_event(mct_port_t *port,
       aec_msg->u.aec_set_parm.u.init_param.chromatix = mod_chrom->chromatixPtr;
       aec_msg->u.aec_set_parm.u.init_param.comm_chromatix =
         mod_chrom->chromatixComPtr;
+
+      aec_msg->u.aec_set_parm.u.init_param.aec_tuning_params.aec_subsampling_factor =
+        ((private->algo_opt_mask & STATS_MASK_AEC) ?
+        (AEC_SUBSAMPLE) : (MIN_AEC_SUBSAMPLE));
+
       rc = q3a_aecawb_thread_en_q_msg(private->thread_data, aec_msg);
     } /* if (aec_msg != NULL ) */
   } /* case MCT_EVENT_MODULE_SET_CHROMATIX_PTR */

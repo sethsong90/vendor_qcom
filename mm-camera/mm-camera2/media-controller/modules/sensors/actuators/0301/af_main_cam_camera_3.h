@@ -287,7 +287,7 @@ Qualcomm Technologies Proprietary and Confidential.
         * Constraints: Integers
         * Effect: Bigger in value represents longer waiting time.
         */
-        3,
+        1,
 
         /* Variable name: lux_index_change_threshold
          * Threshold above which the change of lux index will trigger the
@@ -641,8 +641,7 @@ Qualcomm Technologies Proprietary and Confidential.
          * Effect:  Lower value gives faster response but jerkier. Higher value
          *  gives smooth response.
          */
-        3,
-
+        0,
 
         /* Variable name: coarse_frame_delay
          * Number of frames to skip after lens move is complete in coarse search
@@ -1361,7 +1360,7 @@ Qualcomm Technologies Proprietary and Confidential.
       }
       ,
       /* init_setting_size */
-      0,
+      3,
       /* init_settings */{
         {0x361a, 0xb0},
         {0x361b, 0x04},

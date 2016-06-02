@@ -22,6 +22,14 @@
 #include "asd.h"
 #include "is_interface.h"
 
+typedef enum {
+  STATS_MASK_AEC     = (1 << 0),
+  STATS_MASK_AWB     = (1 << 1),
+  STATS_MASK_AF      = (1 << 2),
+  STATS_MASK_ASD     = (1 << 3),
+  STATS_MASK_AFD     = (1 << 4),
+} stats_mask_type;
+
 /** stats_set_param_t
  *
  *  This enumeration represents the types of set parameter for stats
@@ -130,7 +138,8 @@ typedef enum {
   COMMON_SET_PARAM_STATS_DEBUG_MASK,
   COMMON_SET_PARAM_SUPER_EVT,
   COMMON_SET_PARAM_META_MODE,
-  COMMON_SET_CAPTURE_INTENT
+  COMMON_SET_CAPTURE_INTENT,
+  COMMON_SET_PARAM_ALGO_OPTIMIZATIONS_MASK,
 } stats_common_set_param_type;
 
 /** stats_common_set_param_type
@@ -168,6 +177,7 @@ typedef struct {
     unsigned int           current_frame_id;
     uint8_t                meta_mode;
     stats_capture_intent_t capture_type;
+    uint32_t               algo_opt_mask;
   } u;
 } stats_common_set_parameter_t;
 

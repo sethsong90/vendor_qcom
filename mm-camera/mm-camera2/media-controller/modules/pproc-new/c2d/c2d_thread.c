@@ -238,8 +238,8 @@ static int32_t c2d_thread_handle_process_buf_event(c2d_module_ctrl_t* ctrl,
   }
 
   /* get stream parameters based on the event identity */
-  c2d_module_stream_params_t *stream_params;
-  c2d_module_session_params_t *session_params;
+  c2d_module_stream_params_t *stream_params = NULL;
+  c2d_module_session_params_t *session_params = NULL;
   c2d_module_get_params_for_identity(ctrl, hw_params->identity,
     &session_params, &stream_params);
   if (!stream_params) {

@@ -120,8 +120,9 @@ int32_t c2d_module_send_buf_divert_event(mct_module_t* module,
   int32_t ret = 0;
 
   /* get stream parameters based on the event identity */
-  c2d_module_stream_params_t *stream_params, *linked_stream_params;
-  c2d_module_session_params_t *session_params;
+  c2d_module_stream_params_t *stream_params = NULL;
+  c2d_module_stream_params_t *linked_stream_params = NULL;
+  c2d_module_session_params_t *session_params = NULL;
   c2d_module_get_params_for_identity(ctrl, identity,
     &session_params, &stream_params);
   if (!stream_params) {
@@ -571,8 +572,8 @@ int32_t c2d_module_handle_isp_out_dim_event(mct_module_t* module,
   CDBG("%s:%d identity=0x%x, dim=%dx%d\n", __func__, __LINE__,
     event->identity, stream_info->dim.width, stream_info->dim.height);
   /* get stream parameters based on the event identity */
-  c2d_module_stream_params_t *stream_params;
-  c2d_module_session_params_t *session_params;
+  c2d_module_stream_params_t *stream_params = NULL;
+  c2d_module_session_params_t *session_params = NULL;
   c2d_module_get_params_for_identity(ctrl, event->identity,
     &session_params, &stream_params);
   if(!stream_params) {
@@ -689,8 +690,8 @@ int32_t c2d_module_handle_stream_crop_event(mct_module_t* module,
     return -EFAULT;
   }
   /* get stream parameters based on the event identity */
-  c2d_module_stream_params_t *stream_params;
-  c2d_module_session_params_t *session_params;
+  c2d_module_stream_params_t *stream_params = NULL;
+  c2d_module_session_params_t *session_params = NULL;
   c2d_module_get_params_for_identity(ctrl, event->identity,
     &session_params, &stream_params);
   if(!stream_params) {
@@ -799,9 +800,9 @@ int32_t c2d_module_handle_dis_update_event(mct_module_t* module,
     return -EFAULT;
   }
   /* get stream parameters based on the event identity */
-  c2d_module_stream_params_t *stream_params;
-  c2d_module_session_params_t *session_params;
-  c2d_module_stream_params_t  *linked_stream_params;
+  c2d_module_stream_params_t *stream_params = NULL;
+  c2d_module_session_params_t *session_params = NULL;
+  c2d_module_stream_params_t  *linked_stream_params = NULL;
   c2d_module_frame_hold_t     *frame_hold = FALSE;
   c2d_module_get_params_for_identity(ctrl, event->identity,
     &session_params, &stream_params);
@@ -915,8 +916,8 @@ int32_t c2d_module_handle_stream_cfg_event(mct_module_t* module,
     return -EFAULT;
   }
   /* get stream parameters based on the event identity */
-  c2d_module_stream_params_t *stream_params;
-  c2d_module_session_params_t *session_params;
+  c2d_module_stream_params_t *stream_params = NULL;
+  c2d_module_session_params_t *session_params = NULL;
   c2d_module_get_params_for_identity(ctrl, event->identity,
     &session_params, &stream_params);
   if(!stream_params) {
@@ -984,8 +985,8 @@ int32_t c2d_module_handle_div_info_event(mct_module_t* module,
     return 0;
   }
   /* get stream parameters based on the event identity */
-  c2d_module_stream_params_t *stream_params;
-  c2d_module_session_params_t *session_params;
+  c2d_module_stream_params_t *stream_params = NULL;
+  c2d_module_session_params_t *session_params = NULL;
   c2d_module_get_params_for_identity(ctrl, event->identity,
     &session_params, &stream_params);
   if(!stream_params) {
@@ -1011,8 +1012,8 @@ static int32_t c2d_module_set_parm_hfr_mode(c2d_module_ctrl_t *ctrl,
     return -EFAULT;
   }
   /* get parameters based on the event identity */
-  c2d_module_stream_params_t *stream_params;
-  c2d_module_session_params_t *session_params;
+  c2d_module_stream_params_t *stream_params = NULL;
+  c2d_module_session_params_t *session_params = NULL;
   c2d_module_get_params_for_identity(ctrl, identity,
     &session_params, &stream_params);
   if(!session_params) {
@@ -1072,8 +1073,8 @@ static int32_t c2d_module_set_parm_dis(c2d_module_ctrl_t *ctrl,
     return -EFAULT;
   }
   /* get parameters based on the event identity */
-  c2d_module_stream_params_t *stream_params;
-  c2d_module_session_params_t *session_params;
+  c2d_module_stream_params_t *stream_params = NULL;
+  c2d_module_session_params_t *session_params = NULL;
   c2d_module_get_params_for_identity(ctrl, identity,
     &session_params, &stream_params);
   if (!session_params) {

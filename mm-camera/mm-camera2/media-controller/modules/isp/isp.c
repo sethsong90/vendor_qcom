@@ -303,7 +303,7 @@ int isp_update_buf_info(isp_t *isp, uint32_t session_id,
 
   mct_stream_map_buf_t *buf_holder =
     (mct_stream_map_buf_t *)event->u.ctrl_event.control_event_data;
-  CDBG("%s:buf_holder %x\n", __func__, buf_holder);
+  CDBG("%s:buf_holder %x\n", __func__, (unsigned int)buf_holder);
 
   /* MCT has updated HAL buffers, we update the internal isp_map_buf struct
      and then enqueue bufs to kernel*/

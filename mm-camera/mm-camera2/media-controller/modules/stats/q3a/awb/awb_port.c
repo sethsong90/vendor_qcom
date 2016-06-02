@@ -44,6 +44,9 @@ typedef struct _awb_port_private {
   awb_object_t      awb_object;
   q3a_thread_data_t *thread_data;
   uint32_t          cur_sof_id;
+  uint8_t           awb_stats_proc_freq;
+  uint8_t           awb_stats_frame_count;
+  uint32_t          algo_opt_mask;
 } awb_port_private_t;
 
 
@@ -173,6 +176,10 @@ static void awb_port_callback(awb_output_data_t *output, void *p)
       if (output->eztune_data.ez_running == TRUE) {
         awb_port_send_awb_info_to_metadata(port, output);
       }
+      /* Update stats_proc_freq with a valid value only */
+      if (output->awb_stats_proc_freq) {
+        private->awb_stats_proc_freq = output->awb_stats_proc_freq;
+      }
       output->stats_update.flag = STATS_UPDATE_AWB;
       /* memset the output struct */
       memset(&output->stats_update.awb_update, 0,
@@ -294,7 +301,26 @@ static boolean awb_port_event_stats_data( awb_port_private_t *port_private,
 
   awb_stats->stats_type_mask = 0; /*clear the mask*/
   boolean  send_flag = FALSE;
+
   if (stats_event) {
+    if (!((stats_event->stats_mask & (1 << MSM_ISP_STATS_AWB) &&
+      stats_event->stats_data[MSM_ISP_STATS_AWB].stats_buf) ||
+      (stats_event->stats_mask & (1 << MSM_ISP_STATS_BG) &&
+      stats_event->stats_data[MSM_ISP_STATS_BG].stats_buf))){
+      CDBG_ERROR("invalid stats mask. Return back");
+      return 1;
+    }
+    port_private->awb_stats_frame_count++;
+    if (port_private->awb_stats_frame_count % port_private->awb_stats_proc_freq) {
+      CDBG("skip awb stats. frame id: %d, stats_rec: %d frame_proc_freq: %d",
+        stats_event->frame_id, port_private->awb_stats_frame_count,
+        port_private->awb_stats_proc_freq);
+      return 1;
+    }
+    CDBG("don't skip awb stats. frame id: %d, stats_rec: %d frame_proc_freq: %d",
+      stats_event->frame_id, port_private->awb_stats_frame_count,
+      port_private->awb_stats_proc_freq);
+
     q3a_thread_aecawb_msg_t * awb_msg = (q3a_thread_aecawb_msg_t *)
       malloc(sizeof(q3a_thread_aecawb_msg_t));
     if (awb_msg != NULL) {
@@ -419,6 +445,18 @@ static boolean awb_process_downstream_mod_event( mct_port_t *port,
       awb_msg->u.awb_set_parm.u.init_param.comm_chromatix = mod_chrom->chromatixComPtr;
       CDBG("%s:stream_type=%d op_mode=%d", __func__,
         private->stream_type, awb_msg->u.awb_set_parm.u.init_param.op_mode);
+
+      awb_msg->u.awb_set_parm.u.init_param.awb_tuning_params.awb_subsampling_factor =
+        ((private->algo_opt_mask & STATS_MASK_AWB) ?
+        (AWB_SUBSAMPLE) : (MIN_AWB_SUBSAMPLE));
+
+      if (CAM_STREAM_TYPE_VIDEO == private->stream_type) {
+        awb_msg->u.awb_set_parm.u.init_param.awb_tuning_params.awb_stats_proc_freq =
+          AWB_STATS_PROC_FREQ_VIDEO;
+      } else if (CAM_STREAM_TYPE_PREVIEW == private->stream_type) {
+        awb_msg->u.awb_set_parm.u.init_param.awb_tuning_params.awb_stats_proc_freq =
+          AWB_STATS_PROC_FREQ_PREVIEW;
+      }
 
       rc = q3a_aecawb_thread_en_q_msg(private->thread_data, awb_msg);
       CDBG("%s: Enqueing AWB message returned: %d", __func__, rc);
@@ -625,7 +663,13 @@ static boolean awb_port_proc_downstream_ctrl(mct_port_t *port, mct_event_t *even
           rc = q3a_aecawb_thread_en_q_msg(private->thread_data, awb_msg);
         }
       }
-      break;
+        break;
+      case COMMON_SET_PARAM_ALGO_OPTIMIZATIONS_MASK: {
+        /* Save the algo opt mask in port private. It will be used to send the
+           mask value along with init chromatix*/
+        private->algo_opt_mask = common_param->u.algo_opt_mask;
+      }
+        break;
       default:
         break;
       }
@@ -1071,6 +1115,7 @@ boolean awb_port_init(mct_port_t *port, unsigned int *session_id)
 
   private->reserved_id = *session_id;
   private->state       = AWB_PORT_STATE_CREATED;
+  private->awb_stats_proc_freq = 1;
 
   port->port_private   = private;
   port->direction      = MCT_PORT_SINK;

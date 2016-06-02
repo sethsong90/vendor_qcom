@@ -230,6 +230,36 @@ static int32_t cpp_hardware_send_buf_done(cpp_hardware_t *cpphw,
   return 0;
 }
 
+/* cpp_hardware_set_clock:
+ *
+ **/
+static int32_t cpp_hardware_set_clock(cpp_hardware_t *cpphw,
+  cpp_hardware_clock_settings_t *clock_settings)
+{
+  int rc=0;
+  struct msm_camera_v4l2_ioctl_t v4l2_ioctl;
+  struct msm_cpp_frame_info_t inst_info;
+  char dev_name[SUBDEV_NAME_SIZE_MAX];
+  if(!cpphw) {
+    CDBG_ERROR("%s:%d: failed\n", __func__, __LINE__);
+    return -EINVAL;
+  }
+  /* make sure all code-paths unlock this mutex */
+  PTHREAD_MUTEX_LOCK(&(cpphw->mutex));
+  v4l2_ioctl.ioctl_ptr = clock_settings;
+  v4l2_ioctl.len = sizeof(cpp_hardware_clock_settings_t);
+  rc = ioctl(cpphw->subdev_fd, VIDIOC_MSM_CPP_SET_CLOCK, &v4l2_ioctl);
+  if (rc < 0) {
+    CDBG_ERROR("%s:%d: v4l2 ioctl() failed, rc=%d\n", __func__, __LINE__, rc);
+    rc = -EIO;
+  }
+
+error_mutex:
+  PTHREAD_MUTEX_UNLOCK(&(cpphw->mutex));
+  return rc;
+}
+
+
 /* cpp_hardware_process_command:
  *
  *  processes the command given to the hardware. Hardware state is
@@ -277,6 +307,9 @@ int32_t cpp_hardware_process_command(cpp_hardware_t *cpphw,
     break;
   case CPP_HW_CMD_QUEUE_BUF:
     rc = cpp_hardware_send_buf_done(cpphw, cmd.u.event_data);
+    break;
+  case CPP_HW_CMD_SET_CLK:
+    rc = cpp_hardware_set_clock(cpphw, &cmd.u.clock_settings);
     break;
   default:
     CDBG_ERROR("%s:%d, error: bad command type=%d",

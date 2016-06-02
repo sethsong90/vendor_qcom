@@ -13,6 +13,12 @@
 #define CPP_PORT_NAME_LEN     32
 #define CPP_NUM_SINK_PORTS    6
 #define CPP_NUM_SOURCE_PORTS  6
+#define MINIMUM_PROCESS_TIME 10.0f
+#define PADDING_FACTOR       1.2f
+#ifndef MAX
+#define MAX(x,y) (((x)>(y)) ? (x) : (y))
+#endif
+
 static const char cpp_sink_port_name[CPP_NUM_SINK_PORTS][CPP_PORT_NAME_LEN] = {
  "cpp_sink_0",
  "cpp_sink_1",
@@ -145,6 +151,10 @@ static cpp_module_ctrl_t* cpp_module_create_cpp_ctrl(void)
   ctrl->ack_list.size = 0;
   pthread_mutex_init(&(ctrl->ack_list.mutex), NULL);
 
+  ctrl->clk_rate_list.list = NULL;
+  ctrl->clk_rate_list.size = 0;
+  pthread_mutex_init(&(ctrl->clk_rate_list.mutex), NULL);
+
   /* Create PIPE for communication with cpp_thread */
   rc = pipe(ctrl->pfd);
   if(rc < 0) {
@@ -196,6 +206,7 @@ static int32_t cpp_module_destroy_cpp_ctrl(cpp_module_ctrl_t *ctrl)
   pthread_mutex_destroy(&(ctrl->realtime_queue.mutex));
   pthread_mutex_destroy(&(ctrl->offline_queue.mutex));
   pthread_mutex_destroy(&(ctrl->ack_list.mutex));
+  pthread_mutex_destroy(&(ctrl->clk_rate_list.mutex));
   pthread_mutex_destroy(&(ctrl->cpp_mutex));
   pthread_cond_destroy(&(ctrl->th_start_cond));
   close(ctrl->pfd[READ_FD]);
@@ -336,6 +347,9 @@ boolean cpp_module_start_session(mct_module_t *module, unsigned int sessionid)
       return FALSE;
     }
     CDBG_HIGH("%s:%d, info: cpp_thread created.", __func__, __LINE__);
+
+    /* set default clock */
+    cpp_module_set_clock_freq(ctrl,NULL,0);
   }
   ctrl->session_count++;
   CDBG_HIGH("%s:%d, info: session %d started.", __func__, __LINE__, sessionid);
@@ -974,6 +988,139 @@ int32_t cpp_module_process_upstream_event(mct_module_t* module,
     return rc;
   }
   return 0;
+}
+
+/* cpp_module_set_clock_freq:
+ *
+ * Check for stream information and select clock frequency.
+ **/
+int32_t cpp_module_set_clock_freq(cpp_module_ctrl_t *ctrl,
+  cpp_module_stream_params_t *stream_params, uint32_t stream_event)
+{
+  int32_t rc = 0;
+  uint32_t i;
+  cpp_hardware_cmd_t cmd;
+  uint32_t input_dim = 0, output_dim = 0, dim = 0;
+  float input_fps;
+  float input_format_factor, output_format_factor;
+  cpp_module_stream_clk_rate_t *clk_rate_obj;
+  int64_t total_load = 0;
+  unsigned long clk_rate = 0, rounded_clk_rate = 0;
+
+  if (!ctrl) {
+    CDBG_ERROR("%s:%d, failed\n", __func__, __LINE__);
+    return -EINVAL;
+  }
+
+  if ( NULL == stream_params) {
+    ctrl->clk_rate = ctrl->cpphw->hwinfo.freq_tbl[0];
+    cmd.u.clock_settings.clock_rate = ctrl->cpphw->hwinfo.freq_tbl[0];
+    cmd.u.clock_settings.avg = 2 * ctrl->cpphw->hwinfo.freq_tbl[0];
+    cmd.u.clock_settings.inst = (6 * cmd.u.clock_settings.avg) / 5;
+    cmd.type = CPP_HW_CMD_SET_CLK;
+    /* Update the clk rate with the next biggest value */
+    rc = cpp_hardware_process_command(ctrl->cpphw, cmd);
+    if(rc < 0) {
+      CDBG_ERROR("%s:%d, failed\n", __func__, __LINE__);
+      return rc;
+    }
+    return 0;
+
+  } else if (stream_event){
+
+    switch (stream_params->hw_params.output_info.plane_fmt) {
+    case CPP_PARAM_PLANE_CRCB422:
+    case CPP_PARAM_PLANE_CBCR422: {
+      output_format_factor = 2;
+      break;
+    }
+    default: {
+      output_format_factor = 1.5f;
+      break;
+    }
+    }
+
+    switch (stream_params->hw_params.input_info.plane_fmt) {
+    case CPP_PARAM_PLANE_CRCB422:
+    case CPP_PARAM_PLANE_CBCR422: {
+      input_format_factor = 2;
+      break;
+    }
+    default: {
+      input_format_factor = 1.5f;
+      break;
+    }
+    }
+
+    if(stream_params->priority == CPP_PRIORITY_REALTIME)
+      input_fps = stream_params->hfr_skip_info.input_fps;
+    else
+      input_fps = MINIMUM_PROCESS_TIME;
+
+    output_dim = stream_params->hw_params.output_info.width *
+      stream_params->hw_params.output_info.height;
+
+    input_dim = stream_params->hw_params.input_info.width *
+      stream_params->hw_params.input_info.height;
+    dim = MAX(input_dim, output_dim);
+    if (dim)
+      total_load = (float)dim * input_format_factor *
+        PADDING_FACTOR * input_fps;
+    if (stream_params->hw_params.duplicate_output) {
+      total_load = (float)total_load * 1.5f;
+    }
+
+    clk_rate_obj = malloc(sizeof(cpp_module_stream_clk_rate_t));
+    if (NULL == clk_rate_obj) {
+      CDBG_ERROR("%s:%d, malloc failed\n", __func__, __LINE__);
+      return -ENOMEM;
+    }
+
+    clk_rate_obj->identity = stream_params->hw_params.identity;
+    clk_rate_obj->total_load = total_load;
+    PTHREAD_MUTEX_LOCK(&(ctrl->clk_rate_list.mutex));
+    ctrl->clk_rate_list.list = mct_list_append(ctrl->clk_rate_list.list,
+      clk_rate_obj, NULL, NULL);
+    ctrl->clk_rate_list.size++;
+    PTHREAD_MUTEX_UNLOCK(&(ctrl->clk_rate_list.mutex));
+  } else {
+    PTHREAD_MUTEX_LOCK(&(ctrl->clk_rate_list.mutex));
+    clk_rate_obj = cpp_module_find_clk_rate_by_identity(ctrl,
+      stream_params->hw_params.identity);
+    ctrl->clk_rate_list.list = mct_list_remove(ctrl->clk_rate_list.list,
+       clk_rate_obj);
+    ctrl->clk_rate_list.size--;
+    free(clk_rate_obj);
+    PTHREAD_MUTEX_UNLOCK(&(ctrl->clk_rate_list.mutex));
+  }
+  total_load = 0;
+  total_load = cpp_module_get_total_load_by_value(ctrl);
+  if (total_load < 0) {
+    CDBG_ERROR("Fail to get total load");
+    return -EFAULT;
+  }
+  clk_rate = total_load;
+  for(i = 0; i < ctrl->cpphw->hwinfo.freq_tbl_count; i++) {
+    if (clk_rate < ctrl->cpphw->hwinfo.freq_tbl[i]) {
+      rounded_clk_rate = ctrl->cpphw->hwinfo.freq_tbl[i];
+      break;
+    }
+  }
+  ctrl->clk_rate = rounded_clk_rate;
+  cmd.u.clock_settings.clock_rate = ctrl->clk_rate;
+  cmd.u.clock_settings.avg = clk_rate * 2;
+  cmd.u.clock_settings.inst = (rounded_clk_rate * cmd.u.clock_settings.avg) /
+    clk_rate;
+  cmd.type = CPP_HW_CMD_SET_CLK;
+  /* The new stream needs higher clock */
+  rc = cpp_hardware_process_command(ctrl->cpphw, cmd);
+
+  if(rc < 0) {
+    CDBG_ERROR("%s:%d, failed\n", __func__, __LINE__);
+    return rc;
+  }
+
+  return rc;
 }
 
 /* cpp_module_notify_add_stream:

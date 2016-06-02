@@ -354,6 +354,7 @@ typedef struct {
   /* Store sensor_params to post to bus */
   cam_sensor_params_t            sensor_params;
   int32_t                        torch_on;
+  int32_t                        longshot;
   cam_fps_range_t                fps_info;
 } module_sensor_bundle_info_t;
 

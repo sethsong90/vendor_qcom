@@ -15,6 +15,9 @@
 #include "aec.h"
 #include "awb.h"
 #include "af.h"
+#include <fcntl.h>
+#include <stdlib.h>
+
 
 #if 0
 #undef CDBG
@@ -29,6 +32,7 @@
 #define STATS_PORT_SKIP_STATS_MAX_FPS 30    // if fps exceed will trigger skip stats
 #define STATS_PORT_SKIP_STATS_MIN_FPS 20    // if fps below this value won't skip stats
 #define Q8                            0x00000100
+#define CPU_CLOCK_TRESHOLD           (1700000) /* CPU clock rate below which target will be treated as Low-Tier*/
 
 /** stats_port_state_t
  *
@@ -530,6 +534,40 @@ static boolean stats_port_filter_set_param(int param)
   return rc;
 }
 
+#define INFO_PATH "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq"
+boolean stats_port_is_low_tier_target(void) {
+  boolean retVal = FALSE;
+  FILE    *fp;
+  char    buf[100];
+  size_t  read_bytes;
+  int32_t cpuMaxFreq;
+
+  fp = fopen(INFO_PATH, "r");
+  if (fp == NULL) {
+    CDBG_ERROR("%s: Cannot determine CPU max frequency.", __func__);
+    return FALSE;
+  }
+
+  read_bytes = fread(buf, 1, 99, fp);
+  if (read_bytes <= 99) {
+    buf[read_bytes] = 0;
+  } else {
+    buf[99] = 0;
+  }
+  fclose(fp);
+
+  cpuMaxFreq = atoi(buf);
+  CDBG("%s: max CPU clock: %d, threshold: %d, low tier: %d" , __func__,
+    cpuMaxFreq, CPU_CLOCK_TRESHOLD, cpuMaxFreq <= CPU_CLOCK_TRESHOLD);
+
+  if (cpuMaxFreq <= CPU_CLOCK_TRESHOLD) {
+    retVal = TRUE;
+  }
+
+  return retVal;
+}
+
+
 /** stats_port_proc_set_parm
  *    @port:       a port instance where the event to send from;
  *    @event:      the event to be processed
@@ -836,6 +874,22 @@ static boolean stats_port_proc_downstream_set_parm(mct_port_t *port,
         send_internal = TRUE;
       }
         break;
+      case CAM_INTF_PARM_ALGO_OPTIMIZATIONS_MASK: {
+        int32_t data = *((int32_t *)ui_parm->parm_data);
+        port_event.cap_flag = (MCT_PORT_CAP_STATS_AEC |
+          MCT_PORT_CAP_STATS_AWB);
+        stats_parm->param_type = STATS_SET_COMMON_PARAM;
+        stats_parm->u.common_param.type = COMMON_SET_PARAM_ALGO_OPTIMIZATIONS_MASK;
+        stats_parm->u.common_param.u.algo_opt_mask =
+          *((int32_t *)ui_parm->parm_data);
+        if (stats_port_is_low_tier_target()) {
+          stats_parm->u.common_param.u.algo_opt_mask = (STATS_MASK_AEC|STATS_MASK_AWB);
+          CDBG_ERROR("%s Enable AEC & AWB subsampling optimizations", __func__);
+        }
+        CDBG("%s Algo opt enable %d", __func__, stats_parm->u.common_param.u.algo_opt_mask);
+        send_internal = TRUE;
+      }
+        break;
       case CAM_INTF_META_AF_TRIGGER: { // HAL3
         port_event.cap_flag = MCT_PORT_CAP_STATS_AF;
         stats_parm->param_type = STATS_SET_Q3A_PARAM;
@@ -889,7 +943,17 @@ static boolean stats_port_proc_downstream_set_parm(mct_port_t *port,
         send_internal = TRUE;
       }
         break;
-
+      case CAM_INTF_PARM_LONGSHOT_ENABLE: {
+        port_event.cap_flag = MCT_PORT_CAP_STATS_AEC;
+        stats_parm->param_type = STATS_SET_Q3A_PARAM;
+        stats_parm->u.q3a_param.type = Q3A_SET_AEC_PARAM;
+        stats_parm->u.q3a_param.u.aec_param.type =
+          AEC_SET_PARAM_LONGSHOT_MODE;
+        stats_parm->u.q3a_param.u.aec_param.u.longshot_mode =
+          *((int8_t *)ui_parm->parm_data);
+        send_internal = TRUE;
+      }
+      break;
       default: {
       }
         break;

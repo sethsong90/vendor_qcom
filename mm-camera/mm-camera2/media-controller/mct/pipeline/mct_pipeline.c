@@ -29,9 +29,9 @@ static cam_dimension_t default_preview_sizes[] = {
   { 4096, 2160},// true 4K
   { 3840, 2160},// 4K
   { 1920, 1080}, //1080p
-  { 1280, 960},
+  { 1600, 900}, //16:9
+  { 1280, 752},  // 720P, reserved
   { 1280, 720},  // 720P, reserved
-  { 960, 720},
   { 864, 480}, //FWVGA
   { 800, 480},   //  WVGA
   { 768, 432},
@@ -1707,10 +1707,10 @@ static boolean mct_pipeline_process_get(struct msm_v4l2_event_data *data,
       /*Send event only if a stream exists*/
       ret = mct_pipeline_send_ctrl_events(pipeline, stream->streamid,
             MCT_EVENT_CONTROL_GET_PARM);
-      sem_post(&p_table->cam_sync_sem);
     } else {
       ret = TRUE;
     }
+    sem_post(&p_table->cam_sync_sem);
   }
   break;
 

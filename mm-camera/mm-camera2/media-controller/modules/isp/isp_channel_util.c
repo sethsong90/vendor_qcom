@@ -3860,8 +3860,8 @@ int isp_ch_util_reg_buf_list_update(isp_t *isp, isp_session_t *session,
     session->session_id, stream_id);
 
   uint32_t bufq_handle = isp_ch_util_get_channel_bufq_handle(session, stream_id);
-  CDBG("%s: E, bufq_handle = %x map_buffer_list %x\n", __func__, bufq_handle,
-     map_buffer_list);
+  CDBG("%s: E, bufq_handle = %x map_buffer_list %x\n", __func__, (unsigned int)bufq_handle,
+     (unsigned int)map_buffer_list);
 
   assert(map_buffer_list != NULL);
   memset(&buf_request, 0, sizeof(buf_request));

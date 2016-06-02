@@ -16,6 +16,9 @@
 #define GYRO_DIM 3
 #define GYRO_Q16 (1 << 16)
 
+#define AEC_SUBSAMPLE     (10)
+#define MIN_AEC_SUBSAMPLE (1)
+
 typedef enum {
   AEC_STATS_YUV,
   AEC_STATS_BAYER
@@ -494,7 +497,7 @@ typedef enum {
   AEC_SET_PARAM_PREP_FOR_SNAPSHOT_NOTIFY, /* 60 */
   AEC_SET_PARAM_PREP_FOR_SNAPSHOT_LEGACY,
   AEC_SET_PARAM_RESET_LED_EST,
-
+  AEC_SET_PARAM_LONGSHOT_MODE           ,
   AEC_SET_PARAM_MAX
 } aec_set_parameter_type;
 
@@ -544,6 +547,9 @@ typedef struct _aec_ui_frame_dim {
   uint32_t height;
 } aec_ui_frame_dim_t;
 
+typedef struct _aec_tunable_params {
+  uint32_t             aec_subsampling_factor;
+} aec_tuning_params_t;
 /** _aec_set_parameter_init:
  *    @stats_type:     TODO
  *    @chromatix:      TODO
@@ -563,6 +569,7 @@ typedef struct _aec_set_parameter_init {
   unsigned int         numRegions;
   aec_operation_mode_t op_mode;
   aec_ui_frame_dim_t   frame_dim;
+  aec_tuning_params_t  aec_tuning_params;
 } aec_set_parameter_init_t;
 
 /** aec_precapture_trigger_t:
@@ -725,6 +732,7 @@ typedef struct _aec_set_parameter {
     uint32_t                      capture_type;
     boolean                       est_for_af;
     aec_algo_gyro_info_t          gyro_info;
+    boolean                       longshot_mode;
   } u;
 } aec_set_parameter_t;
 
