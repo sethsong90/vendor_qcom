@@ -45,6 +45,10 @@ static boolean module_imglib_start_mod_session(void *data, void *user_data)
   if (!(module && module->module_private) || !sessionid)
     return FALSE;
 
+  if (module->object.parentsnum > 256)
+    return FALSE;
+  if (!module->start_session)
+    return FALSE;
   return module->start_session(module, *sessionid);
 }
 
@@ -71,6 +75,10 @@ static boolean module_imglib_stop_mod_session(void *data, void *user_data)
   if (!(module && module->module_private) || !sessionid)
     return FALSE;
 
+  if (module->object.parentsnum > 256)
+    return FALSE;
+  if (!module->stop_session)
+    return FALSE;
   return module->stop_session(module, *sessionid);
 }
 
@@ -97,6 +105,10 @@ static boolean module_imglib_query_mod_session(void *data, void *user_data)
   if (!module || !query_d)
     return FALSE;
 
+  if (module->object.parentsnum > 256)
+    return FALSE;
+  if (!module->query_mod)
+    return FALSE;
   return module->query_mod(module, query_d->query_buf, query_d->sessionid);
 }
 /**
