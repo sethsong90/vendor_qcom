@@ -30,6 +30,7 @@ static void mct_list_free(mct_list_t *mct_list)
 {
   if (mct_list) {
     free(mct_list);
+    mct_list = NULL;
   }
 }
 
@@ -242,6 +243,7 @@ mct_list_t* mct_list_remove(mct_list_t *mct_list, const void *data)
             i++;
           }
           free(temp->next);
+          temp->next  = NULL;
         } else {
           temp->prev->next = NULL;
         } /* num == 0 */
@@ -319,6 +321,7 @@ mct_list_t* mct_list_remove(mct_list_t *mct_list, const void *data)
         temp->next[0]->prev = NULL;
         mct_list = temp->next[0];
         free(temp->next);
+        temp->next = NULL;
         mct_list_free(temp);
       } else if (temp->next_num == 0) {
         mct_list = NULL;

@@ -26,6 +26,7 @@ void mct_queue_free(mct_queue_t *q)
 
   mct_list_free_list(q->head);
   free(q);
+  q = NULL;
 }
 
 void mct_queue_free_all(mct_queue_t *q, mct_queue_traverse_func traverse)
@@ -35,6 +36,7 @@ void mct_queue_free_all(mct_queue_t *q, mct_queue_traverse_func traverse)
 
   mct_list_free_all(q->head, traverse);
   free(q);
+  q = NULL;
 }
 
 void mct_queue_traverse(mct_queue_t *q, mct_queue_traverse_func traverse,
@@ -81,6 +83,7 @@ void *mct_queue_pop_head(mct_queue_t *q)
     if (node->next) {
       q->head = node->next[0];
       free(node->next);
+      node->next = NULL;
     } else {
       q->head = NULL;
     }

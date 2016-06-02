@@ -17,6 +17,15 @@
 #define CDBG ALOGE
 #endif
 
+/** g_imglib_feature_mask:
+ *
+ *  Composite feature mask of the features supported by imglib
+ **/
+static uint32_t g_imglib_feature_mask =
+  CAM_QCOM_FEATURE_REGISTER_FACE |
+  CAM_QCOM_FEATURE_FACE_DETECTION |
+  CAM_QCOM_FEATURE_HDR;
+
 /** mct_stream_check_module:
  *    @
  *    @
@@ -339,7 +348,6 @@ static boolean mct_stream_start_link(mct_stream_t *stream)
       iface  = mct_stream_get_module(modules, "iface");
       isp    = mct_stream_get_module(modules, "isp");
       stats  = mct_stream_get_module(modules, "stats");
-      pproc  = NULL;
       if (!sensor || !iface || !isp || !stats) {
         ALOGE("%s:%d] Null: %p %p %p %p", __func__, __LINE__,
         sensor, iface, isp, stats);
@@ -353,10 +361,9 @@ static boolean mct_stream_start_link(mct_stream_t *stream)
       iface  = mct_stream_get_module(modules, "iface");
       isp    = mct_stream_get_module(modules, "isp");
       stats  = mct_stream_get_module(modules, "stats");
-      pproc  = mct_stream_get_module(modules, "pproc");
-      if (!sensor || !iface || !isp || !stats || !pproc) {
-        ALOGE("%s:%d] Null: %p %p %p %p %p", __func__, __LINE__,
-          sensor, iface, isp, stats, pproc);
+      if (!sensor || !iface || !isp || !stats) {
+        ALOGE("%s:%d] Null: %p %p %p %p", __func__, __LINE__,
+          sensor, iface, isp, stats);
           return FALSE;
       }
     }
@@ -369,8 +376,12 @@ static boolean mct_stream_start_link(mct_stream_t *stream)
     stats->set_mod(stats, MCT_MODULE_FLAG_SINK,
       stream->streaminfo.identity);
 
+    pproc  = NULL;
+    /* If the sensor outputs YUV422i use C2D to convert it to NV21 */
+    if(pipeline->query_data.sensor_cap.sensor_format == FORMAT_YCBCR){
+      pproc  = mct_stream_get_module(modules, "pproc");
+    }
     if (pproc) {
-      /* this is Regular snapshot */
       pproc->set_mod(pproc, MCT_MODULE_FLAG_SINK, stream->streaminfo.identity);
       ret = mct_stream_link_modules(stream, sensor, iface, isp, pproc, NULL);
       if (ret == FALSE)
@@ -383,7 +394,6 @@ static boolean mct_stream_start_link(mct_stream_t *stream)
         }
       }
     } else {
-      /* this is ZSL snapshot */
       if(pipeline->query_data.sensor_cap.sensor_format != FORMAT_YCBCR)
         ret = mct_stream_link_modules(stream, sensor, iface, isp, stats, NULL);
       else
@@ -480,13 +490,9 @@ static boolean mct_stream_start_link(mct_stream_t *stream)
 
     CDBG_HIGH("%s: Starting offline stream linking \n", __func__);
 
-    /*Check if face proc module is needed*/
+    /*Check if imglib module is needed*/
     if (stream->streaminfo.reprocess_config.pp_feature_config.feature_mask
-      & CAM_QCOM_FEATURE_REGISTER_FACE
-      || stream->streaminfo.reprocess_config.pp_feature_config.feature_mask
-        & CAM_QCOM_FEATURE_FACE_DETECTION
-      || stream->streaminfo.reprocess_config.pp_feature_config.feature_mask
-        & CAM_QCOM_FEATURE_HDR) {
+      & g_imglib_feature_mask) {
       imglib = mct_stream_get_module(modules, "imglib");
 
       if (!imglib) {
@@ -1127,7 +1133,7 @@ static void mct_stream_fill_metadata_v1(cam_metadata_info_t *pdst,
       break;
 
   default:
-     CDBG("%s:%d Unsupported message type msg_type %d\n",
+     CDBG_ERROR("%s:%d Unsupported message type msg_type %d\n",
        __func__, __LINE__,type);
      /* fall through */
 

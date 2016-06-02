@@ -8,6 +8,7 @@
 
 #include "mct_bus.h"
 #include "camera_dbg.h"
+#include <sys/syscall.h>
 
 #if 0
 #undef CDBG
@@ -68,6 +69,11 @@ static void* mct_bus_sof_thread_run(void *data)
 {
   mct_bus_t *bus = (mct_bus_t *)data;
   int ret;
+  CDBG_ERROR("%s thread_id is %d\n",__func__, syscall(SYS_gettid));
+  pthread_mutex_lock(&bus->bus_sof_init_lock);
+  pthread_cond_signal(&bus->bus_sof_init_cond);
+  pthread_mutex_unlock(&bus->bus_sof_init_lock);
+  bus->thread_run = 1;
   while(bus->thread_run) {
     ret = mct_bus_timeout_wait(&bus->bus_sof_msg_cond,
                          &bus->bus_sof_msg_lock, MCT_BUS_SOF_TIMEOUT);
@@ -88,13 +94,18 @@ static void* mct_bus_sof_thread_run(void *data)
 }
 static void start_sof_check_thread(mct_bus_t *bus)
 {
+  int rc = 0;
   if (bus->thread_run == 1)
     return;
   ALOGE("%s: Starting SOF timeout thread\n", __func__);
-  bus->thread_run = 1;
   pthread_mutex_init(&bus->bus_sof_msg_lock, NULL);
   pthread_cond_init(&bus->bus_sof_msg_cond, NULL);
-  pthread_create(&bus->bus_sof_tid, NULL, mct_bus_sof_thread_run, bus);
+  pthread_mutex_lock(&bus->bus_sof_init_lock);
+  rc = pthread_create(&bus->bus_sof_tid, NULL, mct_bus_sof_thread_run, bus);
+  if(!rc) {
+    pthread_cond_wait(&bus->bus_sof_init_cond, &bus->bus_sof_init_lock);
+  }
+  pthread_mutex_unlock(&bus->bus_sof_init_lock);
 }
 
 static void stop_sof_check_thread(mct_bus_t *bus)
@@ -125,7 +136,7 @@ static boolean msg_bus_post_msg(mct_bus_t *bus, mct_bus_msg_t *bus_msg)
   if (bus->bus_queue->length > MAX_MCT_BUS_QUEUE_LENGTH) {
       pthread_mutex_lock(&bus->bus_msg_q_lock);
       mct_bus_queue_flush(bus);
-      ALOGE("%s : Discard the bus msg's that got stagnated\n",__func__);
+      ALOGE("%s : Discard the bus msg's that got stagnated in the queue\n",__func__);
       pthread_mutex_unlock(&bus->bus_msg_q_lock);
       return TRUE;
   }
@@ -290,6 +301,8 @@ mct_bus_t *mct_bus_create(unsigned int session)
 
   memset(new_bus, 0 , sizeof(mct_bus_t));
   pthread_mutex_init(&new_bus->bus_msg_q_lock, NULL);
+  pthread_mutex_init(&new_bus->bus_sof_init_lock, NULL);
+  pthread_cond_init(&new_bus->bus_sof_init_cond, NULL);
 
   new_bus->bus_queue = mct_queue_new;
   if (!new_bus->bus_queue)
@@ -302,6 +315,8 @@ mct_bus_t *mct_bus_create(unsigned int session)
   return new_bus;
 
 busmsgq_error:
+  pthread_cond_destroy(&new_bus->bus_sof_init_cond);
+  pthread_mutex_destroy(&new_bus->bus_sof_init_lock);
   pthread_mutex_destroy(&new_bus->bus_msg_q_lock);
   free(new_bus);
   return NULL;
@@ -314,10 +329,15 @@ void mct_bus_destroy(mct_bus_t *bus)
     mct_queue_free_all(bus->bus_queue, mct_bus_queue_free);
   else
     free(bus->bus_queue);
+  bus->bus_queue = NULL;
+
   pthread_mutex_unlock(&bus->bus_msg_q_lock);
 
+  pthread_cond_destroy(&bus->bus_sof_init_cond);
+  pthread_mutex_destroy(&bus->bus_sof_init_lock);
   pthread_mutex_destroy(&bus->bus_msg_q_lock);
   free(bus);
+  bus = NULL;
   return;
 }
 

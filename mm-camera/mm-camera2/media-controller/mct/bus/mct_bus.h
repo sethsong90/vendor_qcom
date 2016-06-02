@@ -207,6 +207,8 @@ struct _mct_bus {
   post_msg_to_bus_func post_msg_to_bus;
   pthread_mutex_t bus_sof_msg_lock;
   pthread_cond_t  bus_sof_msg_cond;
+  pthread_mutex_t bus_sof_init_lock;
+  pthread_cond_t  bus_sof_init_cond;
   pthread_t       bus_sof_tid;
   int             thread_run;
   mct_bus_msg_type_t msg_to_send_metadata;

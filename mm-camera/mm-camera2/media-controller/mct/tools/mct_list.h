@@ -41,6 +41,10 @@ struct _mct_list {
 #define MCT_LIST_NEXT(mct_list) \
   ((mct_list) ? (((mct_list_t **)(mct_list))->next) : NULL)
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 mct_list_t *mct_list_append(mct_list_t *mct_list, void *data, void *appendto,
              mct_list_find_func list_find);
 
@@ -72,5 +76,10 @@ void        mct_list_free_all_on_data(mct_list_t *mct_list,
 
 void        mct_list_operate_nodes (mct_list_t *mct_list,
               mct_list_operate_func list_operate, void *user_data);
+
+#if defined(__cplusplus)
+}
+#endif
+
 
 #endif /* __MCT_LIST_H__ */

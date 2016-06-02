@@ -12,6 +12,7 @@
 #include "mct_bus.h"
 #include "cam_intf.h"
 #include "camera_dbg.h"
+#include <sys/syscall.h>
 
 #if 0
 #undef CDBG
@@ -176,11 +177,13 @@ boolean mct_controller_destroy(unsigned int session_idx)
     mct_queue_free(mct->serv_cmd_q);
   }else
     free(mct->serv_cmd_q);
+  mct->serv_cmd_q = NULL;
 
   mct_pipeline_stop_session(mct->pipeline);
   mct_pipeline_destroy(mct->pipeline);
   mcts = mct_list_remove(mcts, mct);
   free(mct);
+  mct = NULL;
 
   return TRUE;
 }
@@ -378,6 +381,7 @@ static void* mct_controller_thread_run(void *data)
   sigset_t sigs;
   sigset_t old_sig_set;
 
+  CDBG_ERROR("%s thread_id is %d\n",__func__, syscall(SYS_gettid));
   mct_this = (mct_controller_t *)data;
   mct_this->mct_tid = pthread_self();
 
