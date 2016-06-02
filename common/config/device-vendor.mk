@@ -844,6 +844,21 @@ MM_CAMERA += v4l2-qcamera-app
 MM_CAMERA += libmmcamera_tintless_algo
 MM_CAMERA += libmmcamera_tintless_bg_pca_algo
 
+MM_CAMERA += libmmcamera_ov13850
+MM_CAMERA += libmmcamera_sunny_q13v03a_eeprom
+MM_CAMERA += libchromatix_ov13850_common
+MM_CAMERA += libchromatix_ov13850_preview
+MM_CAMERA += libchromatix_ov13850_default_video
+MM_CAMERA += libchromatix_ov13850_hfr
+MM_CAMERA += libchromatix_ov13850_liveshot
+MM_CAMERA += libchromatix_ov13850_hfr_60fps
+MM_CAMERA += libchromatix_ov13850_hfr_90fps
+MM_CAMERA += libchromatix_ov13850_hfr_120fps
+MM_CAMERA += libchromatix_ov13850_snapshot
+MM_CAMERA += libchromatix_ov13850_zsl
+MM_CAMERA += libchromatix_ov13850_video_hd
+
+
 #MM_CORE
 MM_CORE := CABLService
 MM_CORE += libdisp-aba
