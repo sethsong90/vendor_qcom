@@ -249,13 +249,14 @@ mct_stream_t* mct_pipeline_find_stream_from_stream_id
  **/
 static boolean mct_pipeline_find_buf(void *data, void *user_data)
 {
-  boolean check_index;
+  mct_stream_map_buf_t *map_buf = data;
+  int *buf_index = user_data;
 
-  check_index = (((mct_stream_map_buf_t *)data)->buf_index ==
-      *((int *)user_data));
+  if (CAM_MAPPING_BUF_TYPE_STREAM_BUF != map_buf->buf_type) {
+    return FALSE;
+  }
 
-
-  return ((check_index) ? TRUE : FALSE);
+  return (map_buf->buf_index == *buf_index);
 }
 
 void *mct_pipeline_get_buffer_ptr(mct_pipeline_t *pipeline, int buf_idx,

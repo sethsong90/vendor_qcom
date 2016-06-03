@@ -1352,7 +1352,8 @@ boolean mct_stream_metadata_bus_msg(mct_stream_t *stream,
   mct_stream_map_buf_t *buf;
   cam_hal_version_t hal_version;
   struct msm_buf_mngr_info buf_info, get_buf;
-  int ret = TRUE;
+  boolean ret = TRUE;
+  int ioctl_ret = 0;
   unsigned int frame_number;
   int flag = 0;
   cam_metadata_info_t *current_buf_v1 = NULL;
@@ -1458,9 +1459,9 @@ boolean mct_stream_metadata_bus_msg(mct_stream_t *stream,
       // if session_meta->frame_idx is 0 metadata is not sent
       session_meta->frame_idx = 0;
 
-      ret = ioctl(stream->metadata_stream.buf_mgr_dev_fd,
+      ioctl_ret = ioctl(stream->metadata_stream.buf_mgr_dev_fd,
         VIDIOC_MSM_BUF_MNGR_BUF_DONE, &buf_info);
-      if (ret < 0) {
+      if (ioctl_ret < 0) {
         ALOGE("%s:Failed to do buf_done", __func__);
         ret = FALSE;
       }
@@ -1470,9 +1471,9 @@ boolean mct_stream_metadata_bus_msg(mct_stream_t *stream,
     get_buf.session_id = MCT_PIPELINE_SESSION(
             MCT_PIPELINE_CAST(MCT_OBJECT_PARENT(stream)->data));
 
-    ret = ioctl(stream->metadata_stream.buf_mgr_dev_fd,
+    ioctl_ret = ioctl(stream->metadata_stream.buf_mgr_dev_fd,
       VIDIOC_MSM_BUF_MNGR_GET_BUF, &get_buf);
-    if (ret < 0) {
+    if (ioctl_ret < 0) {
       ALOGE("%s:Failed to get_buf", __func__);
       ret = FALSE;
       stream->metadata_stream.get_buf_err = TRUE;
@@ -1575,18 +1576,20 @@ boolean mct_stream_metadata_ctrl_event(mct_stream_t *stream,
       break;
 
     case MCT_EVENT_CONTROL_STREAMOFF: {
-      if (stream->metadata_stream.current_buf_idx >= 0) {
+      if (!stream->metadata_stream.get_buf_err) {
         buf_info.index = stream->metadata_stream.current_buf_idx;
         buf_info.frame_id = 0;
         buf_info.stream_id = stream->streamid;
         buf_info.session_id = MCT_PIPELINE_SESSION(
           MCT_PIPELINE_CAST(MCT_OBJECT_PARENT(stream)->data));
 
-        ret = ioctl(stream->metadata_stream.buf_mgr_dev_fd,
+        ioctl_ret = ioctl(stream->metadata_stream.buf_mgr_dev_fd,
           VIDIOC_MSM_BUF_MNGR_PUT_BUF, &buf_info);
-        if (ret < 0) {
-          ALOGE("%s:Failed to do buf_done", __func__);
-          ret = FALSE;
+        if (ioctl_ret < 0) {
+          ALOGE("%s:Failed to do buf_done at stream off - errno: %s!!! "
+            "for buffer info - index: %d, stream id: %d, session id: %d",
+             __func__, strerror(errno),
+              buf_info.index, buf_info.stream_id, buf_info.session_id);
         }
       }
       close(stream->metadata_stream.buf_mgr_dev_fd);
