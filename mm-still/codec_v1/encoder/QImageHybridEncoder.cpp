@@ -768,6 +768,7 @@ int QImageHybridEncoder::addInputImage(QImage &aImage)
   else if ((mImgInfo.color_format >= JPEG_BITSTREAM_H2V2) &&
     (mImgInfo.color_format < JPEG_COLOR_FORMAT_MAX)) {
     JPEG_DBG_ERROR("%s:%d] Unsupported Format \n", __func__, __LINE__ );
+    QI_UNLOCK(&mMutex);
     return QI_ERR_INVALID_OPERATION;
   }
   mImgSource.p_main = &mImgInfo;
@@ -839,6 +840,8 @@ int QImageHybridEncoder::addOutputImage(QImage &aImage)
     jpeg_buffer_destroy(&mBuffers[0]);
     jpeg_buffer_destroy(&mBuffers[1]);
     mDest.buffer_cnt = 0;
+    QI_UNLOCK(&(mMutex));
+    return QI_ERR_INVALID_OPERATION;
   }
 
   if(output_filename) {
@@ -846,6 +849,7 @@ int QImageHybridEncoder::addOutputImage(QImage &aImage)
     if (!p_thread_arg->output_handler_args.fout) {
       JPEG_DBG_ERROR("%s:%d] failed to open output file: %d \n",
         __func__, __LINE__, output_filename);
+      QI_UNLOCK(&(mMutex));
       return QI_ERR_INVALID_OPERATION;
     }
   }

@@ -205,7 +205,7 @@ OMX_ERRORTYPE OMXJpegEncoder::writeExifData(QImage *aThumbnail,
 {
   OMX_ERRORTYPE lret = OMX_ErrorNone;
   int lrc = 0;
-  bool enable_mobicat = false;
+  int enable_mobicat = 0;
 
 #ifdef PROCESS_METADATA
   lret = processMetadata();
@@ -218,10 +218,10 @@ OMX_ERRORTYPE OMXJpegEncoder::writeExifData(QImage *aThumbnail,
 
   char value [32];
   property_get("persist.camera.mobicat", value, "0");
-  enable_mobicat = atoi(value) > 0? true : false;
+  enable_mobicat = atoi(value);
 
   //enable mobicat
-  if (enable_mobicat) {
+  if (enable_mobicat > 0) {
     m_mobicatComposer = new QMobicatComposer();
     if (m_mobicatComposer == NULL) {
       QIDBG_ERROR("%s:%d] failed to create mobicat composer", __func__,

@@ -459,7 +459,7 @@ int jpegd_lib_wait_done(void* handle)
 {
   jpegd_lib_t *p_jpg = (jpegd_lib_t *)handle;
 
-  if (p_jpg->event_thread_id > 0) {
+  if (!pthread_equal(p_jpg->event_thread_id, pthread_self())) {
     JDDBG_MED ("%s:%d] event_thread_id %d",
       __func__, __LINE__, (int)p_jpg->event_thread_id);
     jpegd_lib_wait_thread_ready(p_jpg, &(p_jpg->event_thread_id));

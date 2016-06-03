@@ -1391,19 +1391,25 @@ OMX_ERRORTYPE OMXImageEncoder::flushBufferQueues(OMX_U32 a_portIndex)
   if ((a_portIndex == OMX_ALL) || (a_portIndex == m_inPort->nPortIndex)) {
     for (int i = 0; i < m_etbQueue.Count(); i++) {
       l_buffer = (QOMX_Buffer *)m_etbQueue.Dequeue();
-      emptyBufferDone((OMX_BUFFERHEADERTYPE *)l_buffer->getBuffer());
+      if(l_buffer) {
+        emptyBufferDone((OMX_BUFFERHEADERTYPE *)l_buffer->getBuffer());
+      }
     }
   } else if ((a_portIndex == OMX_ALL) ||
       (a_portIndex == m_inTmbPort->nPortIndex)) {
     for (int i = 0; i < m_etbTmbQueue.Count(); i++) {
       l_buffer = (QOMX_Buffer *)m_etbTmbQueue.Dequeue();
-      emptyBufferDone((OMX_BUFFERHEADERTYPE *)l_buffer->getBuffer());
+      if(l_buffer) {
+        emptyBufferDone((OMX_BUFFERHEADERTYPE *)l_buffer->getBuffer());
+      }
     }
   } else if ((a_portIndex == OMX_ALL) ||
     (a_portIndex == m_outPort->nPortIndex)) {
     for (int i = 0; i < m_ftbQueue.Count(); i++) {
       l_buffer = (QOMX_Buffer *)m_ftbQueue.Dequeue();
-      fillBufferDone((OMX_BUFFERHEADERTYPE *)l_buffer->getBuffer());
+      if(l_buffer) {
+        fillBufferDone((OMX_BUFFERHEADERTYPE *)l_buffer->getBuffer());
+      }
     }
   } else {
     QIDBG_ERROR("%s %d]: Bad Port Index", __func__, __LINE__);

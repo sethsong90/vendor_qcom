@@ -380,12 +380,14 @@ int QImageHW10Decoder::Start()
     jpegd_hw10_event_handler);
   if (lrc < 0) {
     QIDBG_ERROR("%s:%d] failed", __func__, __LINE__);
+    QI_UNLOCK(&mMutex);
     return QI_ERR_GENERAL;
   }
 
   lrc = Configure();
   if (lrc < 0) {
     QIDBG_ERROR("%s:%d] config failed", __func__, __LINE__);
+    QI_UNLOCK(&mMutex);
     return QI_ERR_GENERAL;
   }
 

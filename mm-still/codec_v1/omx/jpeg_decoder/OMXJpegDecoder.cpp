@@ -193,12 +193,12 @@ OMX_ERRORTYPE OMXJpegDecoder::startDecode()
        m_inputQIBuffer->Length() - m_inputQIBuffer->FilledLen(),
        QI_BITSTREAM);
 
-   m_inputImage->setFd(m_inputQIBuffer->Fd());
-
    if (m_inputImage == NULL) {
      QIDBG_ERROR("%s:%d] failed", __func__, __LINE__);
      return OMX_ErrorInsufficientResources;
    }
+
+   m_inputImage->setFd(m_inputQIBuffer->Fd());
 
    m_outputImage = new QImage(m_outputPadSize, m_subsampling, m_format,
      m_outputSize[0]);
@@ -343,7 +343,8 @@ OMX_ERRORTYPE OMXJpegDecoder::decodeImageHeader(OMX_BUFFERHEADERTYPE *a_inBuffer
     // Configure input buffer
     lret = configureInBuffer(a_inBuffer);
     if (lret != OMX_ErrorNone) {
-      return lret;
+       QIDBG_ERROR("%s:%d] Invalid OMX_ErrorNone state",  __func__, __LINE__);
+       goto error;
     }
     //Create the exif parser
     m_parser = QExifParser::New(*this);
@@ -372,8 +373,10 @@ OMX_ERRORTYPE OMXJpegDecoder::decodeImageHeader(OMX_BUFFERHEADERTYPE *a_inBuffer
     m_outImgSize =  QISize(m_mainFrameInfo->width, m_mainFrameInfo->height);
     m_outImgSubsampling = (QISubsampling)jpeg2QISubsampling(&lImgSzFactor,
         m_mainFrameInfo->subsampling);
-    m_outImgFormat = QI_YCBCR_SP; // Temp - have to extract comp. config
-                                  // from exif
+    QISubsampling lsubsample;
+    translateFormat(m_inPort->format.image.eColorFormat, &m_outImgFormat,
+      &lsubsample);
+
     m_outImgLength = CEILING16(m_mainFrameInfo->width) *
                      CEILING16(m_mainFrameInfo->height) *
                      lImgSzFactor;

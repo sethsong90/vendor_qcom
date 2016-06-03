@@ -128,6 +128,7 @@ struct msm_jpeg_hw_cmds *jpege_cmd_core_cfg (jpege_cmd_scale_cfg *
 
   if (NULL == p_scale_cfg) {
     JPEG_HW_DBG("%s %d: Bad parameter", __func__, __LINE__);
+    return NULL;
   }
   p_hw_cmds =
     jpege_lib_hw_cmd_malloc_and_copy (sizeof (hw_cmd_core_cfg),

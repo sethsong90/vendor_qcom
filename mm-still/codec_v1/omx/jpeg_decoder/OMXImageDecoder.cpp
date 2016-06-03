@@ -302,6 +302,7 @@ OMX_ERRORTYPE OMXImageDecoder::omx_component_set_parameter(
       reinterpret_cast <OMX_PARAM_PORTDEFINITIONTYPE *> (paramData);
     if (ldestPort->nPortIndex == (OMX_U32)OMX_INPUT_PORT_INDEX) {
       if (!portStateIsOk(m_inPort)) {
+        pthread_mutex_unlock(&m_compLock);
         return OMX_ErrorIncorrectStateOperation;
       }
       if ((ldestPort->format.image.nFrameWidth > MAX_IMAGE_WIDTH) ||
@@ -317,6 +318,7 @@ OMX_ERRORTYPE OMXImageDecoder::omx_component_set_parameter(
         (int)m_inPort->nBufferSize);
     } else if (ldestPort->nPortIndex == (OMX_U32)(OMX_OUTPUT_PORT_INDEX)) {
       if (!portStateIsOk(m_outPort)) {
+        pthread_mutex_unlock(&m_compLock);
         return OMX_ErrorIncorrectStateOperation;
       }
       memcpy(m_outPort, ldestPort, sizeof(OMX_PARAM_PORTDEFINITIONTYPE));
@@ -330,6 +332,7 @@ OMX_ERRORTYPE OMXImageDecoder::omx_component_set_parameter(
     OMX_PORT_PARAM_TYPE *l_destPortparam =
       reinterpret_cast <OMX_PORT_PARAM_TYPE *>(paramData);
     if (!portStateIsOk(NULL)) {
+      pthread_mutex_unlock(&m_compLock);
       return OMX_ErrorIncorrectStateOperation;
     }
     memcpy(m_imagePortParam, l_destPortparam, sizeof(OMX_PORT_PARAM_TYPE));
@@ -340,6 +343,7 @@ OMX_ERRORTYPE OMXImageDecoder::omx_component_set_parameter(
      reinterpret_cast <OMX_IMAGE_PARAM_PORTFORMATTYPE *>(paramData);
     if ((l_destImagePortFormat->nPortIndex == (OMX_U32)OMX_INPUT_PORT_INDEX)) {
       if (!portStateIsOk(m_inPort)) {
+        pthread_mutex_unlock(&m_compLock);
         return OMX_ErrorIncorrectStateOperation;
       }
       memcpy(m_inputFormatTypes, l_destImagePortFormat,
@@ -347,6 +351,7 @@ OMX_ERRORTYPE OMXImageDecoder::omx_component_set_parameter(
     } else if (l_destImagePortFormat->nPortIndex ==
       (OMX_U32)OMX_OUTPUT_PORT_INDEX) {
       if (!portStateIsOk(m_outPort)) {
+        pthread_mutex_unlock(&m_compLock);
         return OMX_ErrorIncorrectStateOperation;
       }
       memcpy(m_outputFormatTypes, l_destImagePortFormat,
@@ -932,15 +937,19 @@ OMX_ERRORTYPE OMXImageDecoder::flushBufferQueues(OMX_U32 a_portIndex)
   if ((a_portIndex == OMX_ALL) || (a_portIndex == m_inPort->nPortIndex)) {
     for (int i = 0; i < m_etbQueue.Count(); i++) {
       l_buffer = (QOMX_Buffer *)m_etbQueue.Dequeue();
-      emptyBufferDone((OMX_BUFFERHEADERTYPE *)l_buffer->getBuffer());
-      delete l_buffer;
+      if(l_buffer) {
+        emptyBufferDone((OMX_BUFFERHEADERTYPE *)l_buffer->getBuffer());
+        delete l_buffer;
+      }
     }
   } else if ((a_portIndex == OMX_ALL) ||
     (a_portIndex == m_outPort->nPortIndex)) {
     for (int i = 0; i < m_ftbQueue.Count(); i++) {
       l_buffer = (QOMX_Buffer *)m_ftbQueue.Dequeue();
-      fillBufferDone((OMX_BUFFERHEADERTYPE *)l_buffer->getBuffer());
-      delete l_buffer;
+      if(l_buffer) {
+        fillBufferDone((OMX_BUFFERHEADERTYPE *)l_buffer->getBuffer());
+        delete l_buffer;
+      }
     }
   } else {
     QIDBG_ERROR("%s %d]: Bad Port Index", __func__, __LINE__);
