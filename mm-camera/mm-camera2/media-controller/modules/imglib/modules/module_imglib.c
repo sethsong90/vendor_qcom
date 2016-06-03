@@ -1,7 +1,7 @@
-/**********************************************************************
-* Copyright (c) 2013 Qualcomm Technologies, Inc. All Rights Reserved. *
-* Qualcomm Technologies Proprietary and Confidential.                 *
-**********************************************************************/
+/***************************************************************************
+* Copyright (c) 2013-2014 Qualcomm Technologies, Inc. All Rights Reserved. *
+* Qualcomm Technologies Proprietary and Confidential.                      *
+***************************************************************************/
 #include "module_imglib.h"
 #include "module_imglib_defs.h"
 #include "module_imglib_common.h"
@@ -140,6 +140,56 @@ static boolean module_imglib_check_name(void *mod, void *name)
 }
 
 /**
+ * Function: module_imglib_find_session_params
+ *
+ * Description: Function used in list find custom to
+ *  find matching session params with session id
+ *
+ * Arguments:
+ *   @data1: session params
+ *   @data2: sessionid
+ *
+ * Return values:
+ *   TRUE/FALSE
+ *
+ **/
+static boolean module_imglib_find_session_params(void *data1, void *data2)
+{
+  module_imglib_session_params_t *session_params =
+    (module_imglib_session_params_t *)data1;
+  unsigned int *sessionid = (unsigned int *)data2;
+
+  if (!data1 || !data2) {
+    return FALSE;
+  }
+
+  if (session_params->sessionid == *sessionid) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+/** module_imglib_free_session_params
+ *    @data: Pointer to session params to be freed
+ *    @user_data: should be NULL
+ *
+ *  Function used in traverse list for freeing session params
+ *
+ *  Return TRUE on success.
+ **/
+static boolean  module_imglib_free_session_params(void *data, void *user_data)
+{
+
+  if (!data) {
+    return FALSE;
+  }
+
+  free(data);
+
+  return TRUE;
+}
+/**
  * Function: module_imglib_get_module
  *
  * Description: This function will search module with given name in module list
@@ -173,7 +223,8 @@ static mct_module_t *module_imglib_get_module(mct_list_t *mods, const char *name
  * Arguments:
  *   @p_new: New topology candidate
  *   @p_old: Old topology candidate
-
+ *   @stream_info: Stream info struct
+ *
  * Return values:
  *     TRUE/FALSE
  *
@@ -213,24 +264,253 @@ static boolean module_imglib_is_new_candidate(module_imglib_topology_t *p_new,
 }
 
 /**
- * Function: module_imglib_get_topology
+ * Function: module_imglib_init_session_params
  *
- * Description: Get internal topology list based in stream info
+ * Description: Init session parameters which need to be stored
  *
  * Arguments:
- *   @p_mod: Imagelib module private data
- *   @stream_info: mct_stream_info_t struct
+ *   @p_mod: Imagelib module instance
+ *   @topo_holder: Topology holder
+ *   @param_type_array: Array of parameters need to be stored per session
+ *
+ * Return values:
+ *     TRUE on success
+ *
+ * Notes: none
+ **/
+static boolean module_imglib_init_session_params(module_imglib_t *p_mod,
+  module_imglib_topo_holder_t *topo_holder,
+  cam_intf_parm_type_t *param_type_array)
+{
+  int i;
 
+  if (!p_mod || !topo_holder || !param_type_array) {
+    IDBG_ERROR("%s:%d Invalid input p_mod %p topo %p array %p",
+      __func__, __LINE__, p_mod, topo_holder, param_type_array);
+    return FALSE;
+  }
+
+  /* If there are no session params just exit */
+  if (CAM_INTF_PARM_MAX <= param_type_array[0]) {
+    return TRUE;
+  }
+
+  for (i = 0; i < MODULE_IMGLIB_MAX_STORED_PARAMS; i++) {
+    if (CAM_INTF_PARM_MAX <= param_type_array[i]) {
+      break;
+    }
+    topo_holder->params_to_restore[param_type_array[i]] = TRUE;
+    p_mod->params_to_store[param_type_array[i]] = TRUE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * Function: module_imglib_deinit_session_params
+ *
+ * Description: Deinitalize and free session parameters
+ *
+ * Arguments:
+ *   @p_mod: Imagelib module instance
+ *
+ * Return values:
+ *     none
+ *
+ * Notes: none
+ **/
+static void module_imglib_deinit_session_params(module_imglib_t *p_mod)
+{
+  if (p_mod && p_mod->session_params_list) {
+    mct_list_free_all(p_mod->session_params_list,
+      module_imglib_free_session_params);
+    p_mod->session_params_list = NULL;
+  }
+
+  return;
+}
+
+/**
+ * Function: module_imglib_clear_session_params
+ *
+ * Description: Function to clear and initialize session parameters
+ *
+ * Arguments:
+ *   @p_mod: Imagelib module instance
+ *   @sessionid: Session id
+ *
  * Return values:
  *     TRUE/FALSE
  *
  * Notes: none
  **/
-mct_list_t *module_imglib_get_topology(mct_module_t *module,
+boolean module_imglib_clear_session_params(module_imglib_t *p_mod,
+  unsigned int sessionid)
+{
+  mct_list_t *p_list;
+
+  if (!p_mod) {
+    IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
+    return FALSE;
+  }
+
+  p_list = mct_list_find_custom(p_mod->session_params_list, &sessionid,
+    module_imglib_find_session_params);
+
+  if (p_list && p_list->data) {
+    module_imglib_session_params_t *session_params = p_list->data;
+    p_mod->session_params_list =
+      mct_list_remove(p_mod->session_params_list, session_params);
+    free(session_params);
+  }
+
+  return TRUE;
+}
+
+/**
+ * Function: module_imglib_get_session_params
+ *
+ * Description: Function used to get session parameters based on session id
+ *
+ * Arguments:
+ *   @module: Mct module instance
+ *   @sessionid: Session id
+ *
+ * Return values:
+ *   Pointer to session param buffer
+ *
+ * Notes: none
+ **/
+parm_buffer_t *module_imglib_get_session_params(mct_module_t *module,
+  unsigned int sessionid)
+{
+  module_imglib_t *p_mod;
+  module_imglib_session_params_t *p_session_params;
+  parm_buffer_t *p_param_buffer = NULL;
+  mct_list_t *p_list;
+
+  if (!(module && module->module_private)) {
+    IDBG_ERROR("%s:%d Invalid input module %p", __func__, __LINE__, module);
+    return NULL;
+  }
+
+  p_mod = module->module_private;
+  if (NULL == p_mod->session_params_list) {
+    return NULL;
+  }
+
+  p_list = mct_list_find_custom(p_mod->session_params_list, &sessionid,
+    module_imglib_find_session_params);
+
+  if (p_list && p_list->data) {
+    module_imglib_session_params_t *p_session_params = p_list->data;
+    p_param_buffer = &p_session_params->params;
+  }
+
+  return p_param_buffer;
+}
+
+/**
+ * Function: module_imglib_store_session_params
+ *
+ * Description: Function used to store session params
+ *
+ * Arguments:
+ *   @module: mct module pointer
+ *   @param_to_store: Params need to be stored
+ *   @sessionid: Session id
+ *
+ * Return values:
+ *   TRUE/FALSE
+ *
+ * Notes: none
+ **/
+boolean module_imglib_store_session_params(mct_module_t *module,
+  mct_event_control_parm_t *param_to_store, unsigned int sessionid)
+{
+  module_imglib_t *p_mod;
+  parm_buffer_t *p_table = NULL;
+
+  if (!(module && module->module_private)  || !param_to_store) {
+    IDBG_ERROR("%s:%d mct modile %p param %p", __func__, __LINE__,
+      module, param_to_store);
+    return FALSE;
+  }
+
+  if (param_to_store->type >= CAM_INTF_PARM_MAX) {
+    IDBG_ERROR("%s:%d Invalid param type ", __func__, __LINE__);
+    return FALSE;
+  }
+
+  p_mod = module->module_private;
+
+  p_table = module_imglib_get_session_params(module, sessionid);
+
+  /* If session params are missing create for this stream */
+  if (NULL == p_table) {
+    module_imglib_session_params_t *session_params;
+
+    session_params = calloc(1, sizeof(*session_params));
+    if (NULL == session_params) {
+      IDBG_ERROR("%s:%d Out of memory ", __func__, __LINE__);
+      return FALSE;
+    }
+
+    session_params->sessionid = sessionid;
+    session_params->params.first_flagged_entry = CAM_INTF_PARM_MAX;
+    p_mod->session_params_list = mct_list_append(p_mod->session_params_list,
+      session_params, NULL, NULL);
+
+    p_table = &session_params->params;
+  }
+
+  if (TRUE == p_mod->params_to_store[param_to_store->type]) {
+    int position = param_to_store->type;
+    parm_type_t *data = param_to_store->parm_data;
+    int current, next;
+
+    current = GET_FIRST_PARAM_ID(p_table);
+    if (position == current){
+      //DO NOTHING
+    } else if (position < current){
+      SET_NEXT_PARAM_ID(position, p_table, current);
+      SET_FIRST_PARAM_ID(p_table, position);
+    } else {
+      /* Search for the position in the linked list where we need to slot in*/
+      while (position > GET_NEXT_PARAM_ID(current, p_table))
+        current = GET_NEXT_PARAM_ID(current, p_table);
+
+      /*If node already exists no need to alter linking*/
+      if (position != GET_NEXT_PARAM_ID(current, p_table)) {
+        next = GET_NEXT_PARAM_ID(current, p_table);
+        SET_NEXT_PARAM_ID(current, p_table, position);
+        SET_NEXT_PARAM_ID(position, p_table, next);
+      }
+    }
+    p_table->entry[param_to_store->type].data = *data;
+  }
+  return TRUE;
+}
+
+/**
+ * Function: module_imglib_get_topology
+ *
+ * Description: Get internal topology based in stream info
+ *
+ * Arguments:
+ *   @module: Imagelib module object
+ *   @stream_info: mct_stream_info_t struct
+
+ * Return values:
+ *     Pointer to topology holder on success/NULL on fail
+ *
+ * Notes: none
+ **/
+module_imglib_topo_holder_t *module_imglib_get_topology(mct_module_t *module,
   mct_stream_info_t *stream_info)
 {
   module_imglib_t *p_mod;
-  mct_list_t *p_topology_list = NULL;
+  module_imglib_topo_holder_t *p_chosen_topology = NULL;
   module_imglib_topology_t *p_topology = NULL;
   boolean new_cand;
   uint32_t topo_idx;
@@ -251,20 +531,20 @@ mct_list_t *module_imglib_get_topology(mct_module_t *module,
     goto out;
   }
 
-  for (topo_idx = 0; topo_idx < p_mod->topology_num; topo_idx++) {
+  for (topo_idx = 0; topo_idx < IMGLIB_ARRAY_SIZE(mod_imglib_topology); topo_idx++) {
     if (stream_info->stream_type == mod_imglib_topology[topo_idx].stream_type) {
       /* Check if new topology will be new candidate */
       new_cand = module_imglib_is_new_candidate(&mod_imglib_topology[topo_idx],
                    p_topology, stream_info);
-      if (new_cand) {
-        p_topology_list = p_mod->topology[topo_idx];
+      if (new_cand && p_mod->topology[topo_idx].topo_attached) {
+        p_chosen_topology = &p_mod->topology[topo_idx];
         p_topology = &mod_imglib_topology[topo_idx];
       }
     }
   }
 
 out:
-  return p_topology_list;
+  return p_chosen_topology;
 }
 
 /**
@@ -285,30 +565,37 @@ static boolean module_imglib_destroy_topology(module_imglib_t *p_mod)
   mct_module_t *m_temp;
   module_imglib_topology_t *curr_top;
   mct_module_init_name_t *curr_mod;
-  unsigned int i = 0, cnt_t, cnt_m;
+  unsigned int top_c, par_c, mod_c;
 
   if (!(p_mod && p_mod->imglib_modules && p_mod->topology))
     return FALSE;
 
   /* Add to separate function As Create topology  */
-  for (cnt_t = 0; cnt_t < p_mod->topology_num; cnt_t++) {
-    curr_top = &mod_imglib_topology[cnt_t];
-    for (cnt_m = 0; cnt_m < IMGLIB_ARRAY_SIZE(curr_top->modules); cnt_m++) {
-      curr_mod = &curr_top->modules[cnt_m];
-      if (!curr_mod->name || !curr_mod->init_mod || !curr_mod->deinit_mod)
+  for (top_c = 0; top_c < IMGLIB_ARRAY_SIZE(mod_imglib_topology); top_c++) {
+    curr_top = &mod_imglib_topology[top_c];
+
+    /* Go thru all parallel topologies for this port */
+    for (par_c = 0; par_c < MODULE_IMGLIB_MAX_PAR_TOPO; par_c++) {
+      if (!curr_top->modules[par_c][0].name)
         break;
 
-      /* Check if module is already registered */
-      m_temp = module_imglib_get_module(p_mod->imglib_modules, curr_mod->name);
-      if (m_temp)
-        curr_mod->deinit_mod(m_temp);
+      for (mod_c = 0; mod_c < MODULE_IMGLIB_MAX_TOPO_MOD; mod_c++) {
+        curr_mod = &curr_top->modules[par_c][mod_c];
+        if (!curr_mod->name || !curr_mod->init_mod || !curr_mod->deinit_mod)
+          break;
+        /* Check if module is already registered */
+        m_temp = module_imglib_get_module(p_mod->imglib_modules, curr_mod->name);
+        if (m_temp) {
+          curr_mod->deinit_mod(m_temp);
+          p_mod->imglib_modules = mct_list_remove(p_mod->imglib_modules, m_temp);
+        }
+      }
+      mct_list_free_list(p_mod->topology[top_c].topo_list[par_c]);
+      p_mod->topology[top_c].topo_list[par_c] = NULL;
     }
-    mct_list_free_list(p_mod->topology[cnt_t]);
   }
   mct_list_free_list(p_mod->imglib_modules);
-
-  free(p_mod->topology);
-  p_mod->topology = NULL;
+  p_mod->imglib_modules = NULL;
 
   return TRUE;
 }
@@ -337,65 +624,63 @@ static boolean module_imglib_create_topology(module_imglib_t *p_mod)
   mct_list_t *temp_list;
   module_imglib_topology_t *curr_top;
   mct_module_init_name_t *curr_mod;
-  unsigned int i = 0, cnt_t, cnt_m;
+  unsigned int top_c, par_c, mod_c;
 
   if (NULL == p_mod)
     return FALSE;
 
-  p_mod->topology_num = IMGLIB_ARRAY_SIZE(mod_imglib_topology);
-  if (0 == p_mod->topology_num) {
-    IDBG_ERROR("%s:%d] No topologies available", __func__, __LINE__);
-    return FALSE;
-  }
+  for (top_c = 0; top_c < IMGLIB_ARRAY_SIZE(mod_imglib_topology); top_c++) {
+    curr_top = &mod_imglib_topology[top_c];
 
-  p_mod->topology = calloc(1, p_mod->topology_num * sizeof(p_mod->topology));
-  if (NULL == p_mod->topology) {
-    IDBG_ERROR("%s:%d] Can not allocate topology list", __func__, __LINE__);
-    return FALSE;
-  }
-
-  for (cnt_t = 0; cnt_t < p_mod->topology_num; cnt_t++) {
-    curr_top = &mod_imglib_topology[cnt_t];
-
-    for (cnt_m = 0; cnt_m < IMGLIB_ARRAY_SIZE(curr_top->modules); cnt_m++) {
-      curr_mod = &curr_top->modules[cnt_m];
-      if (!curr_mod->name || !curr_mod->init_mod || !curr_mod->deinit_mod)
+    /* Go thru all parallel topologies and initiate their list */
+    for (par_c = 0; par_c < MODULE_IMGLIB_MAX_PAR_TOPO; par_c++) {
+      if (!curr_top->modules[par_c][0].name)
         break;
 
-      /* Check if module is already registered */
-      m_temp = NULL;
-      if (p_mod->imglib_modules) {
-        m_temp = module_imglib_get_module(p_mod->imglib_modules,
-          curr_mod->name);
-      }
+      for (mod_c = 0; mod_c < MODULE_IMGLIB_MAX_TOPO_MOD; mod_c++) {
+        curr_mod = &curr_top->modules[par_c][mod_c];
+        if (!curr_mod->name || !curr_mod->init_mod || !curr_mod->deinit_mod)
+          break;
 
-      /* If there is no module initiated call module init and add to the list */
-      if (!m_temp) {
-        m_temp = curr_mod->init_mod(curr_mod->name);
-        if (!m_temp) {
-          IDBG_ERROR("%s:%d] Can not init the module %s", __func__, __LINE__,
+        /* Check if module is already registered */
+        m_temp = NULL;
+        if (p_mod->imglib_modules) {
+          m_temp = module_imglib_get_module(p_mod->imglib_modules,
             curr_mod->name);
-          goto error;
         }
 
-        temp_list = mct_list_append(p_mod->imglib_modules, m_temp, NULL, NULL);
+        /* If there is no module initiated call module init and add to the list */
+        if (!m_temp) {
+          m_temp = curr_mod->init_mod(curr_mod->name);
+          if (!m_temp) {
+            IDBG_ERROR("%s:%d] Can not init the module %s", __func__, __LINE__,
+              curr_mod->name);
+            break;
+          }
+
+          temp_list = mct_list_append(p_mod->imglib_modules, m_temp, NULL, NULL);
+          if (!temp_list) {
+            IDBG_ERROR("%s:%d] Can not add new module to module list",
+              __func__, __LINE__);
+            goto error;
+          }
+          p_mod->imglib_modules = temp_list;
+        }
+        /* Add module to topology list */
+        temp_list = mct_list_append(p_mod->topology[top_c].topo_list[par_c],
+          m_temp, NULL, NULL);
         if (!temp_list) {
-          IDBG_ERROR("%s:%d] Can not add new module to module list",
+          IDBG_ERROR("%s:%d] Can not add module to stream list",
             __func__, __LINE__);
           goto error;
         }
-        p_mod->imglib_modules = temp_list;
+        p_mod->topology[top_c].topo_list[par_c] = temp_list;
+        p_mod->topology[top_c].topo_attached = (par_c + 1);
+        p_mod->topology[top_c].port_events_mask = curr_top->port_events_mask;
+        /* Init session parameters */
+        module_imglib_init_session_params(p_mod, &p_mod->topology[top_c],
+          curr_top->session_params);
       }
-
-      /* Add module to topology list */
-      temp_list = mct_list_append(p_mod->topology[cnt_t],
-        m_temp, NULL, NULL);
-      if (!temp_list) {
-        IDBG_ERROR("%s:%d] Can not add module to stream list",
-          __func__, __LINE__);
-        goto error;
-      }
-      p_mod->topology[cnt_t] = temp_list;
     }
   }
 
@@ -551,6 +836,475 @@ static int module_imglib_forward_event_to_port(mct_module_t *module,
 }
 
 /**
+ * module_imglib_find_buff:
+ *  @list_data: buffer instance
+ *  @user_data: required buffer index
+ *
+ * Function to get specified buffer
+ *
+ * This function executes in Imaging Server context
+ *
+ * Return values: Handler to mapped buffer or NULL
+ **/
+static boolean module_imglib_find_buff(void *list_data, void *user_data)
+{
+  boolean ret_val = FALSE;
+  mct_stream_map_buf_t *img_buf = list_data;
+  int32_t *buff_index = user_data;
+
+  if (img_buf && buff_index) {
+    if (*buff_index == img_buf->buf_index) {
+      ret_val = TRUE;
+    }
+  } else {
+    IDBG_ERROR("%s:%d] Null pointer detected\n", __func__, __LINE__);
+  }
+
+  return ret_val;
+}
+
+/**
+ * module_imglib_get_buffer_holder:
+ *   @stream_info: stream info
+ *   @buf_index: buf index
+ *
+ * This function gets requested buffer holder
+ *
+ * This function executes in Imaging Server context
+ *
+ * Return values: Buff holder or NULL
+ **/
+static mct_stream_map_buf_t* module_imglib_get_buffer_holder(
+  mct_stream_info_t *stream_info, int buf_index)
+{
+  void* ret_val = NULL;
+  mct_list_t* list;
+
+  list = mct_list_find_custom(stream_info->img_buffer_list, &buf_index,
+      module_imglib_find_buff);
+
+  if (list && list->data) {
+    ret_val = list->data;
+  }
+
+  return ret_val;
+}
+
+/**
+ * module_imglib_send_buffer:
+ *   @port: port instance
+ *   @buf_holder: buffer holder
+ *   @stream_info: stream info
+ *   @parm_buf: hal buffer payload
+ *
+ * This sends the buffer to the specified port
+ *
+ * This function executes in Imaging Server context
+ *
+ * Return values: image lib return codes
+ **/
+static int module_imglib_send_buffer(mct_port_t *port,
+  mct_stream_map_buf_t *buf_holder, mct_stream_info_t *stream_info,
+  cam_stream_parm_buffer_t *parm_buf, uint32_t identity)
+{
+  boolean rc;
+  isp_buf_divert_t isp_buf;
+  mct_event_t event;
+
+  memset(&isp_buf, 0, sizeof(isp_buf_divert_t));
+
+  isp_buf.is_uv_subsampled = parm_buf->reprocess.frame_pp_config.uv_upsample;
+
+  /* Use native buffer for now */
+  isp_buf.native_buf = TRUE;
+  isp_buf.fd = buf_holder->buf_planes[0].fd;
+  isp_buf.vaddr = buf_holder->buf_planes[0].buf;
+  isp_buf.buffer.sequence = parm_buf->reprocess.frame_idx;
+
+  isp_buf.buffer.length = buf_holder->num_planes;
+  isp_buf.buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+  isp_buf.buffer.index = buf_holder->buf_index;
+  isp_buf.buffer.memory = V4L2_MEMORY_USERPTR;
+
+  /* Fill timestamp */
+  gettimeofday(&isp_buf.buffer.timestamp, NULL);
+
+  /* Fill event parameters */
+  event.identity  = identity;
+  event.type      = MCT_EVENT_MODULE_EVENT;
+  event.direction = MCT_EVENT_DOWNSTREAM;
+  event.u.module_event.type = MCT_EVENT_MODULE_BUF_DIVERT;
+  event.u.module_event.module_event_data = (void *)&isp_buf;
+
+  rc = MCT_PORT_EVENT_FUNC(port) (port , &event);
+
+  if (!rc) {
+    IDBG_ERROR("%s:%d] failed to send event to %s\n", __func__, __LINE__,
+        MCT_OBJECT_NAME(port));
+    return IMG_ERR_GENERAL;
+  }
+
+  return IMG_SUCCESS;
+}
+
+/**
+ * module_imglib_extract_chromatix:
+ *   @metadata: metadata
+ *   @module_chromatix: chromatix
+ *
+ * This function extracts chromatix from metadata
+ *
+ * This function executes in Imaging Server context
+ *
+ * Return values: image lib return codes
+ **/
+static int module_imglib_extract_chromatix(cam_metadata_info_t *metadata,
+  modulesChromatix_t *module_chromatix)
+{
+  mct_stream_session_metadata_info *priv_metadata;
+
+  priv_metadata =
+    (mct_stream_session_metadata_info *)metadata->private_metadata;
+  if (!priv_metadata) {
+    IDBG_ERROR("%s:%d] Private metadata pointer is Null\n", __func__, __LINE__);
+    return IMG_ERR_GENERAL;
+  }
+
+  module_chromatix->chromatixComPtr =
+    priv_metadata->sensor_data.common_chromatix_ptr;
+  module_chromatix->chromatixPtr = priv_metadata->sensor_data.chromatix_ptr;
+
+  return IMG_SUCCESS;
+}
+
+/**
+ * module_imglib_extract_gamma:
+ *   @metadata: metadata
+ *   @gamma: gamma
+ *
+ * This function extracts gamma from metadata
+ *
+ * This function executes in Imaging Server context
+ *
+ * Return values: image lib return codes
+ **/
+static int module_imglib_extract_gamma(cam_metadata_info_t *metadata,
+  uint16_t *gamma)
+{
+  mct_stream_session_metadata_info *priv_metadata;
+
+  priv_metadata =
+    (mct_stream_session_metadata_info *)metadata->private_metadata;
+  if (!priv_metadata) {
+    IDBG_ERROR("%s:%d] Private metadata pointer is Null\n", __func__, __LINE__);
+    return IMG_ERR_GENERAL;
+  }
+
+  memcpy(gamma, &priv_metadata->isp_gamma_data, (sizeof(uint16_t) * 64));
+
+  return IMG_SUCCESS;
+}
+
+/**
+ * module_imglib_extract_aec_data:
+ *   @metadata: metadata
+ *   @stats_update: stats update
+ *
+ * This function extracts aec data from metadata
+ *
+ * This function executes in Imaging Server context
+ *
+ * Return values: image lib return codes
+ **/
+static int module_imglib_extract_aec_data(cam_metadata_info_t *metadata,
+  stats_update_t *stats_update)
+{
+  mct_stream_session_metadata_info *priv_metadata;
+  stats_get_data_t *stats_get;
+  aec_update_t *aec_update;
+
+  priv_metadata =
+    (mct_stream_session_metadata_info *)metadata->private_metadata;
+  if (!priv_metadata) {
+    IDBG_ERROR("%s:%d] Private metadata pointer is Null\n", __func__, __LINE__);
+    return IMG_ERR_GENERAL;
+  }
+  stats_get = (stats_get_data_t *)&priv_metadata->stats_aec_data.private_data;
+  aec_update = &stats_update->aec_update;
+
+  memset(stats_update, 0, sizeof(stats_update_t));
+  stats_update->flag = STATS_UPDATE_AEC;
+  aec_update->lux_idx = stats_get->aec_get.lux_idx;
+  aec_update->real_gain = stats_get->aec_get.real_gain[0];
+
+  return IMG_SUCCESS;
+}
+
+/**
+ * module_imglib_extract_awb_data:
+ *   @metadata: metadata
+ *   @awb_update: awb data
+ *
+ * This function extracts awb data from metadata
+ *
+ * This function executes in Imaging Server context
+ *
+ * Return values: image lib return codes
+ **/
+static int module_imglib_extract_awb_data(cam_metadata_info_t *metadata,
+   awb_update_t *awb_update)
+{
+  mct_stream_session_metadata_info *priv_metadata;
+
+  priv_metadata =
+    (mct_stream_session_metadata_info *)metadata->private_metadata;
+  if (!priv_metadata) {
+    IDBG_ERROR("%s:%d] Private metadata pointer is Null\n", __func__, __LINE__);
+    return IMG_ERR_GENERAL;
+  }
+
+  memcpy(awb_update, &priv_metadata->isp_stats_awb_data, sizeof(awb_update_t));
+
+  return IMG_SUCCESS;
+}
+
+/**
+ * module_imglib_send_event:
+ *   @port: port instance
+ *   @identity: identity
+ *   @event_type: event type
+ *   @data: event payload
+ *
+ * This function sends module event
+ *
+ * This function executes in Imaging Server context
+ *
+ * Return values: image lib return codes
+ **/
+static int module_imglib_send_event(mct_port_t *port, uint32_t identity,
+  uint32_t event_type, void *data)
+{
+  boolean rc;
+  mct_event_t event;
+
+  event.identity  = identity;
+  event.type      = MCT_EVENT_MODULE_EVENT;
+  event.direction = MCT_EVENT_DOWNSTREAM;
+  event.u.module_event.type = event_type;
+  event.u.module_event.module_event_data = data;
+
+  rc = MCT_PORT_EVENT_FUNC(port) (port , &event);
+
+  if (!rc) {
+    IDBG_ERROR("%s:%d] failed to send event to %s\n", __func__, __LINE__,
+        MCT_OBJECT_NAME(port));
+    return IMG_ERR_GENERAL;
+  }
+
+  return IMG_SUCCESS;
+}
+
+/**
+ * module_imglib_meta_parse:
+ *   @port: port instance
+ *   @identity: identity
+ *   @metadata: metadata
+ *
+ * This function parses meta data and sends the information as module events
+ *
+ * This function executes in Imaging Server context
+ *
+ * Return values: image lib return codes
+ **/
+static int module_imglib_meta_parse(mct_port_t *port, uint32_t identity,
+  cam_metadata_info_t *metadata)
+{
+  int ret_val;
+  modulesChromatix_t module_chromatix;
+  uint16_t gamma_update[64];
+  stats_update_t stats_update;
+  awb_update_t awb_update;
+
+  ret_val = module_imglib_extract_chromatix(metadata, &module_chromatix);
+  if (IMG_SUCCESS != ret_val) {
+    IDBG_ERROR("%s:%d] Cannot extract chromatix\n", __func__, __LINE__);
+    return ret_val;
+  }
+  ret_val = module_imglib_send_event(port, identity,
+    MCT_EVENT_MODULE_SET_CHROMATIX_PTR, &module_chromatix);
+  if (IMG_SUCCESS != ret_val) {
+    IDBG_ERROR("%s:%d] Cannot send chromatix\n", __func__, __LINE__);
+    return ret_val;
+  }
+
+  ret_val = module_imglib_extract_aec_data(metadata, &stats_update);
+  if (IMG_SUCCESS != ret_val) {
+    IDBG_ERROR("%s:%d] Cannot extract aec data\n", __func__, __LINE__);
+    return ret_val;
+  }
+  ret_val = module_imglib_send_event(port, identity,
+    MCT_EVENT_MODULE_STATS_AEC_UPDATE, &stats_update);
+  if (IMG_SUCCESS != ret_val) {
+    IDBG_ERROR("%s:%d] Cannot send aec data\n", __func__, __LINE__);
+    return ret_val;
+  }
+
+  ret_val = module_imglib_extract_gamma(metadata, &gamma_update[0]);
+  if (IMG_SUCCESS != ret_val) {
+    IDBG_ERROR("%s:%d] Cannot extract gamma\n", __func__, __LINE__);
+    return ret_val;
+  }
+  ret_val = module_imglib_send_event(port, identity,
+    MCT_EVENT_MODULE_ISP_GAMMA_UPDATE, &gamma_update[0]);
+  if (IMG_SUCCESS != ret_val) {
+    IDBG_ERROR("%s:%d] Cannot send gamma\n", __func__, __LINE__);
+    return ret_val;
+  }
+
+  ret_val = module_imglib_extract_awb_data(metadata, &awb_update);
+  if (IMG_SUCCESS != ret_val) {
+    IDBG_ERROR("%s:%d] Cannot extract awb data\n", __func__, __LINE__);
+    return ret_val;
+  }
+  ret_val = module_imglib_send_event(port, identity,
+    MCT_EVENT_MODULE_STATS_AWB_UPDATE, &awb_update);
+  if (IMG_SUCCESS != ret_val) {
+    IDBG_ERROR("%s:%d] Cannot send awb data\n", __func__, __LINE__);
+    return ret_val;
+  }
+
+  return IMG_SUCCESS;
+}
+
+/**
+ * module_imglib_do_reprocess_handle:
+ *   @module: module instance
+ *   @event: mct event
+ *
+ * This function handles DO_REPROCESS in MCT_EVENT_CONTROL_PARM_STREAM_BUF event
+ *
+ * This function executes in Imaging Server context
+ *
+ * Return values: image lib return codes
+ **/
+static int module_imglib_do_reprocess_handle(mct_module_t *module,
+  mct_event_t *event)
+{
+  mct_stream_info_t *input_stream_info;
+  mct_stream_info_t *stream_info;
+  mct_port_t *port;
+  mct_stream_t *stream;
+  cam_metadata_info_t *metadata;
+  cam_stream_parm_buffer_t *parm_buf;
+  mct_stream_map_buf_t *buf_holder;
+  int ret_val;
+
+  parm_buf = event->u.ctrl_event.control_event_data;
+
+  // Get current stream
+  stream = mod_imglib_find_module_parent(event->identity, module);
+  if (!stream) {
+    IDBG_ERROR("%s:%d] Module is orphan does not have parent\n",
+        __func__, __LINE__);
+    return IMG_ERR_NOT_FOUND;
+  }
+
+  // Get current port
+  MCT_OBJECT_LOCK(module);
+  port = module_imglib_get_port_with_identity(module, event->identity,
+    MCT_PORT_SINK);
+  MCT_OBJECT_UNLOCK(module);
+  if (!port) {
+    IDBG_ERROR("%s:%d] Module doesn't have port linked with identity 0x%x\n",
+        __func__, __LINE__, event->identity);
+    return IMG_ERR_NOT_FOUND;
+  }
+
+  // Get current stream info
+  stream_info = &stream->streaminfo;
+
+  // Get input stream info
+  if (CAM_ONLINE_REPROCESS_TYPE == stream_info->reprocess_config.pp_type) {
+    input_stream_info = (mct_stream_info_t *)mct_module_get_stream_info(module,
+        IMGLIB_SESSIONID(event->identity),
+        stream_info->reprocess_config.online.input_stream_id);
+    if (!input_stream_info) {
+      IDBG_ERROR("%s:%d] input stream_info is NULL\n", __func__, __LINE__);
+      return IMG_ERR_NOT_FOUND;
+    }
+  } else {
+    input_stream_info = stream_info;
+  }
+
+  // Parse metadata and extract needed data
+  if (parm_buf->reprocess.meta_present == 1) {
+    metadata = (cam_metadata_info_t *)mct_module_get_buffer_ptr(
+        parm_buf->reprocess.meta_buf_index, module,
+        IMGLIB_SESSIONID(event->identity),
+        parm_buf->reprocess.meta_stream_handle);
+    if (!metadata) {
+      IDBG_ERROR("%s:%d] metadata is NULL\n", __func__, __LINE__);
+      return IMG_ERR_NOT_FOUND;
+    }
+
+    ret_val = module_imglib_meta_parse(port, event->identity, metadata);
+    if (IMG_SUCCESS != ret_val) {
+      IDBG_ERROR("%s:%d] Cannot parse metadata\n", __func__, __LINE__);
+      return ret_val;
+    }
+  }
+
+  // Get input buffer
+  buf_holder = module_imglib_get_buffer_holder(input_stream_info,
+      stream_info->parm_buf.reprocess.buf_index);
+  if (!buf_holder) {
+    IDBG_ERROR("%s:%d] Input buffer holder is NULL\n", __func__, __LINE__);
+    return IMG_ERR_NOT_FOUND;
+  }
+
+  // Send buffer
+  return module_imglib_send_buffer(port, buf_holder, input_stream_info,
+      parm_buf, event->identity);
+}
+
+/**
+ * module_imglib_stream_buf_handle:
+ *   @module: module instance
+ *   @event: mct event
+ *
+ * This function handles MCT_EVENT_CONTROL_PARM_STREAM_BUF event
+ *
+ * This function executes in Imaging Server context
+ *
+ * Return values: TRUE in case of success
+ **/
+static boolean module_imglib_stream_buf_handle(mct_module_t *module,
+  mct_event_t *event)
+{
+  cam_stream_parm_buffer_t *parm_buf;
+  boolean ret_val = FALSE;
+  int rc;
+
+  parm_buf = event->u.ctrl_event.control_event_data;
+
+  if (parm_buf) {
+
+    if (parm_buf->type == CAM_STREAM_PARAM_TYPE_DO_REPROCESS) {
+      rc = module_imglib_do_reprocess_handle(module, event);
+    } else {
+      rc = module_imglib_forward_event_to_port(module, event);
+    }
+    ret_val = (rc == IMG_SUCCESS) ? TRUE : FALSE;
+
+  } else {
+    IDBG_ERROR("%s:%d] MCT_EVENT_CONTROL_PARM_STREAM_BUF payload is NULL\n",
+        __func__, __LINE__);
+  }
+
+  return ret_val;
+}
+
+/**
  * Function: module_imglib_query_mod
  *
  * Description: This function is used to query the imglib module info
@@ -614,10 +1368,22 @@ static boolean module_imglib_process_event(mct_module_t *module,
   mct_event_t *event)
 {
   boolean ret_val = TRUE;
+  mct_module_type_t module_type;
   int rc;
 
   if (!module || !event) {
     IDBG_ERROR("%s:%d Invalid input", __func__, __LINE__);
+    return FALSE;
+  }
+
+  MCT_OBJECT_LOCK(module);
+  module_type = mct_module_find_type(module, event->identity);
+  MCT_OBJECT_UNLOCK(module);
+
+  if ((MCT_MODULE_FLAG_PEERLESS != module_type) &&
+      (MCT_MODULE_FLAG_SOURCE != module_type)) {
+    IDBG_ERROR("%s:%d Module %s is not source", __func__, __LINE__,
+        MCT_OBJECT_NAME(module));
     return FALSE;
   }
 
@@ -630,6 +1396,9 @@ static boolean module_imglib_process_event(mct_module_t *module,
     case MCT_EVENT_CONTROL_STREAMOFF:
       /*  Unreserve the port which is needed for redirecting module events */
       ret_val = module_imglib_forward_event_and_destroy_port(module, event);
+      break;
+    case MCT_EVENT_CONTROL_PARM_STREAM_BUF:
+      ret_val = module_imglib_stream_buf_handle(module, event);
       break;
     default:
       rc = module_imglib_forward_event_to_port(module, event);
@@ -645,9 +1414,11 @@ static boolean module_imglib_process_event(mct_module_t *module,
     }
     break;
   }
-  /* Todo missing implementatnion */
   case MCT_EVENT_MODULE_EVENT:
   default:
+    IDBG_ERROR("%s:%d] Event type %d must not be sent to module event",
+        __func__, __LINE__, event->type);
+    ret_val = FALSE;
     break;
   }
 
@@ -751,6 +1522,11 @@ static boolean module_imglib_stop_session(mct_module_t *module,
       module_imglib_free_port(module, port);
   } while (port);
 
+  ret = module_imglib_clear_session_params(p_mod, sessionid);
+  if (FALSE == ret) {
+    IDBG_ERROR("%s:%d Can not clear session parameters", __func__, __LINE__);
+  }
+
 out:
   MCT_OBJECT_UNLOCK(module);
   return ret;
@@ -819,7 +1595,8 @@ mct_port_t *module_imglib_request_new_port(void *vstream_info,
   MCT_OBJECT_LOCK(module);
 
   /* Create new port */
-  p_port = module_imglib_create_port(module, direction, FALSE);
+  p_port = module_imglib_create_port(module, direction, FALSE,
+    MODULE_IMGLIB_MAX_PAR_TOPO);
   if (NULL == p_port) {
     IDBG_ERROR("%s:%d] Create port failed", __func__, __LINE__);
     goto out;
@@ -867,8 +1644,6 @@ void module_imglib_deinit(mct_module_t *p_mct_mod)
     return;
   }
 
-  module_imglib_destroy_topology(p_mod);
-
   /* Free dynamic allocated ports*/
   MCT_OBJECT_LOCK(p_mct_mod);
   do {
@@ -885,6 +1660,10 @@ void module_imglib_deinit(mct_module_t *p_mct_mod)
       module_imglib_free_port(p_mct_mod, list->data);
   } while (list);
   MCT_OBJECT_UNLOCK(p_mct_mod);
+
+  module_imglib_deinit_session_params(p_mod);
+
+  module_imglib_destroy_topology(p_mod);
 
   /* Destroy module ports */
   mct_list_free_list(MCT_MODULE_CHILDREN(p_mct_mod));
@@ -938,7 +1717,8 @@ mct_module_t *module_imglib_init(const char *name)
 
   /* Set internal static ports */
   for (i = 0; i < MODULE_IMGLIB_STATIC_PORTS; i++) {
-    p_port = module_imglib_create_port(p_mct_mod, MCT_PORT_SINK, TRUE);
+    p_port = module_imglib_create_port(p_mct_mod, MCT_PORT_SINK, TRUE,
+      MODULE_IMGLIB_MAX_PAR_TOPO);
     if (NULL == p_port) {
       IDBG_ERROR("%s:%d] Create port failed", __func__, __LINE__);
       goto error;

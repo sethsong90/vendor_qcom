@@ -1,7 +1,7 @@
-/**********************************************************************
-* Copyright (c) 2013 Qualcomm Technologies, Inc. All Rights Reserved. *
-* Qualcomm Technologies Proprietary and Confidential.                 *
-**********************************************************************/
+/***************************************************************************
+* Copyright (c) 2013-2014 Qualcomm Technologies, Inc. All Rights Reserved. *
+* Qualcomm Technologies Proprietary and Confidential.                      *
+***************************************************************************/
 
 #include <linux/media.h>
 #include "mct_module.h"
@@ -11,28 +11,69 @@
 #include "mct_port.h"
 
 
+/* Macro to get attached topologies per port */
+#define PORT_ATTACHED_TOPO(a) \
+  (((imglib_port_data_t *) \
+   (a)->port_private)->internal_topo->topo_attached) \
+
 /* Macro to get topology list */
-#define GET_PORT_TOPO_LIST(a) \
-  ((mct_list_t *)((imglib_port_data_t *)(a)->port_private)->internal_topo) \
+#define GET_PORT_TOPO_LIST(a, p) \
+  ((mct_list_t *)((imglib_port_data_t *) \
+   (a)->port_private)->internal_topo->topo_list[(p)]) \
+
+/** imglib_port_events_holder_t
+ *   @buf_divert_data: Data used for buffer divert event
+ *     @use_int_buffers: TRUE if int buffers need to be used
+ *     @num_planes: Number of planes inside the buffers
+ *     @addr: Array of addr to img planes
+ *     @size: Array of sizes for buffer planes
+ *   @pending_ack: Array of module events which are used
+ *     to mask pending ack.
+ *
+ *   imglib_port_events_holder_t
+ **/
+typedef struct {
+  struct {
+    boolean use_int_buffers;
+    uint32_t num_planes;
+    void *addr[VIDEO_MAX_PLANES];
+    uint32_t size[VIDEO_MAX_PLANES];
+  } buf_divert_data;
+  uint32_t pending_ack[MCT_EVENT_MODULE_MAX];
+} imglib_port_events_holder_t;
 
 /** imglib_port_data_t
  *   @static_p: Port is static TRUE/FALSE
+ *   @topo_orphan: Topology have no parent
  *   @sessionid: Port session id
  *   @reserved_identity: Reserved identity
- *   @mirror_port: Pointer to mirrored port
- *   @internal_topo: List for internal topology
- *   @topo_orphan: Topology have no parent
+ *   @internal_topo: Pointer to internal topology used for this port
+ *   @mirror_port: Array of pointers to mirrored ports
+ *   @port_events: Array of port events holders passed to parallel topologies
  *
  *   imglib port private data
  **/
 typedef struct {
   boolean static_p;
+  boolean topo_orphan;
   unsigned int sessionid;
   unsigned int reserved_identity;
-  mct_port_t   *mirror_port;
-  mct_list_t   *internal_topo;
-  boolean      topo_orphan;
+  unsigned int num_mirror_ports;
+  module_imglib_topo_holder_t *internal_topo;
+  mct_port_t *mirror_port[MODULE_IMGLIB_MAX_PAR_TOPO];
+  imglib_port_events_holder_t port_events[MODULE_IMGLIB_PORT_MAX_HOLD_EVENTS];
 } imglib_port_data_t;
+
+/** imglib_port_data_t
+ *   @index: Index of the mirror port.
+ *   @mct_port_t: Pointer to imglib port parent of this mirror port.
+ *
+ *   imglib_mirror_port_data_t
+ **/
+typedef struct {
+  uint32_t index;
+  mct_port_t *p_imglib_port;
+} imglib_mirror_port_data_t;
 
 /** imglib_link_modules_data_t
  *   @stream_info: Stream info
@@ -184,7 +225,7 @@ static void module_imglib_port_set_mod_type(void *data1, void *data2,
   if (MCT_MODULE_FLAG_SOURCE & p_type_data->imglib_mod_type ||
       MCT_MODULE_FLAG_PEERLESS & p_type_data->imglib_mod_type) {
     /* Check if this is first module in the list */
-    if (p_type_data->p_last_mod) {
+    if (!p_type_data->p_last_mod) {
       p_mod->set_mod(p_mod, MCT_MODULE_FLAG_SOURCE,  p_type_data->identity);
       goto out;
     }
@@ -260,7 +301,6 @@ static void module_imglib_port_unlink_modules(void *data1, void *data2,
   mct_module_t *mod2 =  (mct_module_t *)data2;
   imglib_unlink_modules_data_t *link_data =
     (imglib_unlink_modules_data_t *)user_data;
-  boolean ret;
 
   if (!mod1 || !mod2 || !link_data)
     return;
@@ -268,6 +308,35 @@ static void module_imglib_port_unlink_modules(void *data1, void *data2,
   mct_module_unlink(link_data->identity, mod1, mod2);
 
   return;
+}
+
+/**
+ * Function: module_imglib_port_remove_mod_types
+ *
+ * Description: Function used in list traverse to
+ *  remove module type from internal topology modules.
+ *
+ * Arguments:
+ *   @data: mct module pointer.
+ *   @u_data: Identity.
+ *
+ * Return values:
+ *   TRUE on success.
+ **/
+static boolean module_imglib_port_remove_mod_types(void *data, void *u_data)
+{
+  mct_module_t *p_module =  (mct_module_t *)data;
+  unsigned int *p_identity = (unsigned int *)u_data;
+
+  if (!p_module || !p_identity)
+    return FALSE;
+
+  mct_module_remove_type(p_module, *p_identity);
+
+  IDBG_MED("%s:%d] Remove type module %s identity %d",
+    __func__, __LINE__, MCT_OBJECT_NAME(p_module), *p_identity);
+
+  return TRUE;
 }
 
 /**
@@ -439,6 +508,44 @@ static boolean module_imglib_broadcast_event_downstream(mct_port_t *port,
 }
 
 /**
+ * Function: module_imglib_sent_event_to_mirrors
+ *
+ * Description: Sent event to all mirror ports
+ *
+ * Arguments:
+ *   @port: mct port pointer
+ *   @event: event pointer to broadcast
+ *
+ * Return values:
+ *   TRUE/FALSE
+ *
+ **/
+static boolean module_imglib_sent_event_to_mirrors(mct_port_t *port,
+    mct_event_t *event)
+{
+  imglib_port_data_t *port_data;
+  mct_port_t *mirror_port;
+  boolean ret = FALSE;
+  uint32_t i;
+
+  if (!(port && port->port_private) || !event) {
+    IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
+    return FALSE;
+  }
+
+  port_data = (imglib_port_data_t *)port->port_private;
+  for (i = 0; i < PORT_ATTACHED_TOPO(port); i++) {
+    mirror_port = ((imglib_port_data_t *)port->port_private)->mirror_port[i];
+    if (mirror_port->peer && mirror_port->peer->event_func) {
+      ret = MCT_PORT_PEER(mirror_port)->event_func(mirror_port->peer, event);
+      if (FALSE == ret)
+        break;
+    }
+  }
+
+  return ret;
+}
+/**
  * Function: module_imglib_get_topo_port
  *
  * Description: This function will reserve and
@@ -447,13 +554,14 @@ static boolean module_imglib_broadcast_event_downstream(mct_port_t *port,
  * Arguments:
  *   @port: mct port pointer
  *   @stream_info: Stream info
+ *   @topo_index: Internal topology index
  *
  * Return values:
  *   NULL/mct_port_t *
  *
  **/
 static mct_port_t *module_imglib_get_topo_port(mct_port_t *port,
-  mct_stream_info_t *stream_info)
+  mct_stream_info_t *stream_info, uint32_t topo_index)
 {
   mct_list_t *topo_list;
   imglib_reserve_port_data_t reserve_data;
@@ -461,15 +569,16 @@ static mct_port_t *module_imglib_get_topo_port(mct_port_t *port,
   mct_list_t *mod_ports = NULL;
   mct_list_t *temp_list = NULL;
   mct_port_t *p_topo_port = NULL;
+  imglib_port_data_t *p_port_data = NULL;
 
   if (!port || !stream_info) {
     IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
     goto out;
   }
 
-  topo_list = GET_PORT_TOPO_LIST(port);
+  topo_list = GET_PORT_TOPO_LIST(port, topo_index);
   if (!topo_list) {
-    IDBG_ERROR("%s:%d Topology list is missing", __func__, __LINE__);
+    IDBG_ERROR("%s:%d Topology list is missing %d", __func__, __LINE__, topo_index);
     goto out;
   }
 
@@ -527,13 +636,14 @@ out:
  * Arguments:
  *   @port: mct port pointer
  *   @identity: Stream identity
+ *   @topo_index: Internal topology index
  *
  * Return values:
  *   TRUE/FALSE
  *
  **/
 static boolean module_imglib_put_topo_port(mct_port_t *port,
-  unsigned int identity)
+  unsigned int identity, uint32_t topo_index)
 {
 
   imglib_port_data_t *port_data;
@@ -551,8 +661,13 @@ static boolean module_imglib_put_topo_port(mct_port_t *port,
     return FALSE;
   }
 
-  mirror_port = (mct_port_t *)port_data->mirror_port;
+  mirror_port = (mct_port_t *)port_data->mirror_port[topo_index];
   internal_port = (mct_port_t *)mirror_port->peer;
+  if (!internal_port) {
+    IDBG_ERROR("%s:%d Mirror port not connected \n", __func__, __LINE__);
+    return FALSE;
+  }
+
   mct_port_destroy_link(identity, mirror_port, internal_port);
   internal_port->check_caps_unreserve(internal_port, identity);
 
@@ -575,13 +690,14 @@ static boolean module_imglib_put_topo_port(mct_port_t *port,
  *   @module: Pointer to imglib module
  *   @port: mct port pointer
  *   @stream_info: Stream info
+ *   @topo_index: Internal topology index
  *
  * Return values:
  *   TRUE/FALSE
  *
  **/
 static boolean module_imglib_link_topo_modules(mct_module_t *module,
-    mct_port_t *port, mct_stream_info_t *stream_info)
+    mct_port_t *port, mct_stream_info_t *stream_info, uint32_t topo_index)
 {
   mct_list_t *topo_list;
   imglib_link_modules_data_t link_data;
@@ -594,7 +710,7 @@ static boolean module_imglib_link_topo_modules(mct_module_t *module,
   }
 
   /* Get internal topology per stream type */
-  topo_list = GET_PORT_TOPO_LIST(port);
+  topo_list = GET_PORT_TOPO_LIST(port, topo_index);
   if (!topo_list) {
     IDBG_ERROR("%s:%d] Not available topology for this stream",
         __func__, __LINE__);
@@ -659,15 +775,16 @@ out:
  * Arguments:
  *   @port: mct port pointer
  *   @identity: Stream identity
+ *   @topo_index: Internal topology index
  *
  * Return values:
  *   TRUE/FALSE
  *
  **/
 static boolean module_imglib_unlink_topo_modules(mct_port_t *port,
-  unsigned int identity)
+  unsigned int identity, uint32_t topo_index)
 {
-  mct_list_t *stream_list;
+  mct_list_t *stream_list, *p_topo_list;
   imglib_port_data_t *port_data;
   imglib_unlink_modules_data_t unlink_data;
 
@@ -679,14 +796,15 @@ static boolean module_imglib_unlink_topo_modules(mct_port_t *port,
 
   unlink_data.ret_code = TRUE;
   unlink_data.identity = identity;
-  if (port_data->internal_topo->next_num > 0) {
-    mct_list_operate_nodes(port_data->internal_topo, module_imglib_port_unlink_modules,
-      &unlink_data);
-  } else {
-    /* Type is removed in unlink modules,since we have only one
-     * module it is not linked, remove type here */
-    mct_module_t *single_module = port_data->internal_topo->data;
-    mct_module_remove_type(single_module, identity);
+
+  p_topo_list = port_data->internal_topo->topo_list[topo_index];
+  mct_list_operate_nodes(p_topo_list, module_imglib_port_unlink_modules,
+    &unlink_data);
+
+  /* We need to remove module type on unlink */
+  if (unlink_data.ret_code) {
+    mct_list_traverse(p_topo_list, module_imglib_port_remove_mod_types,
+      &identity);
   }
 
   return unlink_data.ret_code;
@@ -710,10 +828,10 @@ static boolean module_imglib_set_topo_parent(mct_port_t *port,
   unsigned int identity)
 {
   mct_list_t *topo_list;
-  imglib_link_modules_data_t link_data;
-  boolean ret = FALSE;
   mct_stream_t *stream;
   mct_module_t *module;
+  uint32_t i;
+  boolean ret = FALSE;
 
   if (!port) {
     IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
@@ -728,14 +846,16 @@ static boolean module_imglib_set_topo_parent(mct_port_t *port,
     goto out;
   }
 
-  /* Get internal topology per stream type */
-  topo_list = GET_PORT_TOPO_LIST(port);
-  if (!topo_list) {
-    IDBG_ERROR("%s:%d] Not available topology for this stream", __func__, __LINE__);
-    goto out;
+  for (i = 0; i < PORT_ATTACHED_TOPO(port); i++) {
+    /* Get internal topology per stream type */
+    topo_list = GET_PORT_TOPO_LIST(port, i);
+    if (!topo_list) {
+      ret = FALSE;
+      IDBG_ERROR("%s:%d] Not available topology for this stream", __func__, __LINE__);
+      break;
+    }
+    ret = mct_list_traverse(topo_list, module_imglib_port_parent_modules, stream);
   }
-
-  ret = mct_list_traverse(topo_list, module_imglib_port_parent_modules, stream);
 
 out:
   return ret;
@@ -759,10 +879,10 @@ static boolean module_imglib_unset_topo_parent(mct_port_t *port,
   unsigned int identity)
 {
   mct_list_t *topo_list;
-  imglib_link_modules_data_t link_data;
   mct_module_t *module;
   mct_stream_t *stream;
   boolean ret = FALSE;
+  uint32_t i;
 
   if (!port) {
     IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
@@ -777,17 +897,441 @@ static boolean module_imglib_unset_topo_parent(mct_port_t *port,
     goto out;
   }
 
-  /* Get internal topology per stream type */
-  topo_list = GET_PORT_TOPO_LIST(port);
-  if (!topo_list) {
-    IDBG_ERROR("%s:%d] Not available topology for this stream", __func__, __LINE__);
-    goto out;
+  for (i = 0; i < PORT_ATTACHED_TOPO(port); i++) {
+    /* Get internal topology per stream type */
+    topo_list = GET_PORT_TOPO_LIST(port, i);
+    if (!topo_list) {
+      ret = FALSE;
+      IDBG_ERROR("%s:%d] Not available topology for this stream", __func__, __LINE__);
+      break;
+    }
+    ret = mct_list_traverse(topo_list, module_imglib_port_unparent_modules, stream);
   }
-
-  ret = mct_list_traverse(topo_list, module_imglib_port_unparent_modules, stream);
 
 out:
   return ret;
+}
+
+/**
+ * Function: module_imglib_port_send_session_params
+ *
+ * Description: Function to sent stored session parameters to
+ *   internal topologies
+ *
+ * Arguments:
+ *   @port: mct port pointer
+ *   @identity: Stream identity
+ *
+ * Return values:
+ *   TRUE/FALSE
+ *
+ * Notes: This function will update stored session parameters
+ **/
+static boolean module_imglib_port_send_session_params(mct_port_t *port,
+  unsigned int identity)
+{
+  parm_buffer_t *p_table;
+  imglib_port_data_t *port_data;
+  mct_event_t event;
+  mct_event_control_parm_t param;
+  uint32_t i, position, current;
+  mct_module_t *p_mct_mod;
+  boolean ret = TRUE;
+
+  if (!(port && port->port_private)) {
+    IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
+    return FALSE;
+  }
+  port_data = (imglib_port_data_t *)port->port_private;
+
+  p_mct_mod = MCT_MODULE_CAST((MCT_PORT_PARENT(port))->data);
+
+  /* Get session parameters table */
+  p_table = module_imglib_get_session_params(p_mct_mod,
+    IMGLIB_SESSIONID(identity));
+  if (NULL == p_table) {
+    IDBG_LOW("%s:%d Session params not available skip", __func__, __LINE__);
+    return TRUE;
+  }
+
+  current = GET_FIRST_PARAM_ID(p_table);
+
+  event.type = MCT_EVENT_CONTROL_CMD;
+  event.direction = MCT_EVENT_DOWNSTREAM;
+  event.identity = identity;
+  event.timestamp = 0;
+  event.u.ctrl_event.type = MCT_EVENT_CONTROL_SET_PARM;
+  event.u.ctrl_event.control_event_data = &param;
+
+  while (current != CAM_INTF_PARM_MAX) {
+    param.type = current;
+    param.parm_data  = POINTER_OF(current, p_table);
+
+    /* Send only events which need to be restored */
+    if (port_data->internal_topo->params_to_restore[param.type]) {
+      ret = module_imglib_sent_event_to_mirrors(port, &event);
+      if (FALSE == ret) {
+        IDBG_ERROR("%s:%d Can not sent event to mirrors", __func__, __LINE__);
+        break;
+      }
+    }
+
+    current = GET_NEXT_PARAM_ID(current, p_table);
+  }
+  return ret;
+}
+
+/**
+ * Function: module_imglib_port_release_events
+ *
+ * Description: Release memory needed for imglib events
+ *
+ * Arguments:
+ *   @port_events: Pointer to port events array
+
+ *
+ * Return values:
+ *   TRUE/FALSE
+ *
+ * Notes: None;
+ **/
+static boolean module_imglib_port_release_events(imglib_port_events_holder_t *port_events)
+{
+  uint32_t i, j;
+
+  if (!port_events) {
+    IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
+    return FALSE;
+  }
+
+  for (i = 0; i < MODULE_IMGLIB_PORT_MAX_HOLD_EVENTS; i++) {
+    if (port_events[i].buf_divert_data.use_int_buffers) {
+      for (j = 0; j < port_events[i].buf_divert_data.num_planes; j++) {
+        free(port_events[i].buf_divert_data.addr[j]);
+        port_events[i].buf_divert_data.addr[j] = NULL;
+        port_events[i].buf_divert_data.size[j] = 0;
+      }
+      port_events[i].buf_divert_data.num_planes = 0;
+      port_events[i].buf_divert_data.use_int_buffers = FALSE;
+    }
+  }
+
+ return TRUE;
+}
+
+/**
+ * Function: module_imglib_port_release_events
+ *
+ * Description: Allocate memory needed for imglib events
+ *
+ * Arguments:
+ *   @port_events: Pointer to port events array
+ *   @stream_info: Stream info
+ *   @port_events_mask: Port event feature mask
+ *
+ * Return values:
+ *   TRUE/FALSE
+ *
+ * Notes: None;
+ **/
+static boolean module_imglib_port_prepare_events(imglib_port_events_holder_t *port_events,
+  mct_stream_info_t *stream_info, uint32_t port_events_mask)
+{
+
+  uint32_t i, j;
+  boolean ret = TRUE;
+
+  if (!port_events || !stream_info) {
+    IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
+    return FALSE;
+  }
+
+  /* Init port events */
+  for (i = 0; i < MODULE_IMGLIB_PORT_MAX_HOLD_EVENTS; i++) {
+    memset(port_events[i].pending_ack, 0x0, sizeof(port_events[i].pending_ack));
+    /* Allocate internal buffers if flag is set */
+    port_events[i].buf_divert_data.use_int_buffers =
+      (MODULE_IMGLIB_PORT_USE_INT_BUFS & port_events_mask);
+    if (!port_events[i].buf_divert_data.use_int_buffers)
+      continue;
+
+    port_events[i].buf_divert_data.num_planes =
+      stream_info->buf_planes.plane_info.num_planes;
+
+    for (j = 0; j < port_events[i].buf_divert_data.num_planes; j++) {
+      if (1 == port_events[i].buf_divert_data.num_planes) {
+        port_events[i].buf_divert_data.size[j] =
+          stream_info->buf_planes.plane_info.sp.len;
+        port_events[i].buf_divert_data.addr[j] =
+          malloc(port_events[i].buf_divert_data.size[j]);
+      } else {
+        port_events[i].buf_divert_data.size[j] =
+          stream_info->buf_planes.plane_info.mp[j].len;
+        port_events[i].buf_divert_data.addr[j] =
+          malloc(port_events[i].buf_divert_data.size[j]);
+      }
+      if (!port_events[i].buf_divert_data.addr[j]) {
+        IDBG_ERROR("%s:%d] Out of memory ", __func__, __LINE__);
+        ret = FALSE;
+        break;
+      }
+    }
+  }
+
+  if (ret == FALSE) {
+    module_imglib_port_release_events(port_events);
+  }
+ return ret;
+}
+
+/**
+ * Function: module_imglib_port_handle_events
+ *
+ * Description: Helper function for handling port events sent to
+ *   internal topologies. Here we are handling events sent to internal
+ *   topologies. Ack of the events will be handle in the mirror event function
+ *   where we received events from internal topologies
+ *
+ * Arguments:
+ *   @port: Pointer to imglib port
+ *   @event: mct event
+ *
+ * Return values:
+ *   TRUE if event is handled
+ *
+ * Notes: None;
+ **/
+static boolean module_imglib_port_handle_events(mct_port_t *port, mct_event_t *event)
+{
+  mct_port_t *mirror_port;
+  imglib_port_data_t *port_data;
+  boolean ret = FALSE;
+  boolean event_processed = FALSE;
+  uint32_t i;
+
+  if (!(port && port->port_private) || !event) {
+    IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
+    return event_processed;
+  }
+
+  /* Get mirror port and sent event to mirror port peer */
+  port_data = (imglib_port_data_t *)port->port_private;
+
+  switch (event->type) {
+  case MCT_EVENT_CONTROL_CMD: {
+    mct_event_control_t *p_ctrl_event = &event->u.ctrl_event;
+    mct_module_t *p_mct_mod =
+      MCT_MODULE_CAST((MCT_PORT_PARENT(port))->data);
+
+    IDBG_LOW("%s:%d] Ctrl type %d", __func__, __LINE__, p_ctrl_event->type);
+    switch (p_ctrl_event->type) {
+    case MCT_EVENT_CONTROL_SET_PARM:
+      /* Store session params */
+      ret = module_imglib_store_session_params(p_mct_mod,
+        p_ctrl_event->control_event_data, IMGLIB_SESSIONID(event->identity));
+      if (FALSE == ret) {
+        IDBG_ERROR("%s:%d] Store session params fail\n",  __func__, __LINE__);
+      }
+      break;
+    default:
+      break;
+    }
+    break;
+  }
+  case MCT_EVENT_MODULE_EVENT: {
+    mct_event_module_t *p_mod_event = &event->u.module_event;
+    IDBG_LOW("%s:%d] Mod type %d", __func__, __LINE__, p_mod_event->type);
+    switch (p_mod_event->type) {
+    case MCT_EVENT_MODULE_BUF_DIVERT: {
+      isp_buf_divert_t *p_buf_divert = p_mod_event->module_event_data;
+      void *origin_vaddr = p_buf_divert->vaddr;
+      imglib_port_events_holder_t *port_events;
+      uint32_t index;
+
+      //notify tuning server of new preview stream buf notify event
+      mct_module_t *module = MCT_MODULE_CAST(MCT_OBJECT_PARENT(port)->data);
+      mct_stream_t *stream = mod_imglib_find_module_parent(event->identity, module);
+      if (stream == NULL) {
+        IDBG_ERROR("%s:%d unable to find imglib module parent ", __func__, __LINE__);
+        return FALSE;
+      }
+
+      /* Since there is no cookie, we need to choose some reference
+       * which is returned on ack. For buffer divert use buffer index */
+      index = (p_buf_divert->buffer.index % MODULE_IMGLIB_PORT_MAX_HOLD_EVENTS);
+      port_events = &port_data->port_events[index];
+      if (port_events->pending_ack[MCT_EVENT_MODULE_BUF_DIVERT_ACK]) {
+        IDBG_MED("%s:%d] Pending events for idx %d skip \n", __func__,
+          __LINE__, p_buf_divert->buffer.index);
+        p_buf_divert->ack_flag = TRUE;
+        event_processed = TRUE;
+        break;
+      }
+
+      /* If we use internal buffer memcpy here and release the event */
+      if (port_events->buf_divert_data.use_int_buffers) {
+        for (i = 0; i < port_events->buf_divert_data.num_planes; i++) {
+          memcpy(port_events->buf_divert_data.addr[i],
+            (void *)((unsigned int *)p_buf_divert->vaddr)[i],
+            port_events->buf_divert_data.size[i]);
+        }
+        p_buf_divert->vaddr = (void *)port_events->buf_divert_data.addr;
+      }
+
+      for (i = 0; i < PORT_ATTACHED_TOPO(port); i++) {
+        mirror_port = port_data->mirror_port[i];
+        ret = MCT_PORT_PEER(mirror_port)->event_func(mirror_port->peer, event);
+        if (FALSE == ret) {
+          IDBG_ERROR("%s:%d] Mirror port returned error \n",  __func__, __LINE__);
+          break;
+        }
+        if (FALSE == p_buf_divert->ack_flag) {
+          imglib_mirror_port_data_t *mirror_port_data = mirror_port->port_private;
+          port_events->pending_ack[MCT_EVENT_MODULE_BUF_DIVERT_ACK] |=
+            (1 << mirror_port_data->index);
+          if (port_events->buf_divert_data.use_int_buffers) {
+            p_buf_divert->ack_flag = TRUE;
+          }
+        }
+      }
+      p_buf_divert->vaddr = origin_vaddr;
+      event_processed = ret;
+      break;
+    }
+    default:
+      break;
+    }
+    break;
+  }
+  default:
+    break;
+  }
+
+ return event_processed;
+}
+
+/**
+ * Function: module_imglib_port_handle_events
+ *
+ * Description: Helper function for handling mirror port events,
+ *   events recieved from internal topology
+ *
+ *   @port: Pointer to mirror port
+ *   @event: mct event
+ *
+ * Return values:
+ *   TRUE if event is handled
+ *
+ * Notes: None;
+ **/
+static boolean module_imglib_port_handle_mirror_events(mct_port_t *port, mct_event_t *event)
+{
+  mct_port_t *imglib_port;
+  imglib_mirror_port_data_t *mirror_port_data;
+  imglib_port_data_t *port_data;
+  boolean event_processed = FALSE;
+
+  if (!(port && port->port_private) || !event) {
+    IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
+    return FALSE;
+  }
+
+  /* Get imglib port and sent event to original function  */
+  mirror_port_data = (imglib_mirror_port_data_t *)port->port_private;
+  imglib_port = mirror_port_data->p_imglib_port;
+  port_data = (imglib_port_data_t *) imglib_port->port_private;
+
+  switch (event->type) {
+  case MCT_EVENT_MODULE_EVENT: {
+    mct_event_module_t *p_mod_event = &event->u.module_event;
+    IDBG_LOW("%s:%d] Mod type %d", __func__, __LINE__, p_mod_event->type);
+    switch (p_mod_event->type) {
+    case MCT_EVENT_MODULE_BUF_DIVERT_ACK: {
+      uint32_t index;
+      isp_buf_divert_ack_t *isp_buf_divert_ack = p_mod_event->module_event_data;
+      imglib_port_events_holder_t *port_events;
+
+      /* Here we are touching property of imglib port data so lock the object first */
+      MCT_OBJECT_LOCK(imglib_port);
+
+      /* Use index as reference */
+      index = (isp_buf_divert_ack->buf_idx % MODULE_IMGLIB_PORT_MAX_HOLD_EVENTS);
+      port_events = &port_data->port_events[index];
+
+      port_events->pending_ack[MCT_EVENT_MODULE_BUF_DIVERT_ACK] &=
+        ~(1 << mirror_port_data->index);
+
+      /* Do not sent event to the imglib peer if:
+       * 1. There are pending acks
+       * 2. We use internal buffers - pending acks are used only for reference counting
+       * of the internal buffer  */
+      if (port_events->pending_ack[MCT_EVENT_MODULE_BUF_DIVERT_ACK] ||
+          port_events->buf_divert_data.use_int_buffers) {
+        event_processed = TRUE;
+      }
+      MCT_OBJECT_UNLOCK(imglib_port);
+      break;
+    }
+    default:
+      break;
+    }
+    break;
+  }
+  default:
+    break;
+  }
+
+ return event_processed;
+}
+
+/**
+ * Function: module_imglib_port_dummy_event_func
+ *
+ * Description: This function will receive ports event
+ *  from the internal topology modules
+ *
+ * Arguments:
+ *   @port: dummy port which is attached to mirror port
+ *   @event: mct event
+ *
+ * Return values:
+ *   TRUE/FALSE
+ *
+ * Notes: Dummy port is peer of mirror of real port when there is no
+ * module before imglib
+ **/
+static boolean module_imglib_port_dummy_event_func(mct_port_t *port,
+  mct_event_t *event)
+{
+  boolean event_processed = FALSE;
+
+  switch (event->type) {
+  case MCT_EVENT_CONTROL_CMD: {
+    mct_event_control_t *p_ctrl_event = &event->u.ctrl_event;
+    IDBG_LOW("%s:%d] Ctrl type %d", __func__, __LINE__, p_ctrl_event->type);
+    break;
+  }
+  case MCT_EVENT_MODULE_EVENT: {
+    mct_event_module_t *p_mod_event = &event->u.module_event;
+    IDBG_LOW("%s:%d] Mod type %d", __func__, __LINE__, p_mod_event->type);
+    switch (p_mod_event->type) {
+    case MCT_EVENT_MODULE_BUF_DIVERT_ACK: {
+      // Internal modules send buf divert ack for the native buffers,
+      // which are sent from module event. It just needs to be ignored
+      event_processed = TRUE;
+      break;
+    }
+    default:
+      break;
+    }
+    break;
+  }
+  default:
+    IDBG_ERROR("%s:%d] event type %d", __func__, __LINE__, event->type);
+    break;
+  }
+
+  return event_processed;
 }
 
 /**
@@ -811,6 +1355,9 @@ static boolean module_imglib_port_mirror_event_func(mct_port_t *port,
   mct_event_t *event)
 {
   mct_port_t *imglib_port;
+  imglib_mirror_port_data_t *mirror_port_data;
+  imglib_port_data_t *port_data;
+  boolean ret;
 
   if (!(port && port->port_private) || !event) {
     IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
@@ -818,13 +1365,21 @@ static boolean module_imglib_port_mirror_event_func(mct_port_t *port,
   }
 
   /* Get imglib port and sent event to original function  */
-  imglib_port = (mct_port_t *)port->port_private;
-  if (!(imglib_port->peer && imglib_port->peer->event_func)) {
-    IDBG_ERROR("%s:%d Missing peer ", __func__, __LINE__);
+  mirror_port_data = (imglib_mirror_port_data_t *)port->port_private;
+  imglib_port = mirror_port_data->p_imglib_port;
+  port_data = (imglib_port_data_t *) imglib_port->port_private;
+
+  if (!(port_data && imglib_port->peer && imglib_port->peer->event_func)) {
+    IDBG_ERROR("%s:%d Missing imglib peer ", __func__, __LINE__);
     return FALSE;
   }
 
-  return MCT_PORT_PEER(imglib_port)->event_func(imglib_port->peer, event);
+  ret = module_imglib_port_handle_mirror_events(port, event);
+  if (FALSE == ret) {
+    ret = MCT_PORT_PEER(imglib_port)->event_func(imglib_port->peer, event);
+  }
+
+  return ret;
 }
 
 /**
@@ -847,7 +1402,8 @@ boolean module_imglib_port_event_func(mct_port_t *port,
 {
   mct_port_t *mirror_port;
   imglib_port_data_t *port_data;
-  boolean ret;
+  boolean ret = TRUE;
+  uint32_t i;
 
   if (!(port && port->port_private) || !event) {
     IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
@@ -867,20 +1423,20 @@ boolean module_imglib_port_event_func(mct_port_t *port,
   /* If topology is orphan set stream as his parent first */
   if (TRUE == port_data->topo_orphan) {
     ret = module_imglib_set_topo_parent(port, port_data->reserved_identity);
-    if (TRUE == ret)
+    if (TRUE == ret) {
       port_data->topo_orphan = FALSE;
-    else
+    } else {
       IDBG_ERROR("%s:%d Can not set parent", __func__, __LINE__);
+      goto out;
+    }
   }
 
-  mirror_port = port_data->mirror_port;
-  if (!(mirror_port && mirror_port->peer && mirror_port->peer->event_func)) {
-    IDBG_ERROR("%s:%d Missing peer ", __func__, __LINE__);
-    ret = FALSE;
-    goto out;
+  ret = module_imglib_port_handle_events(port, event);
+  if (FALSE == ret) {
+    /* If event is not handle sent to all mirror ports*/
+    ret = module_imglib_sent_event_to_mirrors(port, event);
   }
 
-  ret = MCT_PORT_PEER(mirror_port)->event_func(mirror_port->peer, event);
 
 out:
   MCT_OBJECT_UNLOCK(port);
@@ -915,12 +1471,11 @@ boolean module_imglib_port_ext_link(unsigned int identity,
   MCT_OBJECT_LOCK(port);
 
   if (MCT_PORT_PEER(port)) {
-    IDBG_ERROR("%s:%d] link already established", __func__, __LINE__);
+    IDBG_ERROR("%s:%d] link already established %s %s", __func__, __LINE__,
+      port->object.name, peer->object.name);
     success = FALSE;
     goto out;
   }
-
-  /* Link internal topology */
   MCT_PORT_PEER(port) = peer;
 
 out:
@@ -1010,6 +1565,7 @@ boolean module_imglib_port_check_caps_reserve(mct_port_t *port, void *peer_caps,
   imglib_port_data_t *port_data;
   mct_port_t *top_port = NULL;
   boolean ret = FALSE;
+  uint32_t i = 0;
 
   if (!port || !vstream_info || !peer_caps) {
     IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
@@ -1035,33 +1591,50 @@ boolean module_imglib_port_check_caps_reserve(mct_port_t *port, void *peer_caps,
     goto out;
   }
 
-  /* Get internal topology port */
-  top_port = module_imglib_get_topo_port(port, stream_info);
-  if (!top_port) {
-    IDBG_ERROR("%s:%d] Can not get topology port ", __func__, __LINE__);
-    goto out;
-  }
+  for (i = 0; i < PORT_ATTACHED_TOPO(port); i++) {
+    /* Set mirror port direction */
+    port_data->mirror_port[i]->direction = (port->direction == MCT_PORT_SRC) ?
+      MCT_PORT_SINK : MCT_PORT_SRC;
 
-  /* Set mirror port direction */
-  port_data->mirror_port->direction = (port->direction == MCT_PORT_SRC) ?
-    MCT_PORT_SINK : MCT_PORT_SRC;
-
-  /* Link mirror port with topology port */
-  ret = mct_port_establish_link(stream_info->identity,
-      port_data->mirror_port, top_port);
-  if (ret == FALSE) {
-    IDBG_ERROR("%s:%d] Can not link to mirror port", __func__, __LINE__);
-    goto out;
-  }
-
-  /* Link internal topology modules when sink port is connected  */
-  if (MCT_PORT_IS_SINK(port)) {
-    ret = module_imglib_link_topo_modules(p_mct_mod, port, stream_info);
+    /* Get internal topology port */
+    top_port = module_imglib_get_topo_port(port, stream_info, i);
+    if (!top_port) {
+      IDBG_ERROR("%s:%d] Can not get topology port %d", __func__, __LINE__, i);
+      goto out;
+    }
+    /* Link mirror port with topology port */
+    ret = mct_port_establish_link(stream_info->identity,
+        port_data->mirror_port[i], top_port);
     if (ret == FALSE) {
-      IDBG_ERROR("%s:%d] Can not link internal topology ", __func__,
+      IDBG_ERROR("%s:%d] Can not link to mirror port", __func__, __LINE__);
+      goto out;
+    }
+    /* Link internal topology connected to this mirror port*/
+    if (MCT_PORT_IS_SINK(port)) {
+      ret = module_imglib_link_topo_modules(p_mct_mod, port, stream_info, i);
+      if (ret == FALSE) {
+        IDBG_ERROR("%s:%d] Can not link internal topology ", __func__,
+            __LINE__);
+        goto out;
+      }
+    }
+  }
+
+  if (MCT_PORT_IS_SINK(port)) {
+    ret = module_imglib_port_send_session_params(port, stream_info->identity);
+    if (ret == FALSE) {
+      IDBG_ERROR("%s:%d] Can not sent session params ", __func__,
           __LINE__);
       goto out;
     }
+  }
+
+  ret = module_imglib_port_prepare_events(port_data->port_events, stream_info,
+    port_data->internal_topo->port_events_mask);
+  if (ret == FALSE) {
+    IDBG_ERROR("%s:%d] Can not prepare the events", __func__,
+        __LINE__);
+    goto out;
   }
 
 out:
@@ -1072,7 +1645,9 @@ out:
     IDBG_ERROR("%s:%d] Cap reserve failed ", __func__, __LINE__);
     /* Release mirror port */
     if (NULL != top_port) {
-      module_imglib_put_topo_port(port, stream_info->identity);
+      for (; i > 0; i--) {
+        module_imglib_put_topo_port(port, stream_info->identity, (i - 1));
+      }
     }
   }
 
@@ -1101,6 +1676,7 @@ static boolean module_imglib_port_check_caps_unreserve(mct_port_t *port,
 {
   boolean ret = FALSE;
   imglib_port_data_t *port_data;
+  uint32_t i, j;
 
   if (!(port && port->port_private)) {
     IDBG_ERROR("%s:%d invalid input", __func__, __LINE__);
@@ -1129,19 +1705,21 @@ static boolean module_imglib_port_check_caps_unreserve(mct_port_t *port,
       port_data->topo_orphan = TRUE;
     }
 
-    ret = module_imglib_unlink_topo_modules(port, identity);
-    if (FALSE == ret) {
-      IDBG_ERROR("%s:%d] Can not unlink topology modules", __func__, __LINE__);
-      goto out;
+    for (i = 0; i < PORT_ATTACHED_TOPO(port); i++) {
+      ret = module_imglib_unlink_topo_modules(port, identity, i);
+      if (FALSE == ret) {
+        IDBG_ERROR("%s:%d] Can not unlink topology modules", __func__, __LINE__);
+        goto out;
+      }
+      ret = module_imglib_put_topo_port(port, identity, i);
+      if (FALSE == ret) {
+        IDBG_ERROR("%s:%d] Can not put topology port ", __func__, __LINE__);
+        goto out;
+      }
     }
-
   }
 
-  ret = module_imglib_put_topo_port(port, identity);
-  if (FALSE == ret) {
-    IDBG_ERROR("%s:%d] Can not put topology port ", __func__, __LINE__);
-    goto out;
-  }
+  ret = module_imglib_port_release_events(port_data->port_events);
 
 out:
   if (TRUE == ret) {
@@ -1170,6 +1748,8 @@ out:
 boolean module_imglib_free_port(mct_module_t *p_mct_mod, mct_port_t *p_port)
 {
   boolean rc;
+  uint32_t i;
+  imglib_port_data_t *port_data;
 
   IDBG("%s:%d port %p p_mct_mod %p", __func__, __LINE__, p_port,
     p_mct_mod);
@@ -1186,10 +1766,16 @@ boolean module_imglib_free_port(mct_module_t *p_mct_mod, mct_port_t *p_port)
     imglib_port_data_t *port_data =
       (imglib_port_data_t *)p_port->port_private;
 
-    if (port_data->mirror_port) {
-      mct_port_destroy(port_data->mirror_port);
-      port_data->mirror_port = NULL;
+    for (i = 0; i < port_data->num_mirror_ports; i++) {
+      if (port_data->mirror_port[i]) {
+        if (port_data->mirror_port[i]->port_private) {
+          free(port_data->mirror_port[i]->port_private);
+        }
+        mct_port_destroy(port_data->mirror_port[i]);
+        port_data->mirror_port[i] = NULL;
+      }
     }
+
   }
 
   rc = mct_module_remove_port(p_mct_mod, p_port);
@@ -1218,6 +1804,9 @@ out:
  *   @p_mct_mod: Pointer to imglib module
  *   @dir: Port direction
  *   @static_p: static created port
+ *   @num_mirror_ports: Number of mirror ports to be
+ *     created. Mirror ports are used for conecting
+ *     internal topologies.
  *
  * Return values:
  *   MCTL port pointer \ NULL on fail
@@ -1225,13 +1814,14 @@ out:
  * Notes: Currently supported only source ports
  **/
 mct_port_t *module_imglib_create_port(mct_module_t *p_mct_mod,
-  mct_port_direction_t dir, boolean static_p)
+  mct_port_direction_t dir, boolean static_p, int num_mirror_ports)
 {
   char portname[MODULE_IMGLIB_PORT_NAME_LEN];
   mct_port_t *p_port = NULL;
   mct_port_t *mirror_port = NULL;
   mct_stream_t *stream = NULL;
   imglib_port_data_t *port_data;
+  imglib_mirror_port_data_t *mirror_port_data;
   int index;
   boolean ret_val;
 
@@ -1275,28 +1865,42 @@ mct_port_t *module_imglib_create_port(mct_module_t *p_mct_mod,
   mct_port_set_event_func(p_port, module_imglib_port_event_func);
 
   /* We have caps reserve just need to create internal mirror port */
-  snprintf(portname, sizeof(portname), "mirr_%s", MCT_MODULE_NAME(p_port));
-  mirror_port = mct_port_create(portname);
-  if (NULL == mirror_port) {
-    IDBG_ERROR("%s:%d failed", __func__, __LINE__);
-    goto error;
+
+  for (index = 0; index < num_mirror_ports; index++) {
+    snprintf(portname, sizeof(portname), "mirr%d_%s", index,
+      MCT_MODULE_NAME(p_port));
+
+    mirror_port = mct_port_create(portname);
+    if (NULL == mirror_port) {
+      IDBG_ERROR("%s:%d failed", __func__, __LINE__);
+      goto error;
+    }
+
+    mirror_port_data = calloc(1, sizeof(imglib_mirror_port_data_t));
+    if (!mirror_port_data) {
+      IDBG_ERROR("%s:%d Can not allocate port private data", __func__, __LINE__);
+      goto error;
+    }
+    /* Port should be with opposite direction since is mirror port */
+    mirror_port->caps.port_caps_type = p_port->caps.port_caps_type;
+    mirror_port->caps.u.frame.format_flag = p_port->caps.u.frame.format_flag;
+
+    /* Override the function pointers */
+    mct_port_set_set_caps_func(mirror_port, module_imglib_port_set_caps);
+    mct_port_set_ext_link_func(mirror_port, module_imglib_port_ext_link);
+    mct_port_set_unlink_func(mirror_port, module_imglib_port_unlink);
+    mct_port_set_event_func(mirror_port, module_imglib_port_mirror_event_func);
+
+    /* Set imglib port as mirror port private data */
+    mirror_port_data->p_imglib_port = p_port;
+    mirror_port_data->index = index;
+    mirror_port->port_private = mirror_port_data;
+
+    /* Init port data structure */
+    port_data->mirror_port[index] = mirror_port;
   }
 
-  /* Port should be with opposite direction since is mirror port */
-  mirror_port->caps.port_caps_type = p_port->caps.port_caps_type;
-  mirror_port->caps.u.frame.format_flag = p_port->caps.u.frame.format_flag;
-
-  /* Override the function pointers */
-  mct_port_set_set_caps_func(mirror_port, module_imglib_port_set_caps);
-  mct_port_set_ext_link_func(mirror_port, module_imglib_port_ext_link);
-  mct_port_set_unlink_func(mirror_port, module_imglib_port_unlink);
-  mct_port_set_event_func(mirror_port, module_imglib_port_mirror_event_func);
-
-  /* Set original port as mirror port private data */
-  mirror_port->port_private = p_port;
-
-  /* Init port data structure */
-  port_data->mirror_port = mirror_port;
+  port_data->num_mirror_ports = num_mirror_ports;
   port_data->topo_orphan = TRUE;
   port_data->sessionid = 0;
   port_data->static_p = static_p;
@@ -1365,6 +1969,8 @@ mct_port_t *module_imglib_create_dummy_port(mct_module_t *p_mct_mod,
   p_port->port_private = NULL;
   p_port->caps.port_caps_type = MCT_PORT_CAPS_FRAME;
   p_port->caps.u.frame.format_flag = MCT_PORT_CAP_FORMAT_YCBCR;
+
+  mct_port_set_event_func(p_port, module_imglib_port_dummy_event_func);
 
   /* add port to the module */
   ret_val = mct_module_add_port(p_mct_mod, p_port);

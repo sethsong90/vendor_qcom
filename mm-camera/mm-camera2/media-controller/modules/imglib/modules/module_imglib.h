@@ -1,7 +1,7 @@
-/**********************************************************************
-* Copyright (c) 2013 Qualcomm Technologies, Inc. All Rights Reserved. *
-* Qualcomm Technologies Proprietary and Confidential.                 *
-**********************************************************************/
+/***************************************************************************
+* Copyright (c) 2013-2014 Qualcomm Technologies, Inc. All Rights Reserved. *
+* Qualcomm Technologies Proprietary and Confidential.                      *
+***************************************************************************/
 
 #ifndef __MODULE_IMGLIB_H__
 #define __MODULE_IMGLIB_H__
@@ -14,48 +14,67 @@
 #define MODULE_IMGLIB_MAX_NAME_LENGH 50
 #define MODULE_IMGLIB_STATIC_PORTS 1
 
-#define MODULE_IMGLIB_MAX_TOPOLOGIES 20
+/* Imglib internal configuration limits */
 
-typedef struct {
-  int type;
-  union {
-    int enable_flag;
-  }d;
-} imglib_event_data_t;
+/* Max number of modules in internal topology */
+#define MODULE_IMGLIB_MAX_TOPO_MOD 10
+/* Max parallel topologies per port. Should not exceed 31 */
+#define MODULE_IMGLIB_MAX_PAR_TOPO 5
+/* Max events which can be hold inside imglib waiting for ack
+ * from internal topologies. Currently is used only for buffer divert event */
+#define MODULE_IMGLIB_PORT_MAX_HOLD_EVENTS 10
+/* Max params which can be stored */
+#define MODULE_IMGLIB_MAX_STORED_PARAMS 4
 
-typedef struct {
-  int query_type;
-  union {
-    int img_feature_mask;
-  }d;
-} module_imglib_caps_t;
+/* Port events mask features flags */
 
-typedef struct {
-  cam_format_t fomat;
-  int width;
-  int height;
-} imglib_port_info_t;
+/* Use internal buffers and do not block buff divert event.
+ * NOTE: Number of buffers allocated are max hold events */
+#define MODULE_IMGLIB_PORT_USE_INT_BUFS (1 << 0)
 
-void module_cac_set_parent(mct_module_t *p_mct_mod, mct_module_t *p_parent);
-
-
-/** imglib_bm_pool_info_t
- *   @mutex: To serialize access to module resources
- *   @dummy_port: Dummy port needed for module events
- *   @imglib_modules: List holding pointers to active image modules
- *   @topo_num: Number of topologies
- *   @topo: Array of topology lists
- *     module is source and we need to redirect module events to port
- *     events
+/** module_imglib_session_params_t
+ *   @params: Session params buffer
+ *   @sessionid: Session Id
  *
- *   Imagelib module structure
+ *   imglib session params holder structure
  **/
 typedef struct {
-  pthread_mutex_t mutex;
+  parm_buffer_t params;
+  unsigned int sessionid;
+} module_imglib_session_params_t;
+
+/** module_imglib_t
+ *   @topo_attached: Parallel topologies attached in this holder
+ *   @topo_list: Array of parallel topologies lists holding topology modules.
+ *   @port_events_mask: Mask containing port events features
+ *   @params_to_restore: Array of flags indicating which parameters
+ *     need to be restored for this port.
+ *
+ *   Imglib topology holder structure. Holds topology information.
+ **/
+typedef struct {
+  uint32_t topo_attached;
+  uint32_t port_events_mask;
+  boolean params_to_restore[CAM_INTF_PARM_MAX];
+  mct_list_t *topo_list[MODULE_IMGLIB_MAX_PAR_TOPO];
+} module_imglib_topo_holder_t;
+
+/** module_imglib_t
+ *   @dummy_port: Dummy port needed for module events
+ *   @imglib_modules: List holding pointers to active image modules
+ *   @topo: Array of topology holders
+ *   @params_to_store: Array of flags indicating parameters
+ *     need to be stored for all topologies
+ *   @session_params_list: List containing session parameters
+ *
+ *   Imglib module structure
+ **/
+typedef struct {
   mct_port_t *dummy_port;
   mct_list_t *imglib_modules;
-  uint32_t topology_num;
-  mct_list_t **topology;
+  module_imglib_topo_holder_t topology[MODULE_IMGLIB_MAX_TOPO_MOD];
+  boolean params_to_store[CAM_INTF_PARM_MAX];
+  mct_list_t *session_params_list;
 } module_imglib_t;
 
 /**
@@ -67,6 +86,9 @@ typedef struct {
  *   @p_mct_mod: Pointer to imglib module
  *   @dir: Port direction
  *   @static_p: static created port
+ *   @num_mirror_ports: Number of mirror ports to be
+ *     created. Mirror ports are used for conecting
+ *     internal topologies.
  *
  * Return values:
  *   MCTL port pointer \ NULL on fail
@@ -74,7 +96,7 @@ typedef struct {
  * Notes: Currently supported only source ports
  **/
 mct_port_t *module_imglib_create_port(mct_module_t *p_mct_mod,
-  mct_port_direction_t dir, boolean static_p);
+  mct_port_direction_t dir, boolean static_p, int num_mirror_ports);
 
 /**
  * Function: module_imglib_free_port
@@ -102,7 +124,7 @@ boolean module_imglib_free_port(mct_module_t *p_mct_mod, mct_port_t *p_port);
  *   dir - Port direction
  *
  * Return values:
- *     MCTL port pointer
+ *     MCTL port pointer \ NULL on fail
  *
  * Notes: Currently supported only source ports
  **/
@@ -164,19 +186,54 @@ mct_port_t *module_imglib_get_and_reserve_port(mct_module_t *p_mct_mod,
 /**
  * Function: module_imglib_get_topology
  *
- * Description: Get internal topology list based in stream info
+ * Description: Get internal topology based in stream info
  *
  * Arguments:
- *   @p_mod: Imagelib module
+ *   @module: Imagelib module object
  *   @stream_info: mct_stream_info_t struct
 
  * Return values:
- *     TRUE/FALSE
+ *     Pointer to topology holder on success \ NULL on fail
  *
  * Notes: none
  **/
-mct_list_t *module_imglib_get_topology(mct_module_t *module,
+module_imglib_topo_holder_t *module_imglib_get_topology(mct_module_t *module,
   mct_stream_info_t *stream_info);
+
+/**
+ * Function: module_imglib_get_session_params
+ *
+ * Description: Function used to get session parameters based on session id
+ *
+ * Arguments:
+ *   @module: Mct module instance
+ *   @sessionid: Session id
+ *
+ * Return values:
+ *   Pointer to session param buffer
+ *
+ * Notes: none
+ **/
+parm_buffer_t *module_imglib_get_session_params(mct_module_t *module,
+  unsigned int sessionid);
+
+/**
+ * Function: module_imglib_store_session_params
+ *
+ * Description: Function used to store session params
+ *
+ * Arguments:
+ *   @module: mct module pointer
+ *   @param_to_store: Params need to be stored
+ *   @sessionid: Session id
+ *
+ * Return values:
+ *   TRUE/FALSE
+ *
+ * Notes: none
+ **/
+boolean module_imglib_store_session_params(mct_module_t *module,
+  mct_event_control_parm_t *param_to_store, unsigned int sessionid);
 
 /**
  * Function: module_cac_set_parent
@@ -188,7 +245,7 @@ mct_list_t *module_imglib_get_topology(mct_module_t *module,
  *   @p_parent: Stream object to be set as cac module parent
 
  * Return values:
- *     TRUE/FALSE
+ *     none
  *
  * Notes: This is only temporal
  **/
@@ -204,7 +261,7 @@ void module_cac_set_parent(mct_module_t *p_mct_mod, mct_module_t *p_parent);
  *   @p_parent: Stream object to be set as wnr module parent
 
  * Return values:
- *     TRUE/FALSE
+ *     none
  *
  * Notes: This is only temporal
  **/
