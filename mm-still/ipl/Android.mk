@@ -10,9 +10,9 @@ include $(CLEAR_VARS)
 MM_DEBUG:=false
 
 libmmipl_cflags := -g -O3 \
-	$(CPU)
+	$(CPU) \
 	-Dlrintf=_ffix_r \
-	-D__alignx\(x\)=__attribute__\(\(__aligned__\(x\)\)\)
+	-D__alignx\(x\)=__attribute__\(\(__aligned__\(x\)\)\) \
 	-D_POSIX_SOURCE \
 	-DPOSIX_C_SOURCE=199506L \
 	-D_XOPEN_SOURCE=600 \
