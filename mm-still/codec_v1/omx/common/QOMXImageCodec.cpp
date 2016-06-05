@@ -94,6 +94,8 @@ OMX_ERRORTYPE QOMXImageCodec::omx_component_tunnel_request(
   if((hComp == NULL) || (peerComponent == NULL) || (tunnelSetup == NULL) ) {
     port = 0;
     peerPort = 0;
+    (void) port;
+    (void) peerPort;
     return OMX_ErrorBadParameter;
   }
   return OMX_ErrorNotImplemented;
@@ -115,6 +117,8 @@ OMX_ERRORTYPE QOMXImageCodec::omx_component_use_EGL_image(
   if((hComp == NULL) || (appData == NULL) || (eglImage == NULL)) {
     bufferHdr = NULL;
     port = 0;
+    (void) port;
+    (void) bufferHdr;
     return OMX_ErrorBadParameter;
   }
   return OMX_ErrorNotImplemented;
