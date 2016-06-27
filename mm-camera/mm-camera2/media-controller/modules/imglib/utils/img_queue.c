@@ -141,7 +141,8 @@ void *img_q_dequeue(img_queue_t *p_q)
   void* data = NULL;
 
   pthread_mutex_lock(&p_q->mutex);
-  data = img_q_remove(p_q);
+  if (p_q->count > 0)
+    data = img_q_remove(p_q);
   pthread_mutex_unlock(&p_q->mutex);
 
   return data;

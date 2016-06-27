@@ -1523,6 +1523,7 @@ void module_faceproc_deinit(mct_module_t *p_mct_mod)
     IMG_COMP_UNLOAD(p_core_ops);
   }
   p_mod->client_cnt = 0;
+  free(p_mod);
   mct_module_destroy(p_mct_mod);
 }
 

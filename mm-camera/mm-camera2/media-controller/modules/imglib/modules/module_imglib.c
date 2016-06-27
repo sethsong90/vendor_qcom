@@ -1667,6 +1667,7 @@ void module_imglib_deinit(mct_module_t *p_mct_mod)
 
   /* Destroy module ports */
   mct_list_free_list(MCT_MODULE_CHILDREN(p_mct_mod));
+  free(p_mod);
   mct_module_destroy(p_mct_mod);
   p_mct_mod = NULL;
 }
