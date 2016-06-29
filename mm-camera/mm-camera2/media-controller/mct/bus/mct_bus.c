@@ -9,6 +9,7 @@
 #include "mct_bus.h"
 #include "camera_dbg.h"
 #include <sys/syscall.h>
+#include <cutils/properties.h>
 
 #if 0
 #undef CDBG
@@ -17,6 +18,9 @@
 
 #define MCT_BUS_SOF_TIMEOUT 5000000000 /*in ns unit*/
 #define MAX_MCT_BUS_QUEUE_LENGTH 1000
+
+static signed long long sof_timeout = 0; 
+
 static boolean mct_bus_queue_free(void *data, void *user_data)
 {
   mct_bus_msg_t *pdata = data;
@@ -76,7 +80,7 @@ static void* mct_bus_sof_thread_run(void *data)
   bus->thread_run = 1;
   while(bus->thread_run) {
     ret = mct_bus_timeout_wait(&bus->bus_sof_msg_cond,
-                         &bus->bus_sof_msg_lock, MCT_BUS_SOF_TIMEOUT);
+                         &bus->bus_sof_msg_lock, sof_timeout);
     if (ret == ETIMEDOUT) {
       CDBG_ERROR("%s: SOF freeze; Sending error message\n", __func__);
       break;
@@ -97,7 +101,9 @@ static void start_sof_check_thread(mct_bus_t *bus)
   int rc = 0;
   if (bus->thread_run == 1)
     return;
-  ALOGE("%s: Starting SOF timeout thread\n", __func__);
+  if (!sof_timeout)
+    sof_timeout = MCT_BUS_SOF_TIMEOUT;
+  ALOGE("%s: Starting SOF timeout thread (%lld ns)\n", __func__, sof_timeout);
   pthread_mutex_init(&bus->bus_sof_msg_lock, NULL);
   pthread_cond_init(&bus->bus_sof_msg_cond, NULL);
   pthread_mutex_lock(&bus->bus_sof_init_lock);
@@ -292,6 +298,18 @@ error_2:
 
 mct_bus_t *mct_bus_create(unsigned int session)
 {
+  char value[PROPERTY_VALUE_MAX];
+  int rc = 0;
+
+  if (!sof_timeout) {
+    rc = property_get("persist.camera.sof_timeout", value, "");
+    if (rc > 0) {
+      sof_timeout = strtol(value, NULL, 10);
+      ALOGE("%s: SOF timeout = %d ms\n", __func__, (int)sof_timeout);
+      sof_timeout = sof_timeout * 1000 * 1000;
+    }
+  }
+
   mct_bus_t *new_bus;
   new_bus = malloc(sizeof(mct_bus_t));
   if (!new_bus) {
