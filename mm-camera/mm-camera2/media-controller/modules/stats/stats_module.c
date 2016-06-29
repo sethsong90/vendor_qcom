@@ -15,6 +15,13 @@
 #include "afd_module.h"
 #include "asd_module.h"
 #include "camera_dbg.h"
+#include <cutils/properties.h>
+
+#ifdef FEATURE_GYRO
+int cam_feature_gyro = 1;
+#else
+int cam_feature_gyro = 0;
+#endif
 
 /** stats_module_query_t
  *    @query:       the structure to hold the capability of stats moduel
@@ -166,9 +173,11 @@ static boolean stats_module_get_sub_ports(void *data, void *user_data)
     port = asd_module_get_port(module, sub->session);
   }
 #if FEATURE_GYRO
-  if (!strcmp(MCT_OBJECT_NAME(module), "gyro")) {
-    port = gyro_module_get_port(module, sub->session);
-    CDBG("%s: gyro port %p", __func__, port);
+  if (cam_feature_gyro) {
+    if (!strcmp(MCT_OBJECT_NAME(module), "gyro")) {
+      port = gyro_module_get_port(module, sub->session);
+      CDBG("%s: gyro port %p", __func__, port);
+    }
   }
 #endif
   if (!strcmp(MCT_OBJECT_NAME(module), "is")) {
@@ -429,6 +438,28 @@ void stats_module_deinit(mct_module_t *module)
   return;
 }
 
+int get_feature_gyro(void)
+{
+  int i, cnt;
+  char value[PROPERTY_VALUE_MAX];
+  int rc = property_get("persist.camera.feature.gyro", value, "");
+  if (rc > 0) {
+    cam_feature_gyro = (value[0] == '1') ? 1 : 0;
+    ALOGE("camera.feature.gyro = %d\n", cam_feature_gyro);
+  }
+  if (!cam_feature_gyro) {
+    cnt = sizeof(stats_mods_list) / sizeof(mct_module_init_name_t);
+    for (i = 0; i < cnt; i++) {
+      if (strcmp(stats_mods_list[i].name, "gyro") == 0) {
+        stats_mods_list[i].name = "";
+        stats_mods_list[i].init_mod = NULL;
+        stats_mods_list[i].deinit_mod = NULL;
+      }
+    }
+  }
+  return cam_feature_gyro;
+}
+
 /** stats_module_init:
  *    @name: name of this stats interface module("stats").
  *
@@ -453,6 +484,8 @@ mct_module_t* stats_module_init(const char *name)
     return NULL;
   }
 
+  get_feature_gyro();
+
   stats = mct_module_create("stats");
   if (!stats) {
     CDBG_ERROR("%s: Failure creating stats module!", __func__);
@@ -463,6 +496,10 @@ mct_module_t* stats_module_init(const char *name)
   /* initialize stats sub-modules */
   stats_list_size = (sizeof(stats_mods_list) / sizeof(mct_module_init_name_t));
   for (i = 0; i < stats_list_size; i++) {
+    if (strlen(stats_mods_list[i].name) == 0)
+      continue;
+    if (stats_mods_list[i].init_mod == NULL)
+      continue;
     mod = stats_mods_list[i].init_mod(stats_mods_list[i].name);
     if (mod == NULL) {
       CDBG_ERROR("%s: Sub-module NULL. Skip initializing thi one!", __func__);

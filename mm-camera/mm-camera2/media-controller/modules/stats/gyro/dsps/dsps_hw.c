@@ -56,6 +56,8 @@ void dsps_cirq_add(void *config, void *data, uint8_t seqnum)
 {
   uint8_t i, idx;
 #ifdef FEATURE_GYRO
+  if (!cam_feature_gyro)
+    return;
   sns_sam_gyroint_report_ind_msg_v01 *sensor_data =
       (sns_sam_gyroint_report_ind_msg_v01 *) data;
   sensor1_config_t * dsps_config = (sensor1_config_t *)config;
@@ -179,6 +181,8 @@ int dsps_close(sensor1_config_t *dsps_config)
   if (dsps_config == NULL)
     return -1;
 #ifdef FEATURE_GYRO
+  if (!cam_feature_gyro)
+    return -1;
   if (sensor1_close(dsps_config->handle) != SENSOR1_SUCCESS)
     return -1;
 #else
@@ -219,11 +223,13 @@ int dsps_open(void *sensor_config)
 {
   sensor1_config_t *dsps_config = (sensor1_config_t *)sensor_config;
 #ifdef FEATURE_GYRO
-  /* Open sensor1 port */
-  if (sensor1_open(&dsps_config->handle,
-      (sensor1_notify_data_cb_t)&dsps_callback,
-      (intptr_t)dsps_config) == SENSOR1_SUCCESS)
-    return 0;
+  if (cam_feature_gyro) {
+    /* Open sensor1 port */
+    if (sensor1_open(&dsps_config->handle,
+        (sensor1_notify_data_cb_t)&dsps_callback,
+        (intptr_t)dsps_config) == SENSOR1_SUCCESS)
+      return 0;
+  }
 #endif
   return -1;
 }

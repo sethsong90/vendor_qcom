@@ -3,6 +3,7 @@
  * Copyright (c) 2013 - 2014 Qualcomm Technologies, Inc. All Rights Reserved.
  * Qualcomm Technologies Proprietary and Confidential.
  */
+#include "stats_module.h"
 #include "is.h"
 /* This should be declared in sensor_lib.h */
 void poke_gyro_sample(uint64_t t, int32_t gx, int32_t gy, int32_t gz);
@@ -147,6 +148,7 @@ static void is_process_stats_event(is_stats_data_t *stats_data,
       if (gyro_data.ready) {
         unsigned int i;
 #ifdef FEATURE_GYRO
+      if (cam_feature_gyro) {
         if (!is_info->sns_lib_offset_set) {
           set_sns_apps_offset(gyro_data.sample[0].timestamp);
           is_info->sns_lib_offset_set = 1;
@@ -165,6 +167,7 @@ static void is_process_stats_event(is_stats_data_t *stats_data,
             gyro_data.sample[i].value[1],
             gyro_data.sample[i].value[2]);
         }
+      }
 #endif
         frame_times.sof = gyro_data.sof;
         frame_times.exposure_time = gyro_data.exposure_time;

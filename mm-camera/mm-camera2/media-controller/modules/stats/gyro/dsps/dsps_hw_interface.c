@@ -166,9 +166,11 @@ int dsps_proc_set_params(dsps_set_data_t *data)
       return -1;
   }
 #ifdef FEATURE_GYRO
-  if (dsps_send_request((void *)dsps_config, &msg_data, wait) < 0) {
-    ALOGE("%s Error sending request", __func__);
-    return -1;
+  if (cam_feature_gyro) {
+    if (dsps_send_request((void *)dsps_config, &msg_data, wait) < 0) {
+      ALOGE("%s Error sending request", __func__);
+      return -1;
+    }
   }
 #endif
   return rc;

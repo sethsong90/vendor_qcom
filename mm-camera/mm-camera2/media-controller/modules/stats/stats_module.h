@@ -251,6 +251,8 @@ typedef struct _stats_mode_change_event_data {
 
 /*Data sturcture for awb ends*/
 
+extern int cam_feature_gyro;
+
 mct_module_t* stats_module_init(const char *name);
 void          stats_module_deinit(mct_module_t *mod);
 

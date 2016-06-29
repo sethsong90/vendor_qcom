@@ -21,6 +21,7 @@
 #include "camera_dbg.h"
 #include "dsps_hw_interface.h"
 #include <sns_sam_gyroint_v01.h>
+#include "stats_module.h"
 
 #define SENSOR_SAMPLE_RATE  (200 << 16)
 #define SENSOR_TIME_OUT     1000  /* Timeout for response message */
