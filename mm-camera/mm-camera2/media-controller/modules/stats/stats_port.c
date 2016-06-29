@@ -18,6 +18,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
+#include <cutils/properties.h>
 
 #if 0
 #undef CDBG
@@ -33,6 +34,8 @@
 #define STATS_PORT_SKIP_STATS_MIN_FPS 20    // if fps below this value won't skip stats
 #define Q8                            0x00000100
 #define CPU_CLOCK_TRESHOLD           (1700000) /* CPU clock rate below which target will be treated as Low-Tier*/
+
+static int stats_port_skip = -1;
 
 /** stats_port_state_t
  *
@@ -162,6 +165,21 @@ typedef struct {
 } stats_port_caps_reserve_t;
 
 
+int get_stats_port_skip_mode(void)
+{
+  char value[PROPERTY_VALUE_MAX];
+  if (stats_port_skip < 0) {
+    int rc = property_get("persist.camera.stats_port_skip", value, "");
+    if (rc > 0) {
+      stats_port_skip = strtol(value, NULL, 10);
+      ALOGE("stats_port_skip = %d\n", stats_port_skip);
+    } else {
+      stats_port_skip = ENABLE_STATS_PORT_SKIP_MODE;
+    }
+  }
+  return stats_port_skip;
+}
+
 /** stats_port_set_stats_skip_mode
  *    @port:  the port instance
  *    @event: the event to be processed
@@ -176,7 +194,7 @@ typedef struct {
 static void stats_port_set_stats_skip_mode(mct_port_t *port,
   mct_event_t *event)
 {
-  if (!ENABLE_STATS_PORT_SKIP_MODE) {
+  if (get_stats_port_skip_mode() == 0) {
     return;
   }
   stats_update_t *stats_update = (stats_update_t *)event->u.module_event.module_event_data;
@@ -209,7 +227,7 @@ static void stats_port_set_stats_skip_mode(mct_port_t *port,
  **/
 static boolean stats_port_if_skip_current_stats(mct_port_t *port, mct_event_t *event)
 {
-  if (!ENABLE_STATS_PORT_SKIP_MODE) {
+  if (get_stats_port_skip_mode() == 0) {
      return FALSE;
   }
 
