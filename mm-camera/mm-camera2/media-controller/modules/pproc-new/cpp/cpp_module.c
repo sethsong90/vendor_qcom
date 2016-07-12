@@ -1003,6 +1003,7 @@ int32_t cpp_module_set_clock_freq(cpp_module_ctrl_t *ctrl,
 {
   int32_t rc = 0;
   uint32_t i;
+  uint32_t fcnt;
   cpp_hardware_cmd_t cmd;
   uint32_t input_dim = 0, output_dim = 0, dim = 0;
   float input_fps;
@@ -1104,17 +1105,31 @@ int32_t cpp_module_set_clock_freq(cpp_module_ctrl_t *ctrl,
     return -EFAULT;
   }
   clk_rate = total_load;
-  for(i = 0; i < ctrl->cpphw->hwinfo.freq_tbl_count; i++) {
+  fcnt = ctrl->cpphw->hwinfo.freq_tbl_count;
+  for(i = 0; i < fcnt; i++) {
     if (clk_rate < ctrl->cpphw->hwinfo.freq_tbl[i]) {
       rounded_clk_rate = ctrl->cpphw->hwinfo.freq_tbl[i];
       break;
     }
   }
+
+  cmd.u.clock_settings.avg = clk_rate * 2;
+
+  if (i == fcnt) {
+    rounded_clk_rate = ctrl->cpphw->hwinfo.freq_tbl[fcnt - 1];
+    cmd.u.clock_settings.inst = cmd.u.clock_settings.avg;
+  } else {
+    if (clk_rate != 0) {
+      cmd.u.clock_settings.inst =
+        (rounded_clk_rate * cmd.u.clock_settings.avg) / clk_rate;
+    } else {
+      cmd.u.clock_settings.inst = 0;
+    }
+  }
+
   ctrl->clk_rate = rounded_clk_rate;
   cmd.u.clock_settings.clock_rate = ctrl->clk_rate;
-  cmd.u.clock_settings.avg = clk_rate * 2;
-  cmd.u.clock_settings.inst = (rounded_clk_rate * cmd.u.clock_settings.avg) /
-    clk_rate;
+
   cmd.type = CPP_HW_CMD_SET_CLK;
   /* The new stream needs higher clock */
   rc = cpp_hardware_process_command(ctrl->cpphw, cmd);
