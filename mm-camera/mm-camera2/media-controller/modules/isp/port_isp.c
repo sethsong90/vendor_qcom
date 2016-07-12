@@ -494,7 +494,7 @@ static boolean port_isp_module_event(mct_port_t *port,
     break;
 
   case MCT_EVENT_MODULE_STATS_AWB_UPDATE: {
-    CDBG_HIGH("%s: received AWB update event, identity = 0x%x",
+    CDBG("%s: received AWB update event, identity = 0x%x",
       __func__, event->identity);
     ret = isp_set_awb_trigger_update(isp, tmp_port,
       UNPACK_SESSION_ID(event->identity), UNPACK_STREAM_ID(event->identity),

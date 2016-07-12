@@ -1947,11 +1947,11 @@ void isp_hw_proc_subdev_event(isp_hw_t *isp_hw, isp_thread_t *thread_data)
       }
 
       /*when got SOF event means got reg update IRQ, just applied the hw setting*/
-      CDBG_HIGH("%s:[Profile] before vfe_diag info\n", __func__);
+      CDBG("%s:[Profile] before vfe_diag info\n", __func__);
       if (isp_hw->isp_diag.has_user_dianostics) {
         isp_hw_prepare_vfe_diag(isp_hw, streaming_mode);
       }
-      CDBG_HIGH("%s:[Profile] after vfe_diag info\n", __func__);
+      CDBG("%s:[Profile] after vfe_diag info\n", __func__);
       if (GET_ISP_MAIN_VERSION(isp_hw->init_params.isp_version)
         == ISP_VERSION_40) {
         uint32_t metadump_enable = REG_DUMP_ENABLE;
