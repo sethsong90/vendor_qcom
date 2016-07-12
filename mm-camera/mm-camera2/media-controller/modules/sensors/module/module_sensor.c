@@ -209,17 +209,18 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
         &s_bundle->module_sensor_params[i]->sub_module_private,
         s_bundle->sensor_sd_name[i]);
       if (rc < 0) {
-        SERR("failed rc %d", rc);
+        SERR("sensor '%s' failed rc %d", s_bundle->sensor_sd_name[i], rc);
         goto ERROR1;
       }
     }
   }
 
+  SHIGH("try load sensor lib '%s' ...", s_bundle->sensor_info->sensor_name);
   /* Load sensor library*/
   rc = sensor_load_library(s_bundle->sensor_info->sensor_name,
     s_bundle->sensor_lib_params);
   if (rc < 0) {
-    SERR("failed rc %d", rc);
+    SERR("load sensor lib failed rc %d", rc);
     goto ERROR1;
   }
 
@@ -230,7 +231,7 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
     module_sensor_params->sub_module_private,
     SENSOR_SET_LIB_PARAMS, s_bundle->sensor_lib_params);
   if (rc < 0) {
-    SERR("failed rc %d", rc);
+    SERR("SENSOR_SET_LIB_PARAMS failed rc %d", rc);
     goto ERROR2;
   }
 
@@ -239,7 +240,7 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
     module_sensor_params->sub_module_private,
     SENSOR_SET_INIT_PARAMS, s_bundle->sensor_init_params);
   if (rc < 0) {
-    SERR("failed rc %d", rc);
+    SERR("SENSOR_SET_INIT_PARAMS failed rc %d", rc);
     goto ERROR2;
   }
 
@@ -248,7 +249,7 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
     module_sensor_params->sub_module_private,
     SENSOR_SET_SUBDEV_INFO, s_bundle->sensor_info);
   if (rc < 0) {
-    SERR("failed rc %d", rc);
+    SERR("SENSOR_SET_SUBDEV_INFO failed rc %d", rc);
     goto ERROR2;
   }
 
@@ -259,7 +260,7 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
     module_sensor_params->sub_module_private,
     SENSOR_GET_LENS_INFO, &lens_info);
   if (rc < 0) {
-    SERR("failed rc %d", rc);
+    SERR("SENSOR_GET_LENS_INFO failed rc %d", rc);
   } else {
     /* Fill aperture */
     s_bundle->sensor_params.aperture_value = lens_info.f_number;
@@ -276,7 +277,7 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
       eeprom_module_params->sub_module_private,
       EEPROM_SET_BYTESTREAM, &(s_bundle->eeprom_data->eeprom_params));
       if (rc < 0) {
-        SERR("failed rc %d", rc);
+        SERR("EEPROM_SET_BYTESTREAM failed rc %d", rc);
       }
   }
 
@@ -288,7 +289,7 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
     module_sensor_params->sub_module_private,
     SENSOR_INIT, NULL);
   if (rc < 0) {
-    SERR("failed rc %d", rc);
+    SERR("SENSOR_INIT failed rc %d", rc);
     goto ERROR2;
   }
 
@@ -302,7 +303,7 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
       actuator_module_params->sub_module_private,
       ACTUATOR_INIT, NULL);
     if (rc < 0) {
-      SERR("failed rc %d", rc);
+      SERR("ACTUATOR_INIT failed rc %d", rc);
       goto ERROR2;
     }
 
@@ -314,7 +315,7 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
     module_sensor_params->sub_module_private,
     SENSOR_GET_CSI_LANE_PARAMS, &sensor_get);
   if (rc < 0) {
-    SERR("failed rc %d", rc);
+    SERR("SENSOR_GET_CSI_LANE_PARAMS failed rc %d", rc);
     goto ERROR2;
   }
 
@@ -324,7 +325,7 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
     csiphy_module_params->sub_module_private,
     CSIPHY_SET_LANE_PARAMS, sensor_get.csi_lane_params);
   if (rc < 0) {
-    SERR("failed rc %d", rc);
+    SERR("CSIPHY_SET_LANE_PARAMS failed rc %d", rc);
     goto ERROR2;
   }
 
@@ -334,7 +335,7 @@ static boolean module_sensor_init_session(module_sensor_bundle_info_t *s_bundle)
     csid_module_params->sub_module_private,
     CSID_SET_LANE_PARAMS, sensor_get.csi_lane_params);
   if (rc < 0) {
-    SERR("failed rc %d", rc);
+    SERR("CSID_SET_LANE_PARAMS failed rc %d", rc);
     goto ERROR2;
   }
   return TRUE;
@@ -349,7 +350,7 @@ ERROR1:
     }
   }
   s_bundle->ref_count--;
-  SERR("failed");
+  SERR("sensor init session: FAILED");
   return FALSE;
 }
 

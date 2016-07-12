@@ -34,22 +34,22 @@ int32_t sensor_load_library(const char *name, void *data)
   sensor_lib_params_t *sensor_lib_params = (sensor_lib_params_t *)data;
   SLOW("enter");
   sprintf(lib_name, "libmmcamera_%s.so", name);
-  SLOW("lib_name %s", lib_name);
+  SHIGH("lib_name '%s'", lib_name);
   sensor_lib_params->sensor_lib_handle = dlopen(lib_name, RTLD_NOW);
   if (!sensor_lib_params->sensor_lib_handle) {
-    SERR("failed");
+    SERR("failed load lib '%s'", lib_name);
     return -EINVAL;
   }
   sprintf(open_lib_str, "%s_open_lib", name);
   *(void **)&sensor_open_lib = dlsym(sensor_lib_params->sensor_lib_handle,
     open_lib_str);
   if (!sensor_open_lib) {
-    SERR("failed");
+    SERR("failed find func '%s'", open_lib_str);
     return -EINVAL;
   }
   sensor_lib_params->sensor_lib_ptr = (sensor_lib_t *)sensor_open_lib();
   if (!sensor_lib_params->sensor_lib_ptr) {
-    SERR("failed");
+    SERR("failed sensor_lib_ptr = %p", sensor_lib_params->sensor_lib_ptr);
     return -EINVAL;
   }
   SLOW("exit");
@@ -168,14 +168,14 @@ static int32_t sensor_write_init_settings(void *sctrl)
     for (index = 0; index < init_settings->size; index++) {
       cfg.cfg.setting = &init_settings->reg_settings[index];
       if (ioctl(ctrl->s_data->fd, VIDIOC_MSM_SENSOR_CFG, &cfg) < 0) {
-        SERR("failed");
+        SERR("VIDIOC_MSM_SENSOR_CFG failed");
         return -EIO;
       }
     }
   } else {
     cfg.cfgtype = CFG_SET_INIT_SETTING;
     if (ioctl(ctrl->s_data->fd, VIDIOC_MSM_SENSOR_CFG, &cfg) < 0) {
-      SERR("failed");
+      SERR("VIDIOC_MSM_SENSOR_CFG failed");
       return -EIO;
     }
   }
