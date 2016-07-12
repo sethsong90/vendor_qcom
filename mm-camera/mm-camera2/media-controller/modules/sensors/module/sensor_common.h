@@ -248,7 +248,7 @@ typedef struct {
   void (*do_wbc_calibration) (void *);
   void (*do_lsc_calibration) (void *);
   void (*do_dpc_calibration) (void *);
-  int32_t (*get_raw_data) (void *, void *);
+  void (*get_raw_data) (void *, void *);
 } eeprom_lib_func_t;
 
 typedef struct {
