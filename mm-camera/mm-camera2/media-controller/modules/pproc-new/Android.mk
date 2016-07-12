@@ -54,6 +54,10 @@ ifeq ($(MSM_VERSION), 8610)
   LOCAL_CFLAGS += -DCAMERA_FEATURE_WNR_SW
 endif
 
+ifeq ($(MM_CAMERA_JB), true)
+  LOCAL_CFLAGS += -DMM_CAMERA_JB
+endif
+
 LOCAL_SRC_DIR := $(LOCAL_PATH)
 
 LOCAL_SRC_FILES := pproc_module.c

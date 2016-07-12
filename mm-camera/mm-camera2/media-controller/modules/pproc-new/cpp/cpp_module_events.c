@@ -1747,7 +1747,9 @@ int32_t cpp_module_handle_streamon_event(mct_module_t* module,
     goto CPP_MODULE_STREAMON_ERROR2;
   }
 
+#ifndef MM_CAMERA_JB
   cpp_module_set_clock_freq(ctrl, stream_params, 1);
+#endif
 
   cmd.type = CPP_HW_CMD_STREAMON;
   cmd.u.stream_buff_list = &hw_strm_buff_info;
@@ -1950,7 +1952,9 @@ int32_t cpp_module_handle_streamoff_event(mct_module_t* module,
     return -EFAULT;
   }
 
+#ifndef MM_CAMERA_JB
   cpp_module_set_clock_freq(ctrl, stream_params, 0);
+#endif
 
   /* process hardware command for stream off, this ensures
      hardware is done with this identity */

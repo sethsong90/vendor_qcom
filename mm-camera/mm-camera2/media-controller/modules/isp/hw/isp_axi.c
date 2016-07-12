@@ -679,7 +679,11 @@ static int isp_axi_streamon(isp_axi_t *axi, start_stop_stream_t *params,
   if (start == TRUE) {
     cmd->cmd = START_STREAM;
   } else {
+#ifndef MM_CAMERA_JB
     cmd->cmd = STOP_IMMEDIATELY;
+#else
+    cmd->cmd = STOP_STREAM;
+#endif
   }
 
   rc = ioctl(axi->fd, VIDIOC_MSM_ISP_CFG_STREAM, cmd);

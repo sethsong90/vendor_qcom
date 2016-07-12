@@ -491,6 +491,7 @@ static int32_t cpp_thread_process_hardware_event(cpp_module_ctrl_t *ctrl)
       CDBG_ERROR("%s:%d, failed processed divert\n", __func__, __LINE__);
     }
 
+#ifndef MM_CAMERA_JB
     /* Release this processed divert buffer in kernel if downstream module is
        giving piggy-back ack */
     if (buf_divert.ack_flag == 1) {
@@ -504,6 +505,7 @@ static int32_t cpp_thread_process_hardware_event(cpp_module_ctrl_t *ctrl)
         cpp_thread_fatal_exit(ctrl, FALSE);
       }
     }
+#endif
   }
 
   free(cookie);

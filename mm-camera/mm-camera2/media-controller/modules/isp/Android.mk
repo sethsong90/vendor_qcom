@@ -12,6 +12,9 @@ LOCAL_CFLAGS  := -D_ANDROID_
 
 #LOCAL_CFLAGS += -Werror
 
+ifeq ($(MM_CAMERA_JB), true)
+  LOCAL_CFLAGS += -DMM_CAMERA_JB
+endif
 
 ifeq ($(VFE_VERS),vfe40)
   LOCAL_CFLAGS += -DVFE_40

@@ -37,6 +37,10 @@ ifeq ($(call is-board-platform-in-list,msm8226 msm8610),true)
   LOCAL_CFLAGS += -DCAMERA_FEATURE_WNR_SW
 endif
 
+ifeq ($(MM_CAMERA_JB), true)
+  LOCAL_CFLAGS += -DMM_CAMERA_JB
+endif
+
 LOCAL_SRC_FILES := cpp_module.c
 LOCAL_SRC_FILES += cpp_module_events.c
 LOCAL_SRC_FILES += cpp_module_util.c

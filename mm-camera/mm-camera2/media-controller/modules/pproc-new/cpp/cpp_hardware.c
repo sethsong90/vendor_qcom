@@ -195,6 +195,7 @@ cpp_hardware_status_t cpp_hardware_get_status(cpp_hardware_t *cpphw)
   return status;
 }
 
+#ifndef MM_CAMERA_JB
 /* cpp_hardware_send_buf_done:
  *
  *  Send buffer done to the processed divert buffer. All accesses to the
@@ -259,6 +260,7 @@ error_mutex:
   return rc;
 }
 
+#endif /* not MM_CAMERA_JB */
 
 /* cpp_hardware_process_command:
  *
@@ -305,12 +307,14 @@ int32_t cpp_hardware_process_command(cpp_hardware_t *cpphw,
   case CPP_HW_CMD_PROCESS_FRAME:
     rc = cpp_hardware_process_frame(cpphw, cmd.u.hw_params);
     break;
+#ifndef MM_CAMERA_JB
   case CPP_HW_CMD_QUEUE_BUF:
     rc = cpp_hardware_send_buf_done(cpphw, cmd.u.event_data);
     break;
   case CPP_HW_CMD_SET_CLK:
     rc = cpp_hardware_set_clock(cpphw, &cmd.u.clock_settings);
     break;
+#endif
   default:
     CDBG_ERROR("%s:%d, error: bad command type=%d",
       __func__, __LINE__, cmd.type);
@@ -829,10 +833,12 @@ static int32_t cpp_hardware_process_frame(cpp_hardware_t *cpphw,
            msm_cpp_frame_info->input_buffer_info.index,
            msm_cpp_frame_info->identity);
 
+#ifndef MM_CAMERA_JB
   /* TODO: check whether diagostics is enabled and then update params */
   /* Copy the current diagnostics parameters */
   cpp_hw_params_copy_asf_diag_params(&cpp_frame_info, &hw_params->asf_diag);
   cpp_hw_params_copy_wnr_diag_params(&cpp_frame_info, &hw_params->wnr_diag);
+#endif
 
   cpp_hardware_destroy_hw_frame(msm_cpp_frame_info);
 

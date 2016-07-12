@@ -348,8 +348,10 @@ boolean cpp_module_start_session(mct_module_t *module, unsigned int sessionid)
     }
     CDBG_HIGH("%s:%d, info: cpp_thread created.", __func__, __LINE__);
 
+#ifndef MM_CAMERA_JB
     /* set default clock */
     cpp_module_set_clock_freq(ctrl,NULL,0);
+#endif
   }
   ctrl->session_count++;
   CDBG_HIGH("%s:%d, info: session %d started.", __func__, __LINE__, sessionid);
@@ -723,14 +725,14 @@ static int32_t cpp_module_handle_ack_from_downstream(mct_module_t* module,
      synchronous. */
   isp_buf_divert_ack_t* isp_buf_ack =
     (isp_buf_divert_ack_t*)(event->u.module_event.module_event_data);
-#if 0
+#ifdef MM_CAMERA_JB
   cpp_module_ack_key_t key;
   key.identity = isp_buf_ack->identity;
   key.buf_idx = isp_buf_ack->buf_idx;
   CDBG("%s:%d, doing ack for divert_done ack from downstream",
     __func__, __LINE__);
   cpp_module_do_ack(ctrl, key);
-#endif
+#else
   cmd.type = CPP_HW_CMD_QUEUE_BUF;
   cmd.u.event_data = &event_data;
   memset(&event_data, 0, sizeof(event_data));
@@ -743,6 +745,7 @@ static int32_t cpp_module_handle_ack_from_downstream(mct_module_t* module,
   if(rc < 0) {
     CDBG_ERROR("%s:%d, failed\n", __func__, __LINE__);
   }
+#endif
   return 0;
 }
 
@@ -990,6 +993,7 @@ int32_t cpp_module_process_upstream_event(mct_module_t* module,
   return 0;
 }
 
+#ifndef MM_CAMERA_JB
 /* cpp_module_set_clock_freq:
  *
  * Check for stream information and select clock frequency.
@@ -1122,6 +1126,8 @@ int32_t cpp_module_set_clock_freq(cpp_module_ctrl_t *ctrl,
 
   return rc;
 }
+
+#endif /* not MM_CAMERA_JB */
 
 /* cpp_module_notify_add_stream:
  *

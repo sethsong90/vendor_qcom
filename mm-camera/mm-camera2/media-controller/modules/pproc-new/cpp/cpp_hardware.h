@@ -108,8 +108,10 @@ typedef struct _cpp_hardware_event_subscribe_info {
 typedef struct _cpp_hardware_info_t {
   uint32_t version;
   uint32_t caps;
+#ifndef MM_CAMERA_JB
   unsigned long freq_tbl[MAX_FREQ_TBL];
   uint32_t freq_tbl_count;
+#endif
 } cpp_hardware_info_t;
 
 typedef struct _cpp_hardware_stream_status_t {
@@ -143,9 +145,11 @@ typedef enum {
   CPP_HW_CMD_STREAMOFF,
   CPP_HW_CMD_LOAD_FIRMWARE,
   CPP_HW_CMD_PROCESS_FRAME,
+#ifndef MM_CAMERA_JB
   CPP_HW_CMD_QUEUE_BUF,
   CPP_HW_CMD_GET_CUR_DIAG,
   CPP_HW_CMD_SET_CLK
+#endif
 } cpp_hardware_cmd_type_t;
 
 typedef struct _cpp_hardware_event_data_t {
