@@ -858,6 +858,13 @@ MM_CAMERA += libchromatix_ov13850_snapshot
 MM_CAMERA += libchromatix_ov13850_zsl
 MM_CAMERA += libchromatix_ov13850_video_hd
 
+MM_CAMERA += libmmcamera_t4k37ab
+MM_CAMERA += libmmcamera_f4k37ab_qtech_t4k37_eeprom
+MM_CAMERA += libchromatix_t4k37ab_common
+MM_CAMERA += libchromatix_t4k37ab_preview
+MM_CAMERA += libchromatix_t4k37ab_default_video
+MM_CAMERA += libchromatix_t4k37ab_snapshot
+
 
 #MM_CORE
 MM_CORE := CABLService
