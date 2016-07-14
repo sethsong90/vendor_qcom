@@ -16,7 +16,7 @@
 static actuator_ctrl_t actuators[ACTUATOR_CAM_MODE_MAX][6] = {
 /*ACTUATOR_CAM_MODE_CAMERA*/
 {
-  #include "af_main_cam_camera_0.h"
+  #include "af_main_cam_camera_t4k37ab.h"          /* actuator 0 */
   #include "af_main_cam_camera_1.h"
   #include "af_main_cam_camera_2.h"
   #include "af_main_cam_camera_3.h"
@@ -25,7 +25,7 @@ static actuator_ctrl_t actuators[ACTUATOR_CAM_MODE_MAX][6] = {
 },
 /*ACTUATOR_CAM_MODE_CAMCORDER*/
 {
-  #include "af_main_cam_camcorder_0.h"
+  #include "af_main_cam_camcorder_t4k37ab.h"       /* actuator 0 */
   #include "af_main_cam_camcorder_1.h"
   #include "af_main_cam_camcorder_2.h"
   #include "af_main_cam_camcorder_3.h"
