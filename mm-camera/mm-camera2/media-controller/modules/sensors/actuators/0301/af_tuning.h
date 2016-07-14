@@ -548,8 +548,8 @@ typedef struct _actuator_tuned_params {
  **/
 typedef struct _actuator_params {
   uint32_t i2c_addr;
-  enum msm_actuator_data_type i2c_data_type;
-  enum msm_actuator_addr_type i2c_addr_type;
+  enum msm_camera_i2c_data_type i2c_data_type;
+  enum msm_camera_i2c_reg_addr_type i2c_addr_type;
   enum actuator_type act_type;
   uint16_t data_size;
   uint8_t af_restore_pos;
