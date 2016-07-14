@@ -344,9 +344,11 @@ static int af_actuator_init(void *ptr)
   }
 
   if (cfg.is_af_supported) {
-    SLOW("kernel returned %d", cfg.cfg.cam_name);
+    SHIGH("kernel returned cam_name = %d", cfg.cfg.cam_name);
     af_actuator_ptr->is_af_supported = cfg.is_af_supported;
     af_actuator_ptr->cam_name = cfg.cfg.cam_name;
+  } else {
+    SHIGH("kernel returned is_af_supported = %d", cfg.is_af_supported);
   }
 
   return rc;
@@ -367,7 +369,7 @@ static int af_load_header(void *ptr, actuator_cam_mode_t cam_mode)
   actuator_data_t *af_actuator_ptr = (actuator_data_t *)ptr;
   uint8_t cnt = 0;
 
-  SLOW("%s: cammode %d", __func__, cam_mode);
+  SHIGH("cammode %d", cam_mode);
   if (af_actuator_ptr == NULL) {
     SERR("Invalid Argument - af_actuator_ptr");
     return -EINVAL;
@@ -528,6 +530,7 @@ static int32_t actuator_open(void **actuator_ctrl, const char *subdev_name)
   }
   ctrl->load_params = 1;
   *actuator_ctrl = (void *)ctrl;
+  SHIGH("actuator dev '%s' opened", subdev_string);
   return rc;
 
 ERROR:
@@ -550,7 +553,7 @@ static int actuator_set_af_tuning(void *actuator_ctrl, void *data)
   int rc = 0;
   tune_actuator_t *tdata = (tune_actuator_t *)data;
   actuator_tuning_type_t ttype = (actuator_tuning_type_t)tdata->ttype;
-  SERR("ttype =%d tdata->stepsize=%d", ttype, tdata->stepsize);
+  SHIGH("ttype = %d, tdata->stepsize = %d", ttype, tdata->stepsize);
   switch (ttype) {
   case ACTUATOR_TUNE_RELOAD_PARAMS:
     rc = af_actuator_load_params(actuator_ctrl);
@@ -615,7 +618,7 @@ static int32_t actuator_process(void *actuator_ctrl,
     break;
   }
   case ACTUATOR_FOCUS_TUNING:
-    SERR("ACTUATOR_FOCUS_TUNING");
+    SHIGH("ACTUATOR_FOCUS_TUNING");
     rc = actuator_set_af_tuning(actuator_ctrl, data);
     break;
     /* Get params */
@@ -668,7 +671,7 @@ static int32_t actuator_close(void *actuator_ctrl)
 
 int32_t actuator_sub_module_init(sensor_func_tbl_t *func_tbl)
 {
-  SLOW("Enter");
+  SHIGH("Enter");
   if (!func_tbl) {
     SERR("failed");
     return -EINVAL;
