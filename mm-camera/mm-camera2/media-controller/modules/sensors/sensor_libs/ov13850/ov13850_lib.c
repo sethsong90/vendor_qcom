@@ -62,9 +62,9 @@ static sensor_aec_data_t aec_info = {
 
 
 static sensor_lens_info_t default_lens_info = {
-  .focal_length = 4.92,
-  .pix_size = 1.4,
-  .f_number = 2.65,
+  .focal_length = 3.81,
+  .pix_size = 1.12,
+  .f_number = 2.2,
   .total_f_dist = 1.97,
   .hor_view_angle = 55.4,
   .ver_view_angle = 42.7,
@@ -77,6 +77,7 @@ static struct csi_lane_params_t csi_lane_params = {
   .csi_lane_mask = 0xf,
   .csi_if = 1,
   .csid_core = {0},
+  .csi_phy_sel = 0,
 };
 #else
 static struct csi_lane_params_t csi_lane_params = {
@@ -84,6 +85,7 @@ static struct csi_lane_params_t csi_lane_params = {
   .csi_lane_mask = 0x1f,
   .csi_if = 1,
   .csid_core = {0},
+  .csi_phy_sel = 0,
 };
 #endif
 
@@ -94,7 +96,7 @@ static struct msm_camera_i2c_reg_array init_reg_array0[] = {
 
 
 static struct msm_camera_i2c_reg_array init_reg_array1[] = {
-  {0x0300,0x01},// ; PLL
+  {0x0300,0x00},// ; PLL
   {0x0301,0x00},// ; PLL
   {0x0302,0x28},// ; PLL
   {0x0303,0x00},//  ; PLL
@@ -109,13 +111,13 @@ static struct msm_camera_i2c_reg_array init_reg_array1[] = {
   {0x3106,0x00},//
   {0x3210,0x47},//
   {0x3500,0x00},//  ; exposure HH
-  {0x3501,0x67},//  ; exposure H
-  {0x3502,0x80},//  ; exposure L
+  {0x3501,0xc0},//  ; exposure H
+  {0x3502,0x00},//  ; exposure L
   {0x3506,0x00},//  ; short exposure HH
   {0x3507,0x02},//  ; short exposure H
   {0x3508,0x00},//  ; shour exposure L
   {0x350a,0x00},//  ; gain H
-  {0x350b,0x10},//  ; gain L
+  {0x350b,0x80},//  ; gain L
   {0x350e,0x00},//  ; short gain H
   {0x350f,0x10},//  ; short gain L
   {0x3600,0x40},//  ; analog control
@@ -130,13 +132,13 @@ static struct msm_camera_i2c_reg_array init_reg_array1[] = {
   {0x360c,0x49},//  ; analog control
   {0x360f,0x8a},//
   {0x3611,0x10},//  ; PLL2
-  {0x3612,0x23},//  ; PLL2
+  {0x3612,0x07},//  ; PLL2
   {0x3613,0x33},//  ; PLL2
   {0x3615,0x08},//
   {0x3641,0x02},//
   {0x3660,0x82},//
   {0x3668,0x54},//
-  {0x3669,0x40},//
+  {0x3669,0x00},//
   {0x3667,0xa0},//
   {0x3702,0x40},//
   {0x3703,0x44},//
@@ -146,20 +148,28 @@ static struct msm_camera_i2c_reg_array init_reg_array1[] = {
   {0x3707,0x44},//
   {0x3708,0x3c},//
   {0x3709,0x1f},//
-  {0x370a,0x26},//
+  {0x370a,0x24},//
   {0x370b,0x3c},//
   {0x3720,0x66},//
   {0x3722,0x84},//
   {0x3728,0x40},//
-  {0x372a,0x00},//
-  {0x372f,0x90},//
-  {0x3710,0x28},//
-  {0x3716,0x03},//
-  {0x3718,0x10},//
-  {0x3719,0x08},//
-  {0x371c,0xfc},//
-  {0x3760,0x13},//
-  {0x3761,0x34},//
+  {0x372a,0x04},//
+  {0x372e,0x22},
+  {0x372f,0xa0},
+  {0x3730,0x00},
+  {0x3731,0x00},
+  {0x3732,0x00},
+  {0x3733,0x00},
+  {0x3748,0x00},
+  {0x3710,0x28},
+  {0x3716,0x03},
+  {0x3718,0x10},
+  {0x3719,0x08},
+  {0x371c,0xfc},
+  {0x3760,0x13},
+  {0x3761,0x34},
+  {0x3762,0x86},
+  {0x3763,0x16},
   {0x3767,0x24},//
   {0x3768,0x06},//
   {0x3769,0x45},//
@@ -171,49 +181,51 @@ static struct msm_camera_i2c_reg_array init_reg_array1[] = {
   {0x3d8c,0x73},//  ; OTP start address H
   {0x3d8d,0xbf},//  ; OTP start address L
   {0x3800,0x00},//  ; H crop start H
-  {0x3801,0x08},//  ; H crop start L
+  {0x3801,0x0c},//  ; H crop start L
   {0x3802,0x00},//  ; V crop start H
   {0x3803,0x04},//  ; V crop start L
   {0x3804,0x10},//  ; H crop end H
-  {0x3805,0x97},//  ; H crop end L
+  {0x3805,0x93},//  ; H crop end L
   {0x3806,0x0c},//  ; V crop end H
   {0x3807,0x4b},//  ; V crop end L
-  {0x3808,0x08},//  ; H output size H
-  {0x3809,0x40},//  ; H output size L
-  {0x380a,0x06},//  ; V output size H
-  {0x380b,0x20},//  ; V output size L
-  {0x380c,0x25},//  ; HTS H
-  {0x380d,0x80},//  ; HTS L
-  {0x380e,0x06},//  ; VTS H
-  {0x380f,0x80},//  ; VTS L
+  {0x3808,0x10},//  ; H output size H
+  {0x3809,0x80},//  ; H output size L
+  {0x380a,0x0c},//  ; V output size H
+  {0x380b,0x40},//  ; V output size L
+  {0x380c,0x17},//  ; HTS H
+  {0x380d,0x70},//  ; HTS L
+  {0x380e,0x0d},//  ; VTS H
+  {0x380f,0x00},//  ; VTS L
   {0x3810,0x00},//  ; H win off H
   {0x3811,0x04},//  ; H win off L
   {0x3812,0x00},//  ; V win off H
-  {0x3813,0x02},//  ; V win off L
-  {0x3814,0x31},//  ; H inc
-  {0x3815,0x31},//  ; V inc
-  {0x3820,0x02},//  ; V flip off, V bin on
-  {0x3821,0x05},//  ; H mirror on, H bin on
+  {0x3813,0x04},//  ; V win off L
+  {0x3814,0x11},//  ; H inc
+  {0x3815,0x11},//  ; V inc
+  {0x3820,0x00},//  ; V flip off, V bin on
+  {0x3821,0x04},//  ; H mirror on, H bin on
   {0x3834,0x00},//
   {0x3835,0x1c},//  ; cut_en, vts_auto, blk_col_dis
-  {0x3836,0x08},//
-  {0x3837,0x02},//
+  {0x3836,0x04},//
+  {0x3837,0x01},//
   {0x4000,0xf1},//  ; BLC offset trig en, format change trig en, gain trig en, exp trig en, median en
   {0x4001,0x00},//  ; BLC
+  {0x4006,0x04},
+  {0x4007,0x04},
   {0x400b,0x0c},//  ; BLC
   {0x4011,0x00},//  ; BLC
   {0x401a,0x00},//  ; BLC
   {0x401b,0x00},//  ; BLC
   {0x401c,0x00},//  ; BLC
   {0x401d,0x00},//  ; BLC
-  {0x4020,0x00},//  ; BLC
-  {0x4021,0xe4},//  ; BLC
-  {0x4022,0x07},//  ; BLC
-  {0x4023,0x5f},//  ; BLC
-  {0x4024,0x08},//  ; BLC
-  {0x4025,0x44},//  ; BLC
-  {0x4026,0x08},//  ; BLC
-  {0x4027,0x47},//  ; BLC
+  {0x4020,0x02},//  ; BLC
+  {0x4021,0x4c},//  ; BLC
+  {0x4022,0x0e},//  ; BLC
+  {0x4023,0x37},//  ; BLC
+  {0x4024,0x0f},//  ; BLC
+  {0x4025,0x1c},//  ; BLC
+  {0x4026,0x0f},//  ; BLC
+  {0x4027,0x1f},//  ; BLC
   {0x4028,0x00},//  ; BLC
   {0x4029,0x02},//  ; BLC
   {0x402a,0x04},//  ; BLC
@@ -229,14 +241,14 @@ static struct msm_camera_i2c_reg_array init_reg_array1[] = {
   {0x4601,0x04},//
   {0x4602,0x22},//
   {0x4603,0x01},// ; VFIFO
-  {0x4837,0x19},// ; MIPI global timing
+  {0x4837,0x10},// ; MIPI global timing
   {0x4d00,0x04},//  ; temperature monitor
   {0x4d01,0x42},//  ; temperature monitor
   {0x4d02,0xd1},//  ; temperature monitor
   {0x4d03,0x90},//  ; temperature monitor
   {0x4d04,0x66},//  ; temperature monitor
   {0x4d05,0x65},//  ; temperature monitor
-  {0x5000,0x0f},//  ; windowing enable, BPC on, WPC on, Lenc on
+  {0x5000,0x0e},//  ; windowing enable, BPC on, WPC on, Lenc on
   {0x5001,0x03},//  ; BLC enable, MWB on
   {0x5002,0x07},//
   {0x5013,0x40},//
@@ -268,11 +280,11 @@ static struct msm_camera_i2c_reg_array init_reg_array1[] = {
   {0x530f,0x01},//
   {0x5310,0x01},//
   {0x5400,0x00},//
-  {0x5401,0x61},//
+  {0x5401,0x71},//
   {0x5402,0x00},//
   {0x5403,0x00},//
   {0x5404,0x00},//
-  {0x5405,0x40},//
+  {0x5405,0x80},//
   {0x540c,0x05},//
   {0x5b00,0x00},//
   {0x5b01,0x00},//
@@ -283,6 +295,7 @@ static struct msm_camera_i2c_reg_array init_reg_array1[] = {
   {0x5b09,0x02},//
   {0x5e00,0x00},//  ; test pattern disable
   {0x5e10,0x1c},//  ; ISP test disable
+  {0x0102,0x01},
 };
 
 
@@ -435,30 +448,40 @@ static sensor_stream_info_array_t ov13850_stream_info_array = {
 #if RES_0_ENABLE
 static struct msm_camera_i2c_reg_array res0_reg_array[] = {
   {0x0300,0x00},// ; PLL
+  {0x0301,0x00},
   {0x0302,0x21},// ; PLL
-  {0x3613,0x22},// ; PLL
-  {0x3614,0x1b},// ; PLL
-  {0x3501,0xcf},// ; Exposure H
-  {0x370a,0x24},//
-  {0x372a,0x04},//
-  {0x372f,0xa0},//
+  {0x0303,0x00},
+  {0x3612,0x07},
+  {0x3614,0x28},// ; PLL
+  {0x370a,0x24},
+  {0x372a,0x04},
+  {0x372f,0xa0},
+  {0x3718,0x10},
+  {0x3767,0x24},
+  {0x3800,0x00},
   {0x3801,0x14},// ; H crop start L
+  {0x3802,0x00},
   {0x3803,0x0c},// ; V crop start L
+  {0x3804,0x10},
   {0x3805,0x8b},// ; H crop end L
+  {0x3806,0x0c},
   {0x3807,0x43},// ; V crop end L
   {0x3808,0x10},// ; H output size H
   {0x3809,0x70},// ; H output size L
   {0x380a,0x0c},// ; V output size H
   {0x380b,0x30},// ; V output size L
-  {0x380c,0x12},//0x25},// ; HTS H
-  {0x380d,0x70},//0x80},// ; HTS L
-  {0x380e,0x0c},//0x0d},// ; VTS H
-  {0x380f,0xe0},//0x00},// ; VTS L
+  {0x380c,0x1c},//0x25},// ; HTS H
+  {0x380d,0x2a},//0x80},// ; HTS L
+  {0x380e,0x0d},//0x0d},// ; VTS H
+  {0x380f,0x00},//0x00},// ; VTS L
+  {0x3810,0x00},
+  {0x3811,0x04},
+  {0x3812,0x00},
   {0x3813,0x04},// ; V win off
   {0x3814,0x11},// ; H inc
   {0x3815,0x11},// ; V inc
-  {0x3820,0x00},// ; V flip off, V bin on
-  {0x3821,0x04},// ; H mirror on, H bin on
+  {0x3820,0x04},// ; V flip off, V bin on
+  {0x3821,0x00},// ; H mirror on, H bin on
   {0x3836,0x04},//
   {0x3837,0x01},//
   {0x4020,0x02},//
@@ -469,10 +492,17 @@ static struct msm_camera_i2c_reg_array res0_reg_array[] = {
   {0x4025,0x1c},//
   {0x4026,0x0f},//
   {0x4027,0x1f},//
+  {0x4501,0x38},
+  {0x4601,0x04},
+  {0x4602,0x22},
   {0x4603,0x01},// ; VFIFO
   {0x4837,0x14},//0x19},// ; MIPI global timing
   {0x5401,0x71},//
   {0x5405,0x80},//
+  {0x350b,0x20},
+  {0x3500,0x00},
+  {0x3501,0x7c},
+  {0x3502,0xe0},
 };
 #endif
 
@@ -480,46 +510,61 @@ static struct msm_camera_i2c_reg_array res0_reg_array[] = {
 #if RES_1_ENABLE
 static struct msm_camera_i2c_reg_array res1_reg_array[] = {
   {0x0300,0x01},// ; PLL
+  {0x0301,0x00},
   {0x0302,0x28},// ; PLL
-  {0x3613,0x33},// ; PLL
+  {0x0303,0x00},
+  {0x3612,0x27},
   {0x3614,0x28},// ; PLL
-  {0x0300,0x01},// ; PLL
-  {0x0302,0x28},// ; PLL
-  {0x3501,0x67},// ; Exposure H
-  {0x370a,0x26},//
-  {0x372a,0x00},//
-  {0x372f,0x90},//
+  {0x370a,0x26},
+  {0x372a,0x00},
+  {0x372f,0x90},
+  {0x3718,0x10},
+  {0x3767,0x24},
+  {0x3800,0x00},
   {0x3801,0x08},// ; H crop start L
+  {0x3802,0x00},
   {0x3803,0x04},// ; V crop start L
+  {0x3804,0x10},
   {0x3805,0x97},// ; H crop end L
+  {0x3806,0x0c},
   {0x3807,0x4b},// ; V crop end L
   {0x3808,0x08},// ; H output size H
-  {0x3809,0x38},// ; H output size L
+  {0x3809,0x40},// ; H output size L
   {0x380a,0x06},// ; V output size H
-  {0x380b,0x18},// ; V output size L
-  {0x380c,0x25},// ; HTS H
-  {0x380d,0x80},// ; HTS L
-  {0x380e,0x06},// ; VTS H
-  {0x380f,0x80},// ; VTS L
+  {0x380b,0x20},// ; V output size L
+  {0x380c,0x09},// ; HTS H
+  {0x380d,0x60},// ; HTS L
+  {0x380e,0x0d},// ; VTS H
+  {0x380f,0x00},// ; VTS L
+  {0x3810,0x00},
+  {0x3811,0x04},
+  {0x3812,0x00},
   {0x3813,0x02},// ; V win off
   {0x3814,0x31},// ; H inc
   {0x3815,0x31},// ; V inc
-  {0x3820,0x00},// ; V flip off, V bin on
-  {0x3821,0x05},// ; H mirror on, H bin on
+  {0x3820,0x06},// ; V flip off, V bin on
+  {0x3821,0x02},// ; H mirror on, H bin on
   {0x3836,0x08},//
   {0x3837,0x02},//
   {0x4020,0x00},//
   {0x4021,0xe4},//
-  {0x4022,0x07},//
-  {0x4023,0x5f},//
-  {0x4024,0x08},//
-  {0x4025,0x44},//
-  {0x4026,0x08},//
-  {0x4027,0x47},//
+  {0x4022,0x04},//
+  {0x4023,0xd7},//
+  {0x4024,0x05},//
+  {0x4025,0xbc},//
+  {0x4026,0x05},//
+  {0x4027,0xbf},//
+  {0x4501,0x3c},
+  {0x4601,0x83},
+  {0x4602,0x22},
   {0x4603,0x01},// ; VFIFO
   {0x4837,0x19},// ; MIPI global timing
   {0x5401,0x61},//
   {0x5405,0x40},//
+  {0x350b,0x20},
+  {0x3500,0x00},
+  {0x3501,0xbb},
+  {0x3502,0x20},
 };
 #endif
 
@@ -647,13 +692,13 @@ static struct sensor_lib_out_info_t sensor_out_info[] = {
   {
     .x_output = 4208,
     .y_output = 3120,
-    .line_length_pclk = 4720,
-    .frame_length_lines = 3296,
-    .vt_pixel_clk = 323600000,
+    .line_length_pclk = 7210,
+    .frame_length_lines = 3328,
+    .vt_pixel_clk = 480000000,
     .op_pixel_clk = 316800000,
     .binning_factor = 0,
     .max_fps = 20.8,
-    .min_fps = 7.5,
+    .min_fps = 10.0,
     .mode = SENSOR_DEFAULT_MODE,
   },
 #endif
@@ -661,13 +706,13 @@ static struct sensor_lib_out_info_t sensor_out_info[] = {
   {
     .x_output = 2104,
     .y_output = 1560,
-    .line_length_pclk = 9600,
-    .frame_length_lines = 1664,
-    .vt_pixel_clk = 480000000,
+    .line_length_pclk = 2400,
+    .frame_length_lines = 3328,
+    .vt_pixel_clk = 240000000,
     .op_pixel_clk = 256000000,
     .binning_factor = 1,
-    .max_fps = 30,
-    .min_fps = 7.5,
+    .max_fps = 30.0,
+    .min_fps = 10.0,
     .mode = SENSOR_DEFAULT_MODE,
   },
 #endif
@@ -681,7 +726,7 @@ static struct sensor_lib_out_info_t sensor_out_info[] = {
     .op_pixel_clk = 320000000,
     .binning_factor = 1,
     .max_fps = 61.0,
-    .min_fps = 7.5,
+    .min_fps = 10.0,
     .mode = SENSOR_HFR_MODE,
   },
 #endif
@@ -717,7 +762,7 @@ static struct sensor_lib_chromatix_t ov13850_chromatix[] = {
     .common_chromatix = SKUF_OV13850_LOAD_CHROMATIX(common),
     .camera_preview_chromatix = SKUF_OV13850_LOAD_CHROMATIX(snapshot),
     .camera_snapshot_chromatix = SKUF_OV13850_LOAD_CHROMATIX(snapshot),
-    .camcorder_chromatix = SKUF_OV13850_LOAD_CHROMATIX(snapshot),
+    .camcorder_chromatix = SKUF_OV13850_LOAD_CHROMATIX(default_video),
     .liveshot_chromatix = SKUF_OV13850_LOAD_CHROMATIX(snapshot),
   },
 #endif
@@ -758,10 +803,10 @@ static uint16_t ov13850_real_to_register_gain(float gain)
   uint16_t reg_gain, reg_temp;
   if (gain < 1.0) {
       gain = 1.0;
-  } else if (gain > 15.5) {
-      gain = 15.5;
+  } else if (gain > 7.75) {
+      gain = 7.75;
   }
-  gain = (gain) * 16.0;
+  gain = (gain) * 32.0;
   reg_gain = (uint16_t) gain;
   return reg_gain;
 }
@@ -784,7 +829,7 @@ static float ov13850_register_to_real_gain(uint16_t reg_gain)
   } else if (reg_gain >= 0xf8) {
       reg_gain = 0xf8;
   }
-  real_gain = (float) reg_gain / 16.0;
+  real_gain = (float) reg_gain / 32.0;
   return real_gain;
 }
 
@@ -939,9 +984,11 @@ static sensor_lib_t sensor_lib_ptr = {
   /* sensor aec info */
   .aec_info = &aec_info,
   /* sensor snapshot exposure wait frames info */
-  .snapshot_exp_wait_frames = 2,
+  .snapshot_exp_wait_frames = 4,
   /* number of frames to skip after start stream */
-  .sensor_num_frame_skip = 2,
+  .sensor_num_frame_skip = 7,
+  /* number of frames to skip after start HDR stream */
+  .sensor_num_HDR_frame_skip = 2,
   /* sensor exposure table size */
   .exposure_table_size = 10,
   /* sensor lens info */
