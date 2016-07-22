@@ -56,6 +56,11 @@ static int af_actuator_set_default_focus(void *ptr)
   if (af_actuator_ptr->fd <= 0)
     return -EINVAL;
 
+  if (!af_actuator_ptr->ctrl) {
+    SERR("af_tune = NULL");
+    return -EINVAL;
+  }
+
   cfg.cfgtype = CFG_SET_DEFAULT_FOCUS;
   cfg.cfg.move.dir = MOVE_FAR;
   cfg.cfg.move.sign_dir = -1;
