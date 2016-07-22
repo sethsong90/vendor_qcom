@@ -865,6 +865,17 @@ MM_CAMERA += libchromatix_t4k37ab_preview
 MM_CAMERA += libchromatix_t4k37ab_default_video
 MM_CAMERA += libchromatix_t4k37ab_snapshot
 
+MM_CAMERA += libmmcamera_imx214
+MM_CAMERA += libchromatix_imx214_common
+MM_CAMERA += libchromatix_imx214_preview
+MM_CAMERA += libchromatix_imx214_default_video
+MM_CAMERA += libchromatix_imx214_liveshot
+MM_CAMERA += libchromatix_imx214_hfr_60fps
+MM_CAMERA += libchromatix_imx214_hfr_120fps
+MM_CAMERA += libchromatix_imx214_snapshot
+MM_CAMERA += libchromatix_imx214_snapshot_hdr
+MM_CAMERA += libchromatix_imx214_video_hdr
+
 
 #MM_CORE
 MM_CORE := CABLService
