@@ -866,6 +866,7 @@ MM_CAMERA += libchromatix_t4k37ab_default_video
 MM_CAMERA += libchromatix_t4k37ab_snapshot
 
 MM_CAMERA += libmmcamera_imx214
+MM_CAMERA += libmmcamera_sony_imx214_eeprom
 MM_CAMERA += libchromatix_imx214_common
 MM_CAMERA += libchromatix_imx214_preview
 MM_CAMERA += libchromatix_imx214_default_video
