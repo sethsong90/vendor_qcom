@@ -1,3 +1,5 @@
+MM_CAMERA :=
+
 MM_CAMERA += libmmcamera_imx135
 MM_CAMERA += libchromatix_imx135_common
 MM_CAMERA += libchromatix_imx135_default_video
@@ -57,3 +59,5 @@ MM_CAMERA += libchromatix_imx214_hfr_120fps
 MM_CAMERA += libchromatix_imx214_snapshot
 MM_CAMERA += libchromatix_imx214_snapshot_hdr
 MM_CAMERA += libchromatix_imx214_video_hdr
+
+MM_CAMERA_EXT := $(MM_CAMERA)

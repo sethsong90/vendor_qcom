@@ -659,6 +659,7 @@ MM_CAMERA += v4l2-qcamera-app
 MM_CAMERA += libmmcamera_tintless_algo
 MM_CAMERA += libmmcamera_tintless_bg_pca_algo
 
+MM_CAMERA += $(MM_CAMERA_EXT)
 
 #MM_CORE
 MM_CORE := CABLService
